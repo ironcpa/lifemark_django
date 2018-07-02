@@ -1,3 +1,5 @@
 from django.db import models
 
-# Create your models here.
+
+class Lifemark(models.Model):
+    title = models.TextField(default='')
