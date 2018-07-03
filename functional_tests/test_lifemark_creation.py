@@ -1,22 +1,8 @@
-from django.test import LiveServerTestCase
-from selenium import webdriver
+from .base import FunctionalTest
 from selenium.webdriver.common.keys import Keys
-import unittest
-import time
 
 
-class NewVisitorTest(LiveServerTestCase):
-
-    def setUp(self):
-        self.browser = webdriver.Firefox()
-
-    def tearDown(self):
-        self.browser.quit()
-
-    def check_row_in_list_table(self, text):
-        table = self.browser.find_element_by_id('list_recent')
-        rows = table.find_elements_by_tag_name('tr')
-        self.assertIn(text, [row.text for row in rows])
+class NewVisitorTest(FunctionalTest):
 
     def test_enter_page_and_create_single_item(self):
         # augie enters home page
@@ -38,7 +24,6 @@ class NewVisitorTest(LiveServerTestCase):
         # when he hits enter, the page updates
         # and now page lists item he just typed
         inputbox.send_keys(Keys.ENTER)
-        time.sleep(1)
 
         self.check_row_in_list_table('new item')
 
@@ -53,12 +38,7 @@ class NewVisitorTest(LiveServerTestCase):
         # end hits enter
         inputbox.send_keys('second item')
         inputbox.send_keys(Keys.ENTER)
-        time.sleep(1)
 
         # page updates again, and now shows both items on the table list
         self.check_row_in_list_table('new item')
         self.check_row_in_list_table('second item')
-
-
-if __name__ == '__main__':
-    unittest.main(warnings='ignore')
