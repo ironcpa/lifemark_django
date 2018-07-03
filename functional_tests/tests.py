@@ -1,10 +1,11 @@
+from django.test import LiveServerTestCase
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
 import unittest
 import time
 
 
-class BasicInputTest(unittest.TestCase):
+class NewVisitorTest(LiveServerTestCase):
 
     def setUp(self):
         self.browser = webdriver.Firefox()
@@ -19,7 +20,7 @@ class BasicInputTest(unittest.TestCase):
 
     def test_enter_page_and_create_single_item(self):
         # augie enters home page
-        self.browser.get('http://localhost:8000')
+        self.browser.get(self.live_server_url)
 
         # augie notices the page title is Lifemark
         self.assertIn('Lifemark', self.browser.title)
