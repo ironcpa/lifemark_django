@@ -6,7 +6,9 @@
             {% csrf_token %}
         </form>
         <table id="list_recent">
-            <tr><td>{{ add_title }}</td></tr>
+            {% for lifemark in lifemarks %}
+                <tr><td>{{ lifemark.title }}</td></tr>
+            {% endfor %}
         </table>
     </body>
 </html>
