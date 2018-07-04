@@ -1,5 +1,6 @@
 from django.test import TestCase
 from main.models import Lifemark
+from main.forms import LifemarkForm
 
 
 class BasicPageTest(TestCase):
@@ -19,14 +20,14 @@ class BasicPageTest(TestCase):
         self.assertTemplateUsed(response, 'home.html')
 
     def test_can_save_a_POST_request(self):
-        self.client.post('/', data={'add_title': 'new item'})
+        self.client.post('/', data={'title': 'new item'})
 
         self.assertEqual(Lifemark.objects.count(), 1)
         new_item = Lifemark.objects.first()
         self.assertEqual(new_item.title, 'new item')
 
     def test_redirects_after_POST(self):
-        response = self.client.post('/', data={'add_title': 'new item'})
+        response = self.client.post('/', data={'title': 'new item'})
         self.assertEqual(response.status_code, 302)
         self.assertEqual(response['location'], '/')
 
@@ -42,3 +43,10 @@ class BasicPageTest(TestCase):
 
         self.assertIn('first item', res.content.decode())
         self.assertIn('second item', res.content.decode())
+
+    def test_main_page_uses_lifemark_form(self):
+        res = self.client.get('/')
+        self.assertIsInstance(res.context['form'], LifemarkForm)
+
+    def test_validation_errors_are_sent_back_to_home_page_template(self):
+        pass

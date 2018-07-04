@@ -2,7 +2,11 @@
     <title>Lifemark</title>
     <body>
         <form method="POST">
+            <!--
             <input name='add_title' id="id_add_title" placeholder="Enter lifemark title" />
+            -->
+            {{ test_obj }}
+            {{ form }}
             {% csrf_token %}
         </form>
         <table id="list_recent">

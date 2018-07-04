@@ -12,7 +12,7 @@ class NewVisitorTest(FunctionalTest):
         self.assertIn('Lifemark', self.browser.title)
 
         # augie sees form to insert title of lifemark
-        inputbox = self.browser.find_element_by_id('id_add_title')
+        inputbox = self.browser.find_element_by_id('id_title')
         self.assertEqual(
             inputbox.get_attribute('placeholder'),
             'Enter lifemark title'
@@ -28,7 +28,7 @@ class NewVisitorTest(FunctionalTest):
         self.check_row_in_list_table('new item')
 
         # there's still a text box for insert title of new lifemark
-        inputbox = self.browser.find_element_by_id('id_add_title')
+        inputbox = self.browser.find_element_by_id('id_title')
         self.assertEqual(
             inputbox.get_attribute('placeholder'),
             'Enter lifemark title'
@@ -53,7 +53,7 @@ class NewVisitorTest(FunctionalTest):
         self.assertEqual(titlebox.get_attribute('name'), 'title')
         self.assertEqual(
             titlebox.get_attribute('placeholder'),
-            'Enter lifemark title here'
+            'Enter lifemark title'
         )
         #  - link
         linkbox = self.browser.find_element_by_id('id_link')
