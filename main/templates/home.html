@@ -2,12 +2,11 @@
     <title>Lifemark</title>
     <body>
         <form method="POST">
-            <!--
-            <input name='add_title' id="id_add_title" placeholder="Enter lifemark title" />
-            -->
             {{ test_obj }}
-            {{ form }}
+            {{ form.as_ul }}
+            <input id='id_existing_categories' />
             {% csrf_token %}
+            <input type="submit" id="id_btn_add" value="add lifemark" />
         </form>
         <table id="list_recent">
             {% for lifemark in lifemarks %}

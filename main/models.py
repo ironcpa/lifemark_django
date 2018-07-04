@@ -11,3 +11,7 @@ class Lifemark(models.Model):
     tags = models.TextField(default='')
     desc = models.TextField(default='')
     image_url = models.TextField(default='', null=True)
+
+
+class TestModel(models.Model):
+    title = models.TextField()

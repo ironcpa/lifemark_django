@@ -32,3 +32,7 @@ class FunctionalTest(LiveServerTestCase):
         table = self.browser.find_element_by_id('list_recent')
         rows = table.find_elements_by_tag_name('tr')
         self.assertIn(text, [row.text for row in rows])
+
+    def click_button(self, id):
+        button = self.browser.find_element_by_id(id)
+        button.click()

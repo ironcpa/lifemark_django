@@ -2,7 +2,7 @@ from .base import FunctionalTest
 from selenium.webdriver.common.keys import Keys
 
 
-class NewVisitorTest(FunctionalTest):
+class BasicTest(FunctionalTest):
 
     def test_enter_page_and_create_single_item(self):
         # augie enters home page
@@ -21,9 +21,9 @@ class NewVisitorTest(FunctionalTest):
         # he types 'new item' into a text box
         inputbox.send_keys('new item')
 
-        # when he hits enter, the page updates
-        # and now page lists item he just typed
-        inputbox.send_keys(Keys.ENTER)
+        # when he click 'add lifemark' button
+        # the page updates and now page lists item he just typed
+        self.click_button('id_btn_add')
 
         self.check_row_in_list_table('new item')
 
@@ -37,7 +37,7 @@ class NewVisitorTest(FunctionalTest):
         # he enters second lifemakr 'second item'
         # end hits enter
         inputbox.send_keys('second item')
-        inputbox.send_keys(Keys.ENTER)
+        self.click_button('id_btn_add')
 
         # page updates again, and now shows both items on the table list
         self.check_row_in_list_table('new item')
