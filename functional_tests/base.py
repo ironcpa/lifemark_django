@@ -28,6 +28,10 @@ class FunctionalTest(LiveServerTestCase):
         self.browser.quit()
 
     @wait
+    def wait_for(self, fn):
+        return fn()
+
+    @wait
     def check_row_in_list_table(self, text):
         table = self.browser.find_element_by_id('list_recent')
         rows = table.find_elements_by_tag_name('tr')
@@ -36,3 +40,6 @@ class FunctionalTest(LiveServerTestCase):
     def click_button(self, id):
         button = self.browser.find_element_by_id(id)
         button.click()
+
+    def click_add_lifemark(self):
+        self.click_button('id_btn_add')

@@ -47,6 +47,3 @@ class BasicPageTest(TestCase):
     def test_main_page_uses_lifemark_form(self):
         res = self.client.get('/')
         self.assertIsInstance(res.context['form'], LifemarkForm)
-
-    def test_validation_errors_are_sent_back_to_home_page_template(self):
-        pass

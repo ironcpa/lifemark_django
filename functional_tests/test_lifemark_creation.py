@@ -23,7 +23,7 @@ class BasicTest(FunctionalTest):
 
         # when he click 'add lifemark' button
         # the page updates and now page lists item he just typed
-        self.click_button('id_btn_add')
+        self.click_add_lifemark()
 
         self.check_row_in_list_table('new item')
 
@@ -37,7 +37,7 @@ class BasicTest(FunctionalTest):
         # he enters second lifemakr 'second item'
         # end hits enter
         inputbox.send_keys('second item')
-        self.click_button('id_btn_add')
+        self.click_add_lifemark()
 
         # page updates again, and now shows both items on the table list
         self.check_row_in_list_table('new item')
@@ -92,3 +92,25 @@ class BasicTest(FunctionalTest):
         # augie fills in all entries
         # he hits 'add lifemark' button
         # page updates, and now he can see just enters lifemark on list
+
+    def test_cannot_add_empty_titled_lifemark(self):
+        # augie goes to the main page
+        # with empty title, he clicks 'add lifemark' button
+        self.browser.get(self.live_server_url)
+        title_box = self.browser.find_element_by_id('id_title')
+        self.click_add_lifemark()
+
+        # the browser intercepts the request, shows validation error
+        self.wait_for(lambda: self.browser.find_element_by_css_selector(
+            '#id_title:invalid'
+        ))
+
+        # he type some title, then validation error disappears
+        title_box.send_keys('new item')
+        self.wait_for(lambda: self.browser.find_element_by_css_selector(
+            '#id_title:valid'
+        ))
+
+        # and he can submit with 'add lifemark' as expected
+        self.click_add_lifemark()
+        self.check_row_in_list_table('new item')
