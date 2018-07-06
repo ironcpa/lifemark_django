@@ -2,7 +2,7 @@ from .base import FunctionalTest
 from selenium.webdriver.common.keys import Keys
 
 
-class BasicTest(FunctionalTest):
+class MainPageTest(FunctionalTest):
 
     def test_enter_page_and_create_single_item(self):
         # augie enters home page
@@ -49,34 +49,36 @@ class BasicTest(FunctionalTest):
 
         # augie sees form to create lifemark
         #  - title
-        titlebox = self.browser.find_element_by_id('id_title')
-        self.assertEqual(titlebox.get_attribute('name'), 'title')
+        title_box = self.browser.find_element_by_id('id_title')
+        self.assertEqual(title_box.get_attribute('name'), 'title')
         self.assertEqual(
-            titlebox.get_attribute('placeholder'),
+            title_box.get_attribute('placeholder'),
             'Enter lifemark title'
         )
         #  - link
-        linkbox = self.browser.find_element_by_id('id_link')
-        self.assertEqual(linkbox.get_attribute('name'), 'link')
+        link_box = self.browser.find_element_by_id('id_link')
+        self.assertEqual(link_box.get_attribute('name'), 'link')
         self.assertEqual(
-            linkbox.get_attribute('placeholder'),
+            link_box.get_attribute('placeholder'),
             'Enter related page link'
         )
         #  - category
-        categorybox = self.browser.find_element_by_id('id_category')
-        self.assertEqual(categorybox.get_attribute('name'), 'category')
+        category_box = self.browser.find_element_by_id('id_category')
+        self.assertEqual(category_box.get_attribute('name'), 'category')
         self.assertEqual(
-            categorybox.get_attribute('placeholder'),
+            category_box.get_attribute('placeholder'),
             'Enter new or select from combo'
         )
         categorycombo = self.browser.find_element_by_id('id_existing_categories')
         self.assertNotEqual(categorycombo, None)
         #  - is complete
-        iscompletecombo = self.browser.find_element_by_id('id_is_complete')
-        self.assertEqual(iscompletecombo.get_attribute('name'), 'is_complete')
+        is_complete_combo = self.browser.find_element_by_id('id_is_complete')
+        self.assertEqual(is_complete_combo.get_attribute('name'), 'is_complete')
         #  - due date
-        duedate_hidden = self.browser.find_element_by_id('id_due_date')
-        self.assertEqual(duedate_hidden.get_attribute('name'), 'due_date')
+        duedate_box = self.browser.find_element_by_id('id_due_date')
+        due_hour_combo = self.browser.find_element_by_id('id_due_hour')
+        duedate_hidden = self.browser.find_element_by_id('id_due_datehour')
+        self.assertEqual(duedate_hidden.get_attribute('name'), 'due_datehour')
         #  - rating
         rating_box = self.browser.find_element_by_id('id_rating')
         self.assertEqual(rating_box.get_attribute('name'), 'rating')
@@ -89,9 +91,23 @@ class BasicTest(FunctionalTest):
         #  - image
         image_url = self.browser.find_element_by_id('id_image_url')
         self.assertNotEqual(image_url, None)
+
         # augie fills in all entries
+        title_box.send_keys('test entry')
+        link_box.send_keys('http://aaa')
+        category_box.send_keys('normal')
+        is_complete_combo.select_by_value('complete')
+        duedate_box.send_keys('2018-01-01')
+        due_hour_combo.select_by_value('0')
+        rating_box.send_keys('xxxxx')
+        tags_box.send_keys('aaa bbb')
+        desc_box.send_keys('aaaaaaa')
+        image_url.send_keys('http://image_location/sample.jpg')
+
         # he hits 'add lifemark' button
         # page updates, and now he can see just enters lifemark on list
+        self.click_add_lifemark()
+        self.check_row_in_list_table('test entry')
 
     def test_cannot_add_empty_titled_lifemark(self):
         # augie goes to the main page
