@@ -1,5 +1,6 @@
 from .base import FunctionalTest
 from selenium.webdriver.common.keys import Keys
+from selenium.webdriver.support.select import Select
 
 
 class MainPageTest(FunctionalTest):
@@ -25,7 +26,7 @@ class MainPageTest(FunctionalTest):
         # the page updates and now page lists item he just typed
         self.click_add_lifemark()
 
-        self.check_row_in_list_table('new item')
+        self.check_text_in_table('new item')
 
         # there's still a text box for insert title of new lifemark
         inputbox = self.browser.find_element_by_id('id_title')
@@ -40,8 +41,8 @@ class MainPageTest(FunctionalTest):
         self.click_add_lifemark()
 
         # page updates again, and now shows both items on the table list
-        self.check_row_in_list_table('new item')
-        self.check_row_in_list_table('second item')
+        self.check_text_in_table('new item')
+        self.check_text_in_table('second item')
 
     def test_create_lifemark_with_fill_every_form_entries(self):
         # augie enters home page
@@ -65,10 +66,6 @@ class MainPageTest(FunctionalTest):
         #  - category
         category_box = self.browser.find_element_by_id('id_category')
         self.assertEqual(category_box.get_attribute('name'), 'category')
-        self.assertEqual(
-            category_box.get_attribute('placeholder'),
-            'Enter new or select from combo'
-        )
         categorycombo = self.browser.find_element_by_id('id_existing_categories')
         self.assertNotEqual(categorycombo, None)
         #  - is complete
@@ -76,7 +73,9 @@ class MainPageTest(FunctionalTest):
         self.assertEqual(is_complete_combo.get_attribute('name'), 'is_complete')
         #  - due date
         duedate_box = self.browser.find_element_by_id('id_due_date')
+        self.assertNotEqual(duedate_box, None)
         due_hour_combo = self.browser.find_element_by_id('id_due_hour')
+        self.assertNotEqual(due_hour_combo, None)
         duedate_hidden = self.browser.find_element_by_id('id_due_datehour')
         self.assertEqual(duedate_hidden.get_attribute('name'), 'due_datehour')
         #  - rating
@@ -95,10 +94,9 @@ class MainPageTest(FunctionalTest):
         # augie fills in all entries
         title_box.send_keys('test entry')
         link_box.send_keys('http://aaa')
-        category_box.send_keys('normal')
-        is_complete_combo.select_by_value('complete')
-        duedate_box.send_keys('2018-01-01')
-        due_hour_combo.select_by_value('0')
+        self.browser.execute_script('fill_category_hidden("sample")')
+        Select(is_complete_combo).select_by_value('complete')
+        self.browser.execute_script('fill_due_datehour_hidden("2018010100")')
         rating_box.send_keys('xxxxx')
         tags_box.send_keys('aaa bbb')
         desc_box.send_keys('aaaaaaa')
@@ -107,7 +105,9 @@ class MainPageTest(FunctionalTest):
         # he hits 'add lifemark' button
         # page updates, and now he can see just enters lifemark on list
         self.click_add_lifemark()
-        self.check_row_in_list_table('test entry')
+        self.check_row_in_list_table(0, 'test entry')
+        self.check_row_in_list_table(0, 'http://aaa')
+        self.fail('expected fail: need to unittest first')
 
     def test_cannot_add_empty_titled_lifemark(self):
         # augie goes to the main page
@@ -129,4 +129,4 @@ class MainPageTest(FunctionalTest):
 
         # and he can submit with 'add lifemark' as expected
         self.click_add_lifemark()
-        self.check_row_in_list_table('new item')
+        self.check_text_in_table('new item')

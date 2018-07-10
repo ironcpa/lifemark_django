@@ -1,16 +1,33 @@
 <html>
     <title>Lifemark</title>
+    <head>
+        <script>
+            function fill_category_hidden(value) {
+                category_hidden = document.getElementById('id_category')
+                category_hidden.value = value
+            }
+            function fill_due_datehour_hidden(date_str) {
+                due_datehour_hidden = document.getElementById('id_due_datehour')
+                due_datehour_hidden.value = date_str
+            }
+        </script>
+    </head>
     <body>
         <form method="POST">
             {{ test_obj }}
             {{ form.as_ul }}
             <input id='id_existing_categories' />
+            <input id='id_due_date' />
+            <input id='id_due_hour' />
             {% csrf_token %}
             <input type="submit" id="id_btn_add" value="add lifemark" />
         </form>
         <table id="list_recent">
             {% for lifemark in lifemarks %}
-                <tr><td>{{ lifemark.title }}</td></tr>
+                <tr>
+                    <td>{{ lifemark.title }}</td>
+                    <td>{{ lifemark.link }}</td>
+                </tr>
             {% endfor %}
         </table>
     </body>

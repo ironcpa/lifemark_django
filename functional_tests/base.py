@@ -32,10 +32,17 @@ class FunctionalTest(LiveServerTestCase):
         return fn()
 
     @wait
-    def check_row_in_list_table(self, text):
+    def check_text_in_table(self, text):
         table = self.browser.find_element_by_id('list_recent')
         rows = table.find_elements_by_tag_name('tr')
         self.assertIn(text, [row.text for row in rows])
+
+    @wait
+    def check_row_in_list_table(self, row, text):
+        table = self.browser.find_element_by_id('list_recent')
+        rows = table.find_elements_by_tag_name('tr')
+        target_row = rows[row]
+        self.assertIn(text, target_row.text)
 
     def click_button(self, id):
         button = self.browser.find_element_by_id(id)

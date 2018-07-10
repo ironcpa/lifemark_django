@@ -15,8 +15,7 @@ class LifemarkFormTest(TestCase):
         self.assertIn('name="category"', form_text)
         self.assertIn('name="is_complete"', form_text)
         self.assertIn('name="due_datehour"', form_text)
-        # this is not post entry: just for test
-        self.assertIn('id="id_due_date"', form_text)
+        self.assertIn('name="due_datehour"', form_text)
         self.assertIn('name="rating"', form_text)
         self.assertIn('name="tags"', form_text)
         self.assertIn('name="desc"', form_text)

@@ -18,3 +18,4 @@ class Lifemark(models.Model):
 
 class TestModel(models.Model):
     title = models.TextField()
+    category = models.TextField()

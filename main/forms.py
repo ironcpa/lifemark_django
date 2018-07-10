@@ -2,6 +2,12 @@ from django import forms
 from main.models import Lifemark
 from main.models import TestModel
 
+CHOICES_STATE = (
+    ('', ''),
+    ('todo', 'todo'),
+    ('working', 'working'),
+    ('complete', 'complete'),
+)
 
 class LifemarkForm(forms.models.ModelForm):
 
@@ -15,11 +21,9 @@ class LifemarkForm(forms.models.ModelForm):
             'link': forms.fields.URLInput(attrs={
                 'placeholder': 'Enter related page link',
             }),
-            'category': forms.fields.TextInput(attrs={
-                'placeholder': 'Enter new or select from combo',
-            }),
-            'is_complete': forms.fields.TextInput(),
-            'due_datehour': forms.fields.TextInput(),
+            'category': forms.fields.HiddenInput(),
+            'is_complete': forms.fields.Select(choices=CHOICES_STATE),
+            'due_datehour': forms.fields.HiddenInput(),
             'rating': forms.fields.TextInput(),
             'tags': forms.fields.TextInput(),
             'image_url': forms.fields.TextInput(),
