@@ -47,3 +47,31 @@ class BasicPageTest(TestCase):
     def test_main_page_uses_lifemark_form(self):
         res = self.client.get('/')
         self.assertIsInstance(res.context['form'], LifemarkForm)
+
+
+class ViewModelIntergrationTest(TestCase):
+
+    def test_post_saves_correct_model(self):
+        res = self.client.post('/', data={
+            'title': 'new item',
+            'link': 'http://aaa.com',
+            'category': 'web',
+            'is_complete': 'todo',
+            'due_datehour': '2018010101',
+            'rating': 'xxxxx',
+            'tags': 'aaa bbb',
+            'desc': 'aaaabbbbccccdddd',
+            'image_url': 'http://aaa.com/img/sample.jpeg'
+        })
+        self.assertEqual(res.status_code, 302)
+        self.assertEqual(res['location'], '/')
+        saved = Lifemark.objects.get(title='new item')
+        self.assertEqual(saved.title, 'new item')
+        self.assertEqual(saved.link, 'http://aaa.com')
+        self.assertEqual(saved.category, 'web')
+        self.assertEqual(saved.is_complete, 'todo')
+        self.assertEqual(saved.due_datehour, '2018010101')
+        self.assertEqual(saved.rating, 'xxxxx')
+        self.assertEqual(saved.tags, 'aaa bbb')
+        self.assertEqual(saved.desc, 'aaaabbbbccccdddd')
+        self.assertEqual(saved.image_url, 'http://aaa.com/img/sample.jpeg')

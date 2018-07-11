@@ -107,7 +107,8 @@ class MainPageTest(FunctionalTest):
         self.click_add_lifemark()
         self.check_row_in_list_table(0, 'test entry')
         self.check_row_in_list_table(0, 'http://aaa')
-        self.fail('expected fail: need to unittest first')
+        self.check_row_in_list_table(0, 'http://aaa')
+        # self.fail('expected fail: need to unittest first')
 
     def test_cannot_add_empty_titled_lifemark(self):
         # augie goes to the main page

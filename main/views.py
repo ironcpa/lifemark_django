@@ -6,8 +6,16 @@ from main.forms import LifemarkForm
 
 def home_page(request):
     if request.method == 'POST':
-        Lifemark.objects.create(title=request.POST['title'])
-        return redirect('/')
+        form = LifemarkForm(data=request.POST)
+        if form.is_valid():
+            '''
+            Lifemark.objects.create(
+                title=request.POST.get('title'),
+                link=request.POST.get('link'),
+            )
+            '''
+            form.save()
+            return redirect('/')
 
     lifemarks = Lifemark.objects.all()
     form = LifemarkForm()
