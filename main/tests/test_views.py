@@ -20,14 +20,14 @@ class BasicPageTest(TestCase):
         self.assertTemplateUsed(response, 'home.html')
 
     def test_can_save_a_POST_request(self):
-        self.client.post('/', data={'title': 'new item'})
+        self.client.post('/new', data={'title': 'new item'})
 
         self.assertEqual(Lifemark.objects.count(), 1)
         new_item = Lifemark.objects.first()
         self.assertEqual(new_item.title, 'new item')
 
     def test_redirects_after_POST(self):
-        response = self.client.post('/', data={'title': 'new item'})
+        response = self.client.post('/new', data={'title': 'new item'})
         self.assertEqual(response.status_code, 302)
         self.assertEqual(response['location'], '/')
 
@@ -52,7 +52,7 @@ class BasicPageTest(TestCase):
 class ViewModelIntergrationTest(TestCase):
 
     def test_post_saves_correct_model(self):
-        res = self.client.post('/', data={
+        res = self.client.post('/new', data={
             'title': 'new item',
             'link': 'http://aaa.com',
             'category': 'web',
@@ -63,8 +63,11 @@ class ViewModelIntergrationTest(TestCase):
             'desc': 'aaaabbbbccccdddd',
             'image_url': 'http://aaa.com/img/sample.jpeg'
         })
+
         self.assertEqual(res.status_code, 302)
         self.assertEqual(res['location'], '/')
+
+        self.assertEqual(Lifemark.objects.count(), 1)
         saved = Lifemark.objects.get(title='new item')
         self.assertEqual(saved.title, 'new item')
         self.assertEqual(saved.link, 'http://aaa.com')
@@ -75,3 +78,7 @@ class ViewModelIntergrationTest(TestCase):
         self.assertEqual(saved.tags, 'aaa bbb')
         self.assertEqual(saved.desc, 'aaaabbbbccccdddd')
         self.assertEqual(saved.image_url, 'http://aaa.com/img/sample.jpeg')
+
+    def test_invalid_do_not_saved_on_db(self):
+        self.client.post('/new')
+        self.assertEqual(Lifemark.objects.count(), 0)

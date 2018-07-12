@@ -1,6 +1,5 @@
 from django import forms
 from main.models import Lifemark
-from main.models import TestModel
 
 CHOICES_STATE = (
     ('', ''),
@@ -8,6 +7,7 @@ CHOICES_STATE = (
     ('working', 'working'),
     ('complete', 'complete'),
 )
+
 
 class LifemarkForm(forms.models.ModelForm):
 
@@ -34,11 +34,3 @@ class LifemarkForm(forms.models.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super(LifemarkForm, self).__init__(*args, **kwargs)
-        self.fields['link'].required = False
-        self.fields['category'].required = False
-        self.fields['is_complete'].required = False
-        self.fields['due_datehour'].required = False
-        self.fields['rating'].required = False
-        self.fields['tags'].required = False
-        self.fields['desc'].required = False
-        self.fields['image_url'].required = False
