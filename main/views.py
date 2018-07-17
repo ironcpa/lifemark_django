@@ -1,7 +1,7 @@
 from django.shortcuts import redirect, render
 from django.http import HttpResponse
-from main.models import Lifemark
-from main.forms import LifemarkForm
+from .models import Lifemark
+from .forms import LifemarkForm
 
 
 def home_page(request):
@@ -19,4 +19,13 @@ def new_lifemark(request):
         if form.is_valid():
             form.save()
 
+    return redirect('/')
+
+
+def update_lifemark(request):
+    if request.method == 'POST':
+        target = Lifemark.objects.get(id=request.POST['id'])
+        form = LifemarkForm(data=request.POST, instance=target)
+        if form.is_valid():
+            form.save()
     return redirect('/')

@@ -131,3 +131,22 @@ class MainPageTest(FunctionalTest):
         # and he can submit with 'add lifemark' as expected
         self.click_add_lifemark()
         self.check_text_in_table('new item')
+
+    def test_update_existing_lifemark(self):
+        # augie goes to the main page
+        # this page has already existing lifemarks
+        self.browser.get(self.live_server_url)
+        self.add_lifemark(title='existing item 1')
+        self.add_lifemark(title='existing item 2')
+
+        # augie click 'edit' button on list
+        list_btn_edit = self.browser.find_element_by_id('id_list_btn_edit_1')
+        list_btn_edit.click()
+        # then edit form is shown instead of add form
+        # and clicked item's fields are shown on form fields
+        edit_form = self.browser.find_element_by_id('id_edit_form')
+        edit_title_box = edit_form.find_element_by_id('id_edit_title')
+        self.assertEqual(edit_title_box.get_attribute('value'), 'existing item 1')
+
+        # he modify some fields and click 'update' button
+        # page updates, and now he can see updated data on the list

@@ -50,3 +50,8 @@ class FunctionalTest(LiveServerTestCase):
 
     def click_add_lifemark(self):
         self.click_button('id_btn_add')
+
+    def add_lifemark(self, title):
+        inputbox = self.browser.find_element_by_id('id_title')
+        inputbox.send_keys(title)
+        self.click_add_lifemark()

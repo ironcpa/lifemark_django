@@ -11,14 +11,15 @@ class Lifemark(models.Model):
     tags = models.TextField(blank=True, default='')
     desc = models.TextField(blank=True, default='')
     image_url = models.TextField(blank=True, default='')
-    # cdate = models.DateTimeField(null=False)
-    # udate = models.DateTimeField(null=False)
+    cdate = models.DateTimeField(auto_now_add=True)
+    udate = models.DateTimeField(auto_now=True)
 
     def __str__(self):
-        return f'Lifemark: "{self.title}"'
+        return f'Lifemark: "{self.id}: {self.title}"'
 
 
 class TestModel(models.Model):
     title = models.TextField(default=None, null=True)
     category = models.TextField(default='', null=True)
     state = models.TextField(null=True)
+    cdate = models.DateTimeField(auto_now_add=True)

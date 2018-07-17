@@ -1,6 +1,7 @@
 from django.test import TestCase
 from main.models import Lifemark
 from main.forms import LifemarkForm
+from datetime import datetime
 
 
 class BasicPageTest(TestCase):
@@ -25,6 +26,13 @@ class BasicPageTest(TestCase):
         self.assertEqual(Lifemark.objects.count(), 1)
         new_item = Lifemark.objects.first()
         self.assertEqual(new_item.title, 'new item')
+        filtered = Lifemark.objects.filter(
+            cdate__lte=datetime.now(),
+            udate__lte=datetime.now(),
+        )
+        self.assertEqual(filtered.count(), 1)
+        self.assertEqual(filtered.first().title, 'new item')
+        self.assertEqual(filtered.first(), new_item)
 
     def test_redirects_after_POST(self):
         response = self.client.post('/new', data={'title': 'new item'})
@@ -47,6 +55,22 @@ class BasicPageTest(TestCase):
     def test_main_page_uses_lifemark_form(self):
         res = self.client.get('/')
         self.assertIsInstance(res.context['form'], LifemarkForm)
+
+    def test_can_update_POST_request(self):
+        lifemark = Lifemark.objects.create(title='initial title')
+        self.assertEqual(lifemark.title, 'initial title')
+
+        self.client.post('/update', data={'id': 1, 'title': 'modified title'})
+
+        updated = Lifemark.objects.get(id=1)
+        self.assertEqual(updated.title, 'modified title')
+
+    def test_redirects_after_update_POST(self):
+        lifemark = Lifemark.objects.create(title='initial title')
+        res = self.client.post('/update', data={'id': lifemark.id, 'title': 'modified title'})
+
+        self.assertEqual(res.status_code, 302)
+        self.assertEqual(res['location'], '/')
 
 
 class ViewModelIntergrationTest(TestCase):

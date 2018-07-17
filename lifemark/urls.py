@@ -21,4 +21,5 @@ urlpatterns = [
     url(r'^admin/', admin.site.urls),
     url(r'^$', views.home_page, name='home'),
     url(r'^new$', views.new_lifemark, name='new'),
+    url(r'^update$', views.update_lifemark, name='update'),
 ]
