@@ -1,4 +1,5 @@
 from django.test import TestCase
+from django.urls import reverse
 from main.models import Lifemark
 from main.forms import LifemarkForm
 from datetime import datetime
@@ -7,15 +8,15 @@ from datetime import datetime
 class BasicPageTest(TestCase):
 
     def test_uses_home_template(self):
-        response = self.client.get('/')
+        response = self.client.get(reverse('home'))
         self.assertTemplateUsed(response, 'home.html')
 
     def test_home_page_returns_expected_html(self):
-        response = self.client.get('/')
+        response = self.client.get(reverse('home'))
 
         html = response.content.decode('utf8')
         self.assertTrue(html.startswith('<html>'))
-        self.assertIn('<title>Lifemark</title>', html)
+        self.assertIn('<title>Lifemarks</title>', html)
         self.assertTrue(html.strip().endswith('</html>'))
 
         self.assertTemplateUsed(response, 'home.html')
@@ -37,40 +38,41 @@ class BasicPageTest(TestCase):
     def test_redirects_after_POST(self):
         response = self.client.post('/new', data={'title': 'new item'})
         self.assertEqual(response.status_code, 302)
-        self.assertEqual(response['location'], '/')
+        self.assertEqual(response['location'], reverse('home'))
 
     def test_only_saves_lifmarks_when_necessary(self):
-        self.client.get('/')
+        self.client.get(reverse('home'))
         self.assertEqual(Lifemark.objects.count(), 0)
 
     def test_displays_all_list_items(self):
         Lifemark.objects.create(title='first item')
         Lifemark.objects.create(title='second item')
 
-        res = self.client.get('/')
+        res = self.client.get(reverse('home'))
 
         self.assertIn('first item', res.content.decode())
         self.assertIn('second item', res.content.decode())
 
     def test_main_page_uses_lifemark_form(self):
-        res = self.client.get('/')
+        res = self.client.get(reverse('home'))
         self.assertIsInstance(res.context['form'], LifemarkForm)
 
     def test_can_update_POST_request(self):
         lifemark = Lifemark.objects.create(title='initial title')
         self.assertEqual(lifemark.title, 'initial title')
 
-        self.client.post('/update', data={'id': 1, 'title': 'modified title'})
+        self.client.post(reverse('update', kwargs={'pk': 1}), data={'id': 1, 'title': 'modified title'})
 
         updated = Lifemark.objects.get(id=1)
         self.assertEqual(updated.title, 'modified title')
 
     def test_redirects_after_update_POST(self):
         lifemark = Lifemark.objects.create(title='initial title')
-        res = self.client.post('/update', data={'id': lifemark.id, 'title': 'modified title'})
+        # res = self.client.post(f'/update', data={'id': lifemark.id, 'title': 'modified title'})
+        res = self.client.post(f'/update/{lifemark.id}/', data={'title': 'modified title'})
 
         self.assertEqual(res.status_code, 302)
-        self.assertEqual(res['location'], '/')
+        self.assertEqual(res['location'], reverse('home'))
 
 
 class ViewModelIntergrationTest(TestCase):
@@ -89,7 +91,7 @@ class ViewModelIntergrationTest(TestCase):
         })
 
         self.assertEqual(res.status_code, 302)
-        self.assertEqual(res['location'], '/')
+        self.assertEqual(res['location'], reverse('home'))
 
         self.assertEqual(Lifemark.objects.count(), 1)
         saved = Lifemark.objects.get(title='new item')
@@ -106,3 +108,50 @@ class ViewModelIntergrationTest(TestCase):
     def test_invalid_do_not_saved_on_db(self):
         self.client.post('/new')
         self.assertEqual(Lifemark.objects.count(), 0)
+
+    def test_post_updates_all_fields_correctly(self):
+        lifemark = Lifemark.objects.create(title='initial title')
+        self.assertEqual(lifemark.title, 'initial title')
+
+        self.client.post(reverse('update', kwargs={'pk': 1}), data={'id': 1, 'title': 'modified title'})
+
+        lifemark = Lifemark.objects.create(
+            title='init title',
+            link='init link',
+            category='init',
+            is_complete='todo',
+            due_datehour='2018010101',
+            rating='x',
+            tags='aaa bbb',
+            desc='init description',
+            image_url='http://sample.com/init.jpg'
+        )
+        pk = lifemark.id
+
+        res = self.client.post(reverse('update', kwargs={'pk': pk}), data={
+            'id': pk,
+            'title': 'mod title',
+            'link': 'mod link',
+            'category': 'mod',
+            'is_complete': 'complete',
+            'due_datehour': '2018020128',
+            'rating': 'xxxxx',
+            'tags': 'aaa bbb ccc ddd',
+            'desc': 'mod description',
+            'image_url': 'http://sample.com/mod.jpg',
+        })
+
+        self.assertEqual(res.status_code, 302)
+        self.assertEqual(res['location'], reverse('home'))
+
+        updated = Lifemark.objects.get(id=pk)
+
+        self.assertEqual(updated.title, 'mod title')
+        self.assertEqual(updated.link, 'mod link')
+        self.assertEqual(updated.category, 'mod')
+        self.assertEqual(updated.is_complete, 'complete')
+        self.assertEqual(updated.due_datehour, '2018020128')
+        self.assertEqual(updated.rating, 'xxxxx')
+        self.assertEqual(updated.tags, 'aaa bbb ccc ddd')
+        self.assertEqual(updated.desc, 'mod description')
+        self.assertEqual(updated.image_url, 'http://sample.com/mod.jpg')

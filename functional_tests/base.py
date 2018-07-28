@@ -1,4 +1,4 @@
-from django.test import LiveServerTestCase
+from django.contrib.staticfiles.testing import StaticLiveServerTestCase
 from selenium import webdriver
 from selenium.common.exceptions import WebDriverException
 import time
@@ -19,7 +19,7 @@ def wait(fn):
     return modified_fn
 
 
-class FunctionalTest(LiveServerTestCase):
+class FunctionalTest(StaticLiveServerTestCase):
 
     def setUp(self):
         self.browser = webdriver.Firefox()
@@ -35,14 +35,18 @@ class FunctionalTest(LiveServerTestCase):
     def check_text_in_table(self, text):
         table = self.browser.find_element_by_id('list_recent')
         rows = table.find_elements_by_tag_name('tr')
-        self.assertIn(text, [row.text for row in rows])
+        title_tds = []
+        for row in rows:
+            tds = row.find_elements_by_tag_name('td')
+            title_tds.extend(tds)
+        self.assertIn(text, [td.text for td in title_tds])
 
     @wait
     def check_row_in_list_table(self, row, text):
         table = self.browser.find_element_by_id('list_recent')
         rows = table.find_elements_by_tag_name('tr')
-        target_row = rows[row]
-        self.assertIn(text, target_row.text)
+        tds = rows[row].find_elements_by_tag_name('td')
+        self.assertIn(text, [td.text for td in tds])
 
     def click_button(self, id):
         button = self.browser.find_element_by_id(id)
@@ -50,6 +54,9 @@ class FunctionalTest(LiveServerTestCase):
 
     def click_add_lifemark(self):
         self.click_button('id_btn_add')
+
+    def click_update_lifemark(self):
+        self.click_button('id_btn_update')
 
     def add_lifemark(self, title):
         inputbox = self.browser.find_element_by_id('id_title')

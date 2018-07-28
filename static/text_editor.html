@@ -1,0 +1,19 @@
+<html>
+    <script src="jquery-3.2.1.min.js"></script>
+    <script src="desc_editor_test.js?t=114"></script>
+    <body>
+        <!--<input type='button' value='>' onclick='indent_line()' />-->
+        <input type='button' value='>' onclick='indent_selected(1)' />
+        <input type='button' value='<' onclick='indent_selected(-1)' />
+        <input type='button' value='todo' onclick='set_header(editor_module.HEADERS.todo)' />
+        <input type='button' value='prog' onclick='set_header(editor_module.HEADERS.progress)' />
+        <input type='button' value='comp' onclick='set_header_selected(editor_module.HEADERS.complete)' />
+        <input type='button' value='post' onclick='set_header(editor_module.HEADERS.postpone)' />
+        <input type='button' value='debug' onclick='show_curr_pos()' /><br/>
+        <textarea id='editorxxx' rows="5" cols="50" onkeydown='handle_keys(event)'>aaaabbbbcccc</textarea>
+    </body>
+    <script>
+        editor_module.set_editor('editorxxx')
+        get_editor().value = 'aaaaaa\nbbbbbb\ncccccc\nbbbbbb\nbbbbbb'
+    </script>
+</html>

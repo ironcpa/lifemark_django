@@ -1,0 +1,19 @@
+<html>
+    <title>{% block title %}Lifemarks{% endblock %}</title>
+    <head>
+        <script src="static/jquery-3.2.1.min.js"></script>
+        <script src="static/jquery-ui-1.12.1.custom/jquery-ui.min.js"></script>
+        {% block javascript %}
+        {% endblock javascript %}
+    </head>
+    <body>
+        {% block form %}
+        {% endblock form %}
+
+        {% block list %}
+        {% endblock list %}
+
+        {% block init_javascript %}
+        {% endblock init_javascript %}
+    </body>
+</html>

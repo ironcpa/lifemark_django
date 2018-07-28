@@ -1,35 +1,73 @@
-<html>
-    <title>Lifemark</title>
-    <head>
-        <script>
-            function fill_category_hidden(value) {
-                category_hidden = document.getElementById('id_category')
-                category_hidden.value = value
-            }
-            function fill_due_datehour_hidden(date_str) {
-                due_datehour_hidden = document.getElementById('id_due_datehour')
-                due_datehour_hidden.value = date_str
-            }
-        </script>
-    </head>
-    <body>
-        <form method="POST" action="/new">
-            {{ test_obj }}
-            {{ form.as_ul }}
-            <input type="hiddent" name="lifemark_id" />
-            <input id='id_existing_categories' />
-            <input id='id_due_date' />
-            <input id='id_due_hour' />
-            {% csrf_token %}
-            <input type="submit" id="id_btn_add" value="add lifemark" />
-        </form>
-        <table id="list_recent">
-            {% for lifemark in lifemarks %}
-                <tr>
-                    <td>{{ lifemark.title }}</td>
-                    <td>{{ lifemark.link }}</td>
-                </tr>
-            {% endfor %}
-        </table>
-    </body>
-</html>
+{% extends 'base.html' %}
+
+{% block javascript %}
+    <script src="static/desc_editor.js?t=32328"></script>
+    <script>
+        function fill_category_hidden(value) {
+            category_hidden = document.getElementById('id_category')
+            category_hidden.value = value
+        }
+        function fill_due_datehour_hidden(date_str) {
+            due_datehour_hidden = document.getElementById('id_due_datehour')
+            due_datehour_hidden.value = date_str
+        }
+        function toggle_form() {
+            var $new_form = $('#id_new_form')
+            var $update_form = $('#id_update_form')
+            $new_form.hide()
+            $update_form.show()
+        }
+        function edit(id) {
+            console.log('edit('+id+')')
+            toggle_form()
+            
+            var $update_form = $('#id_update_form')
+            $id_row = $('#row_'+id)
+            $update_form.find('#id_title').val($($id_row.find('td')[1]).text())
+
+            $update_form.attr('action', 'update/' + id + '/')
+        }
+    </script>
+{% endblock javascript %}
+
+{% block form %}
+    <form id="id_new_form" method="POST" action="{% url 'new' %}">
+        {{ test_obj }}
+        {{ form.as_ul }}
+        <input type="hidden" name="lifemark_id" />
+        <input id='id_existing_categories' />
+        <input id='id_due_date' />
+        <input id='id_due_hour' />
+        {% csrf_token %}
+        <input type="submit" id="id_btn_add" value="add lifemark" />
+    </form>
+    <form id="id_update_form" method="POST" action="">
+        {{ test_obj }}
+        {{ form.as_ul }}
+        <input type="hidden" name="lifemark_id" />
+        <input id='id_existing_categories' />
+        <input id='id_due_date' />
+        <input id='id_due_hour' />
+        {% csrf_token %}
+        <input type="submit" id="id_btn_update" value="update lifemark" />
+    </form>
+{% endblock form %}
+
+{% block list %}
+    <table id="list_recent">
+        {% for lifemark in lifemarks %}
+            <tr id="row_{{ lifemark.id }}">
+                <td>{{ lifemark.id }}</td>
+                <td>{{ lifemark.title }}</td>
+                <td>{{ lifemark.link }}</td>
+                <td><button id="id_list_btn_edit_{{ lifemark.id }}" onclick="edit({{ lifemark.id }})">Edit</button></td>
+            </tr>
+        {% endfor %}
+    </table>
+{% endblock list %}
+
+{% block init_javascript %}
+    <script>
+        $('#id_update_form').hide()
+    </script>
+{% endblock init_javascript %}

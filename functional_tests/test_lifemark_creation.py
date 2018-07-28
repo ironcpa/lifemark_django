@@ -1,5 +1,4 @@
 from .base import FunctionalTest
-from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support.select import Select
 
 
@@ -105,9 +104,9 @@ class MainPageTest(FunctionalTest):
         # he hits 'add lifemark' button
         # page updates, and now he can see just enters lifemark on list
         self.click_add_lifemark()
-        self.check_row_in_list_table(0, 'test entry')
-        self.check_row_in_list_table(0, 'http://aaa')
-        self.check_row_in_list_table(0, 'http://aaa')
+        self.check_text_in_table('test entry')
+        self.check_text_in_table('http://aaa')
+        self.check_text_in_table('http://aaa')
         # self.fail('expected fail: need to unittest first')
 
     def test_cannot_add_empty_titled_lifemark(self):
@@ -140,13 +139,28 @@ class MainPageTest(FunctionalTest):
         self.add_lifemark(title='existing item 2')
 
         # augie click 'edit' button on list
-        list_btn_edit = self.browser.find_element_by_id('id_list_btn_edit_1')
+        table = self.browser.find_element_by_id('list_recent')
+        rows = table.find_elements_by_tag_name('tr')
+        target_row = rows[0]
+        row_id = target_row.get_attribute('id')
+        target_id = row_id[row_id.index('_') + 1:]
+
+        list_btn_edit = self.browser.find_element_by_id('id_list_btn_edit_' + target_id)
         list_btn_edit.click()
         # then edit form is shown instead of add form
         # and clicked item's fields are shown on form fields
-        edit_form = self.browser.find_element_by_id('id_edit_form')
-        edit_title_box = edit_form.find_element_by_id('id_edit_title')
+        update_form = self.browser.find_element_by_id('id_update_form')
+        edit_title_box = update_form.find_element_by_id('id_title')
         self.assertEqual(edit_title_box.get_attribute('value'), 'existing item 1')
 
         # he modify some fields and click 'update' button
         # page updates, and now he can see updated data on the list
+        edit_title_box.clear()
+        edit_title_box.send_keys('modified item')
+        self.click_update_lifemark()
+
+        # self.check_text_in_table('modified item')
+        self.check_row_in_list_table(0, 'modified item')
+
+    def test_delete_lifemark(self):
+        pass
