@@ -4,12 +4,12 @@
     <script src="static/desc_editor.js?t=32328"></script>
     <script>
         function fill_category_hidden(value) {
-            category_hidden = document.getElementById('id_category')
-            category_hidden.value = value
+            var $category_hidden = $('#id_category')
+            $category_hidden.val(value)
         }
         function fill_due_datehour_hidden(date_str) {
-            due_datehour_hidden = document.getElementById('id_due_datehour')
-            due_datehour_hidden.value = date_str
+            var $due_datehour_hidden = $('#id_due_datehour')
+            $due_datehour_hidden.val(date_str)
         }
         function toggle_form() {
             var $new_form = $('#id_new_form')
@@ -18,14 +18,20 @@
             $update_form.show()
         }
         function edit(id) {
-            console.log('edit('+id+')')
+            console.log('edit(' + id + ')')
             toggle_form()
             
             var $update_form = $('#id_update_form')
-            $id_row = $('#row_'+id)
+            var $id_row = $('#row_'+id)
             $update_form.find('#id_title').val($($id_row.find('td')[1]).text())
 
             $update_form.attr('action', 'update/' + id + '/')
+        }
+        function del(id) {
+            console.log('delete(' + id + ')')
+            var $form = $('#id_del_form')
+            $form.attr('action', 'delete/' + id + '/')
+            $form[0].submit()
         }
     </script>
 {% endblock javascript %}
@@ -39,7 +45,7 @@
         <input id='id_due_date' />
         <input id='id_due_hour' />
         {% csrf_token %}
-        <input type="submit" id="id_btn_add" value="add lifemark" />
+        <button type="submit" id="id_btn_add">add lifemark</button>
     </form>
     <form id="id_update_form" method="POST" action="">
         {{ test_obj }}
@@ -49,21 +55,27 @@
         <input id='id_due_date' />
         <input id='id_due_hour' />
         {% csrf_token %}
-        <input type="submit" id="id_btn_update" value="update lifemark" />
+        <button type="submit" id="id_btn_update">update lifemark</button>
     </form>
 {% endblock form %}
 
 {% block list %}
-    <table id="list_recent">
-        {% for lifemark in lifemarks %}
-            <tr id="row_{{ lifemark.id }}">
-                <td>{{ lifemark.id }}</td>
-                <td>{{ lifemark.title }}</td>
-                <td>{{ lifemark.link }}</td>
-                <td><button id="id_list_btn_edit_{{ lifemark.id }}" onclick="edit({{ lifemark.id }})">Edit</button></td>
-            </tr>
-        {% endfor %}
-    </table>
+    <form id="id_del_form" method="POST" action="">
+        {% csrf_token %}
+        <table id="list_recent">
+            {% for lifemark in lifemarks %}
+                <tr id="row_{{ lifemark.id }}">
+                    <td>{{ lifemark.id }}</td>
+                    <td>{{ lifemark.title }}</td>
+                    <td>{{ lifemark.link }}</td>
+                    <td>
+                        <button id="id_list_btn_edit_{{ lifemark.id }}" type="button" onclick="edit({{ lifemark.id }})">Edit</button>
+                        <button id="id_list_btn_del_{{ lifemark.id }}" type="button" onclick="del({{ lifemark.id }})">Del</button>
+                    </td>
+                </tr>
+            {% endfor %}
+        </table>
+    </form>
 {% endblock list %}
 
 {% block init_javascript %}

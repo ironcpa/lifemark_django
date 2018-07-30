@@ -48,6 +48,12 @@ class FunctionalTest(StaticLiveServerTestCase):
         tds = rows[row].find_elements_by_tag_name('td')
         self.assertIn(text, [td.text for td in tds])
 
+    @wait
+    def check_row_count(self, row_count):
+        table = self.browser.find_element_by_id('list_recent')
+        rows = table.find_elements_by_tag_name('tr')
+        self.assertEqual(len(rows), row_count)
+
     def click_button(self, id):
         button = self.browser.find_element_by_id(id)
         button.click()

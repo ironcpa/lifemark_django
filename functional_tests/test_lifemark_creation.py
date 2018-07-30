@@ -147,6 +147,7 @@ class MainPageTest(FunctionalTest):
 
         list_btn_edit = self.browser.find_element_by_id('id_list_btn_edit_' + target_id)
         list_btn_edit.click()
+
         # then edit form is shown instead of add form
         # and clicked item's fields are shown on form fields
         update_form = self.browser.find_element_by_id('id_update_form')
@@ -162,5 +163,32 @@ class MainPageTest(FunctionalTest):
         # self.check_text_in_table('modified item')
         self.check_row_in_list_table(0, 'modified item')
 
+    def del_lifemark(self, row_idx):
+        table = self.browser.find_element_by_id('list_recent')
+        rows = table.find_elements_by_tag_name('tr')
+        target_row = rows[row_idx]
+        row_id = target_row.get_attribute('id')
+        target_id = row_id[row_id.index('_') + 1:]
+
+        list_btn_del = self.browser.find_element_by_id('id_list_btn_del_' + target_id)
+        list_btn_del.click()
+
     def test_delete_lifemark(self):
-        pass
+        # augie goes to the main page
+        # this page has already existing 2 lifemarks
+        self.browser.get(self.live_server_url)
+        self.add_lifemark(title='existing item 1')
+        self.add_lifemark(title='existing item 2')
+
+        # augie click 'del' button on list
+        # then page updates, and now clicked item is disappeared
+        self.del_lifemark(0)
+
+        self.check_row_in_list_table(0, 'existing item 2')
+        self.check_row_count(1)
+
+        # augie click 'del' button on the other item
+        # then page updates, and there're no items in list table
+        self.del_lifemark(0)
+
+        self.check_row_count(0)

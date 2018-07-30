@@ -75,6 +75,28 @@ class BasicPageTest(TestCase):
         self.assertEqual(res['location'], reverse('home'))
 
 
+class DeleteLifemarkTest(TestCase):
+
+    def test_delete(self):
+        lifemark_1st = Lifemark.objects.create(title='existing item1')
+        lifemark_2nd = Lifemark.objects.create(title='existing item2')
+        self.assertEquals(Lifemark.objects.count(), 2)
+
+        self.client.post(reverse('delete', kwargs={'pk': lifemark_1st.id}))
+        self.assertEquals(Lifemark.objects.count(), 1)
+        self.assertEquals(Lifemark.objects.all()[0].title, 'existing item2')
+
+        self.client.post(reverse('delete', kwargs={'pk': lifemark_2nd.id}))
+        self.assertEquals(Lifemark.objects.count(), 0)
+
+    def test_redirect_to_home_after_delete(self):
+        lifemark = Lifemark.objects.create(title='existing item')
+        res = self.client.post(reverse('delete', kwargs={'pk': lifemark.id}))
+
+        self.assertEqual(res.status_code, 302)
+        self.assertEqual(res['location'], reverse('home'))
+
+
 class ViewModelIntergrationTest(TestCase):
 
     def test_post_saves_correct_model(self):

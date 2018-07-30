@@ -1,5 +1,5 @@
 from django.shortcuts import redirect, render
-from django.views.generic import CreateView, UpdateView, ListView
+from django.views.generic import CreateView, UpdateView, ListView, DeleteView
 from django.urls import reverse_lazy
 from .models import Lifemark
 from .forms import LifemarkForm
@@ -20,7 +20,7 @@ def new_lifemark(request):
         if form.is_valid():
             form.save()
 
-    return redirect('/')
+    return redirect(reverse_lazy('home'))
 
 
 class CreateLifemarkView(CreateView):
@@ -29,7 +29,7 @@ class CreateLifemarkView(CreateView):
     template_name = 'home.html'
     # below code failed w/ no reason i can catch!
     # success_url = reverse('home')
-    success_url = '/'
+    success_url = reverse_lazy('home')
 
 
 def update_lifemark(request):
@@ -38,7 +38,7 @@ def update_lifemark(request):
         form = LifemarkForm(data=request.POST, instance=target)
         if form.is_valid():
             form.save()
-    return redirect('/')
+    return redirect(reverse_lazy('home'))
 
 
 class UpdateLifemarkView(UpdateView):
@@ -51,30 +51,9 @@ class UpdateLifemarkView(UpdateView):
     success_url = reverse_lazy('home')
 
 
-'''
-        widgets = {
-            'title': forms.fields.TextInput(attrs={
-                'placeholder': 'Enter lifemark title',
-            }),
-            'link': forms.fields.URLInput(attrs={
-                'placeholder': 'Enter related page link',
-            }),
-            'category': forms.fields.HiddenInput(),
-            'is_complete': forms.fields.Select(choices=CHOICES_STATE),
-            'due_datehour': forms.fields.HiddenInput(),
-            'rating': forms.fields.TextInput(),
-            'tags': forms.fields.TextInput(),
-            'image_url': forms.fields.TextInput(),
-        }
-        '''
-
-'''
-class UpdateLifemarkView(UpdateView):
+class DeleteLifemarkView(DeleteView):
     model = Lifemark
-    form_class = LifemarkForm
-    template_name = 'home.html'
-    success_url = '/'
-    '''
+    success_url = reverse_lazy('home')
 
 
 class TestListView(ListView):
