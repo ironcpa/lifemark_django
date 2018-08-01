@@ -68,3 +68,13 @@ class FunctionalTest(StaticLiveServerTestCase):
         inputbox = self.browser.find_element_by_id('id_title')
         inputbox.send_keys(title)
         self.click_add_lifemark()
+
+    def del_lifemark(self, row_idx):
+        table = self.browser.find_element_by_id('list_recent')
+        rows = table.find_elements_by_tag_name('tr')
+        target_row = rows[row_idx]
+        row_id = target_row.get_attribute('id')
+        target_id = row_id[row_id.index('_') + 1:]
+
+        list_btn_del = self.browser.find_element_by_id('id_list_btn_del_' + target_id)
+        list_btn_del.click()

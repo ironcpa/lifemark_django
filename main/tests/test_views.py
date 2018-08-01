@@ -40,11 +40,11 @@ class BasicPageTest(TestCase):
         self.assertEqual(response.status_code, 302)
         self.assertEqual(response['location'], reverse('home'))
 
-    def test_only_saves_lifmarks_when_necessary(self):
+    def test_initial_home_has_no_lifemarks(self):
         self.client.get(reverse('home'))
         self.assertEqual(Lifemark.objects.count(), 0)
 
-    def test_displays_all_list_items(self):
+    def test_home_page_displays_all_lifemarks(self):
         Lifemark.objects.create(title='first item')
         Lifemark.objects.create(title='second item')
 
@@ -73,9 +73,6 @@ class BasicPageTest(TestCase):
 
         self.assertEqual(res.status_code, 302)
         self.assertEqual(res['location'], reverse('home'))
-
-
-class DeleteLifemarkTest(TestCase):
 
     def test_delete(self):
         lifemark_1st = Lifemark.objects.create(title='existing item1')
@@ -128,7 +125,7 @@ class ViewModelIntergrationTest(TestCase):
         self.assertEqual(saved.image_url, 'http://aaa.com/img/sample.jpeg')
 
     def test_invalid_do_not_saved_on_db(self):
-        self.client.post('/new')
+        self.client.post(reverse('new'))
         self.assertEqual(Lifemark.objects.count(), 0)
 
     def test_post_updates_all_fields_correctly(self):
