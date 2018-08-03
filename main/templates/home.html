@@ -1,7 +1,9 @@
 {% extends 'base.html' %}
 
+{% load static nbsp_filter %}
+
 {% block javascript %}
-    <script src="static/desc_editor.js?t=32328"></script>
+    <script src="{% static 'js/desc_editor.js' %}"></script>
     <script>
         function fill_category_hidden(value) {
             var $category_hidden = $('#id_category')
@@ -37,46 +39,92 @@
 {% endblock javascript %}
 
 {% block form %}
-    <form id="id_new_form" method="POST" action="{% url 'new' %}">
-        {{ test_obj }}
-        {{ form.as_ul }}
-        <input type="hidden" name="lifemark_id" />
-        <input id='id_existing_categories' />
-        <input id='id_due_date' />
-        <input id='id_due_hour' />
+    <form class="form-horizontal" id="id_new_form" method="POST" action="{% url 'new' %}">
         {% csrf_token %}
-        <button type="submit" id="id_btn_add">add lifemark</button>
+        <div class="form-group">
+            <div class="col-sm-12">
+                <button type="submit" class="btn btn-default">Add Lifemark</button>
+            </div>
+        </div>
+        {% include 'includes/lifemark_form.html' %}
     </form>
-    <form id="id_update_form" method="POST" action="">
-        {{ test_obj }}
-        {{ form.as_ul }}
-        <input type="hidden" name="lifemark_id" />
-        <input id='id_existing_categories' />
-        <input id='id_due_date' />
-        <input id='id_due_hour' />
+    <form class="form-horizontal" id="id_update_form" method="POST" action="">
         {% csrf_token %}
-        <button type="submit" id="id_btn_update">update lifemark</button>
+        <div class="form-group">
+            <div class="col-sm-12">
+                <button type="submit" class="btn btn-default">Update Lifemark</button>
+                <button type="button" class="btn btn-default">Cancel</button>
+            </div>
+        </div>
+        {% include 'includes/lifemark_form.html' %}
     </form>
 {% endblock form %}
 
-{% block list %}
+{% block content %}
     <form id="id_del_form" method="POST" action="">
         {% csrf_token %}
-        <table id="list_recent">
-            {% for lifemark in lifemarks %}
-                <tr id="row_{{ lifemark.id }}">
-                    <td>{{ lifemark.id }}</td>
-                    <td>{{ lifemark.title }}</td>
-                    <td>{{ lifemark.link }}</td>
-                    <td>
-                        <button id="id_list_btn_edit_{{ lifemark.id }}" type="button" onclick="edit({{ lifemark.id }})">Edit</button>
-                        <button id="id_list_btn_del_{{ lifemark.id }}" type="button" onclick="del({{ lifemark.id }})">Del</button>
-                    </td>
+
+        <div class="row">
+            <div class="col-sm-2">
+                <button type="button" class="btn btn-default" id="id_btn_search">Search</button>
+            </div>
+            <div class="col-sm-10">
+                <input type="text" class="form-control">
+            </div>
+        </div>
+
+        <table id="list_recent" class="table table-hover">
+            <thead class="thead-dark">
+                <tr>
+                    <th>ID</th>
+                    <th>Title</th>
+                    <th>Link</th>
+                    <th>Buttons</th>
                 </tr>
-            {% endfor %}
+            </thead>
+            <tbody>
+                {% for lifemark in lifemarks %}
+                    <tr id="row_{{ lifemark.id }}">
+                        <td>{{ lifemark.id }}</td>
+                        <td>{{ lifemark.title }}</td>
+                        <td>{{ lifemark.link }}</td>
+                        <td>
+                            <button id="id_list_btn_edit_{{ lifemark.id }}" type="button" onclick="edit({{ lifemark.id }})">Edit</button>
+                            <button id="id_list_btn_del_{{ lifemark.id }}" type="button" onclick="del({{ lifemark.id }})">Del</button>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
         </table>
+
+        <table id="id_detail_list" class="table">
+            <tbody>
+                {% for lifemark in lifemarks %}
+                    <tr id="row_{{ lifemark.id }}">
+                        <td>
+                            {{ lifemark.id }}
+                            <button type="button" class="btn btn-default">Del</button>
+                            <button type="button" class="btn btn-default">Edit</button>
+                            <button type="button" class="btn btn-default">Map</button>
+                            <button type="button" class="btn btn-default">Recent Map</button>
+                            <button type="button" class="btn btn-default">Copy</button>
+                            <p>Title: {{ lifemark.title }}</p>
+                            <p>cdate: {{ lifemark.cdate }}</p>
+                            <p>udate: {{ lifemark.udate }}</p>
+                            <p>category: {{ lifemark.category }}</p>
+                            <p>state: {{ lifemark.is_complete }}</p>
+                            <p>tags: {{ lifemark.tags }}</p>
+                            {% if lifemark.desc %}
+                                <p>{{ lifemark.desc|nbsp|linebreaks }}</p>
+                            {% endif %}
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
     </form>
-{% endblock list %}
+{% endblock content %}
 
 {% block init_javascript %}
     <script>

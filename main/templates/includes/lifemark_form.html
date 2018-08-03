@@ -1,0 +1,63 @@
+<div class="form-group">
+    <label class="control-label col-sm-2" for="id_title">Title</label>
+    <div class="col-sm-10">{{ form.title }}</div>
+</div>
+<div class="form-group">
+    <label class="control-label col-sm-2" for="id_link">Link</label>
+    <div class="col-sm-10">{{ form.link }}</div>
+</div>
+<div class="form-group">
+    <label class="control-label col-sm-2" for="id_category_txt">Category</label>
+    <div class="col-sm-10">
+        <div class="row">
+            <div class="col-sm-8">
+                <input type="text" class="form-control" id="id_category_txt" placeholder="Enter or select category">
+            </div>
+            <div class="col-sm-4">
+                <select class="form-control" id="id_category_sel">
+                    <option></option>
+                    <option value="aaa">aaa</option>
+                    <option value="bbb">bbb</option>
+                </select>
+            </div>
+        </div>
+    </div>
+    {{ form.category }}
+</div>
+<div class="form-group">
+    <label class="control-label col-sm-2" for="id_state_sel">State</label>
+    <div class="col-sm-10">{{ form.is_complete }}</div>
+</div>
+<div class="form-group">
+    <label class="control-label col-sm-2" for="id_due_date">Due Date</label>
+    <div class="col-sm-10">
+        <div class="row">
+            <div class="col-sm-8">
+                <input type="text" class="form-control" id="id_due_date" placeholder="Choose Date">
+            </div>
+            <div class="col-sm-4">
+                <select class="form-control">
+                    <option>0</option>
+                    <option>1</option>
+                    <option>2</option>
+                </select>
+            </div>
+        </div>
+    </div>
+    {{ form.due_datehour }}
+</div>
+<div class="form-group">
+    <label class="control-label col-sm-2" for="id_rating">Rating</label>
+    <div class="col-sm-10">{{ form.rating }}</div>
+</div>
+<div class="form-group">
+    <label class="control-label col-sm-2" for="id_tags">Tags</label>
+    <div class="col-sm-10">{{ form.tags }}</div>
+</div>
+<div class="form-group">
+    <div class="col-sm-12">{{ form.desc }}</div>
+</div>
+<div class="form-group">
+    <label class="control-label col-sm-2" for="id_img_url">Iamge Url</label>
+    <div class="col-sm-10">{{ form.image_url }}</div>
+</div>

@@ -7,6 +7,10 @@ from .forms import LifemarkForm
 
 def home_page(request):
     lifemarks = Lifemark.objects.all()
+
+    for lifemark in lifemarks:
+        print(lifemark.id, lifemark.desc)
+
     form = LifemarkForm()
     return render(request, 'home.html', {
         'lifemarks': lifemarks,

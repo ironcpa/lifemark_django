@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>Lifemarks xxx</title>
+        <link href="css/bootstrap.min.css" rel="stylesheet">
+    </head>
+    <body>
+        <nav class="navbar navbar-inverse">
+            <div class="container-fluid">
+                <div class="navbar-header">
+                    <a class="navbar-brand" href="#">Lifemark</a>
+                </div>
+                <ul class="nav navbar-nav">
+                    <li class="active"><a href="#">Home</a></li>
+                    <li><a href="#">Images</a></li>
+                    <li><a href="#">Scraps</a></li>
+                </ul>
+                <ul class="nav navbar-nav navbar-right">
+                    <li><a href="#">Login</a></li>
+                </ul>
+            </div>
+        </nav>
+        <div class="container-fluid">
+            <form class="form-horizontal">
+                <div class="form-group">
+                    <div class="col-sm-12">
+                        <button type="submit" class="btn btn-default">Add Lifemark</button>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="control-label col-sm-2" for="id_title">Title</label>
+                    <div class="col-sm-10">
+                        <input type="text" class="form-control" id="id_title" placeholder="Enter Lifemark title" name="title">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="control-label col-sm-2" for="id_link">Link</label>
+                    <div class="col-sm-10">
+                        <input type="text" class="form-control" id="id_link" placeholder="Enter web link" name="link">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="control-label col-sm-2" for="id_category">Category</label>
+                    <div class="col-sm-10">
+                        <div class="row">
+                            <div class="col-sm-8">
+                                <input type="text" class="form-control" id="id_category" placeholder="Enter or select category" name="category">
+                            </div>
+                            <div class="col-sm-4">
+                                <select class="form-control" id="id_category_sel">
+                                    <option></option>
+                                    <option value="aaa">aaa</option>
+                                    <option value="bbb">bbb</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="control-label col-sm-2" for="id_state_sel">State</label>
+                    <div class="col-sm-10">
+                        <select class="form-control" id="id_state_sel" name="state">
+                            <option></option>
+                            <option value="todo">todo</option>
+                            <option value="working">working</option>
+                            <option value="complete">complete</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="control-label col-sm-2" for="id_due_date">Due Date</label>
+                    <div class="col-sm-10">
+                        <div class="row">
+                            <div class="col-sm-8">
+                                <input type="text" class="form-control" id="id_due_date" placeholder="Choose Date">
+                            </div>
+                            <div class="col-sm-4">
+                                <select class="form-control">
+                                    <option>0</option>
+                                    <option>1</option>
+                                    <option>2</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="control-label col-sm-2" for="id_rating">Rating</label>
+                    <div class="col-sm-10">
+                        <input type="text" class="form-control" id="id_rating" placeholder="Enter rating w/ x~xxxxx" name="rating">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="control-label col-sm-2" for="id_tags">Tags</label>
+                    <div class="col-sm-10">
+                        <input type="text" class="form-control" id="id_tags" placeholder="Enter tags w/ space separator" name="tags">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-sm-12">
+                        <textarea class="form-control" rows="10" id="id_desc"></textarea>
+                    </div>
+                </div>
+            </form>
+
+            <div class="row">
+                <div class="col-sm-2">
+                    <button type="button" class="btn btn-default">Search</button>
+                </div>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control">
+                </div>
+            </div>
+
+            <table class="table table-hover">
+                <thead class="thead-dark">
+                    <tr>
+                        <th>ID</th>
+                        <th>Category</th>
+                        <th>Title</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>1234</td>
+                        <td>todo</td>
+                        <td>
+                            this is first item
+                            <button>Edit</button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>1234</td>
+                        <td>todo</td>
+                        <td>
+                            this is first item
+                            <button>Edit</button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>1234</td>
+                        <td>todo</td>
+                        <td>
+                            this is first item
+                            <button>Edit</button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>1234</td>
+                        <td>todo</td>
+                        <td>
+                            this is first item
+                            <button>Edit</button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <table id="id_detail_list" class="table">
+                <tbody>
+                    <tr>
+                        <td>
+                            1173
+                            <button type="button">Del</button>
+                            <button type="button">Edit</button>
+                            <button type="button">Map</button>
+                            <button type="button">Recent Map</button>
+                            <button type="button">Copy</button>
+                            <p>Title: xxxxx</p>
+                            <p>cdate: 20180706-124811</p>
+                            <p>udate: 20180706-124811</p>
+                            <p>category: workout</p>
+                            <p>state: working</p>
+                            <p>tags: </p>
+                            <p>
+title: <span id="title">basketball shooting principle</span><br/>
+
+cdate:20180706-124811<br/>
+udate:20180802-103351<br/>
+category:<span id="category">workout</span><br/>
+
+state: <span id='state'>working</span><br/>
+
+
+
+tags: <span id="tags"></span><br/>
+    <div id="desc">
+        <pre>[원칙]
++ 몸앞에 가능하면 몸 가운데에 c자를 만든다. &lt;- 20180714 주목
+  - 집중하지 않으면 공이 어깨쪽에 세팅되는 경향이 있다.
+  - 어깨쪽 세팅되면 릴리즈가 공을 던지듯 앞으로 후려버리는 경향이 있다.
+    - 낮다 -&gt; 짧다 -&gt; 무리한 힘을 준다 -&gt; 앞으로 점프한다 의 악순환의 원인이다.
+  - 가운데 세팅하면 점프힘이 분산되지 않는다. 가볍게 릴리즈해도 멀리 나간다.
+- 위로 점프한다. 앞으로 뛰지 않는다. 안되면 약간 페이드어웨이 느낌으로 뛴다.
+&gt; 힘은 어깨를 &#39;가볍게&#39; 튕긴다는 느낌으로 순간적으로 쓴다.
+  - 힘을 팔이 쭉 뻗을 정도로 하지 말고 약간 굽어진 상태 정도 까지만 펴도록 쓴다. &lt;- 20180712 발견
+    - 이정도가 충분하고, 이렇게 해야 무리한 힘이 안들어간다.
+    &gt; 이렇게 하면 공을 후리기 힘들다. 가볍게 어깨 튕기기도 더 잘 된다. &lt;- 20180714
+  - 그리고 힘을 다 소진한 상태로 공을 따라간다는 느낌으로 이어서 팔을 펴 주면서 아래 처럼 림을 가리킨다. 
+- 릴리즈 끝에서 손이 림 뒤의 사각형 윗변을 가르키도록 한다. 
+&gt; 릴리즈의 구체적인 방법: 엄지와 새끼 사이로 공이 레일을 타고 나아가듯이 한다. &lt;- 20180714
+  + 스냅주는 손가락을 의식적으로 너무 사용하려 하면 공을 올리지 못하고 후리게 된다.
+    + 릴리즈 후 팔의 각도가 낮다면 이 증상
+    + 뿌리는 증상을 피하는 쉬운 방법은 팔을 완전히 펴지 않아 보는 것 &lt;- 20180716
+  - 스냅주는 3손가락은 점차 사용을 늘려가면 될 것 같다. 사용하지 않아도 거리는 나온다!
++ 공을 위로 미는 성분에만 집중하는 릴리즈 연습 중
+  + 스핀보다는 밀어내는 성분을 늘리면 거리가 쉽게 나오는 것 같다. &lt;- 20180801
+    + 아래 내용으로 대체함
+  + 팔목을 위로 밀어내는 형태으 릴리즈가 효과적임 &lt;- 20180802
+    + 장점은 이 방식은 절대 후리기가 힘들다는 점
+    + 3점 거리에서도 검증되었으며 현재까지 가장 강력하게 공에 스핀을 먹일 수 있음
+    + 릴리즈 후 손목털기와 팔이 분리되는(?) 느낌으로 남겨짐 - 나중에 이해할 수 있는 말인지...
+      + 몸앞에 꺽은 거위목 형태가 몸과 관계 없이 남아있게 된다고 보면 맞을까?
+
+[연습방법]
+- 100개 3점 연습
+- 제자리 연습
+
+awieofeowifj
+        </pre>
+    </div>
+                            </p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            1173
+                            <button type="button">Del</button>
+                            <button type="button">Edit</button>
+                            <button type="button">Map</button>
+                            <button type="button">Recent Map</button>
+                            <button type="button">Copy</button>
+                            <p>Title: xxxxx</p>
+                            <p>cdate: 20180706-124811</p>
+                            <p>udate: 20180706-124811</p>
+                            <p>category: workout</p>
+                            <p>state: working</p>
+                            <p>tags: </p>
+                            <p>
+                                awieofeowifj
+                            </p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            1173
+                            <button type="button">Del</button>
+                            <button type="button">Edit</button>
+                            <button type="button">Map</button>
+                            <button type="button">Recent Map</button>
+                            <button type="button">Copy</button>
+                            <p>Title: xxxxx</p>
+                            <p>cdate: 20180706-124811</p>
+                            <p>udate: 20180706-124811</p>
+                            <p>category: workout</p>
+                            <p>state: working</p>
+                            <p>tags: </p>
+                            <p>
+                                awieofeowifj
+                            </p>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <script src="http://code.jquery.com/jquery.js"></script>
+        <script src="js/bootstrap.min.js"></script>
+    </body>
+</html>
