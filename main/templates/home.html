@@ -19,13 +19,18 @@
             $new_form.hide()
             $update_form.show()
         }
+        function set_form_data($form, id, field_name) {
+            $form.find('#id_'+field_name).val($('#row_'+id+'_'+field_name).text())
+        }
         function edit(id) {
             console.log('edit(' + id + ')')
             toggle_form()
             
             var $update_form = $('#id_update_form')
-            var $id_row = $('#row_'+id)
-            $update_form.find('#id_title').val($($id_row.find('td')[1]).text())
+            set_form_data($update_form, id, 'title')
+            //$update_form.find('#id_link').val($('#row_'+id+'_link').text())
+            set_form_data($update_form, id, 'link')
+            set_form_data($update_form, id, 'desc')
 
             $update_form.attr('action', 'update/' + id + '/')
         }
@@ -43,7 +48,7 @@
         {% csrf_token %}
         <div class="form-group">
             <div class="col-sm-12">
-                <button type="submit" class="btn btn-default">Add Lifemark</button>
+                <button type="submit" id="id_btn_new" class="btn btn-default">Add Lifemark</button>
             </div>
         </div>
         {% include 'includes/lifemark_form.html' %}
@@ -52,7 +57,7 @@
         {% csrf_token %}
         <div class="form-group">
             <div class="col-sm-12">
-                <button type="submit" class="btn btn-default">Update Lifemark</button>
+                <button type="submit" id="id_btn_update" class="btn btn-default">Update Lifemark</button>
                 <button type="button" class="btn btn-default">Cancel</button>
             </div>
         </div>
@@ -84,7 +89,7 @@
             </thead>
             <tbody>
                 {% for lifemark in lifemarks %}
-                    <tr id="row_{{ lifemark.id }}">
+                    <tr>
                         <td>{{ lifemark.id }}</td>
                         <td>{{ lifemark.title }}</td>
                         <td>{{ lifemark.link }}</td>
@@ -102,21 +107,7 @@
                 {% for lifemark in lifemarks %}
                     <tr id="row_{{ lifemark.id }}">
                         <td>
-                            {{ lifemark.id }}
-                            <button type="button" class="btn btn-default">Del</button>
-                            <button type="button" class="btn btn-default">Edit</button>
-                            <button type="button" class="btn btn-default">Map</button>
-                            <button type="button" class="btn btn-default">Recent Map</button>
-                            <button type="button" class="btn btn-default">Copy</button>
-                            <p>Title: {{ lifemark.title }}</p>
-                            <p>cdate: {{ lifemark.cdate }}</p>
-                            <p>udate: {{ lifemark.udate }}</p>
-                            <p>category: {{ lifemark.category }}</p>
-                            <p>state: {{ lifemark.is_complete }}</p>
-                            <p>tags: {{ lifemark.tags }}</p>
-                            {% if lifemark.desc %}
-                                <p>{{ lifemark.desc|nbsp|linebreaks }}</p>
-                            {% endif %}
+                            {% include 'includes/lifemark_detail.html' %}
                         </td>
                     </tr>
                 {% endfor %}

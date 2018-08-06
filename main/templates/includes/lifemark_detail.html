@@ -1,0 +1,15 @@
+{{ lifemark.id }} <button type="button" class="btn btn-default">Del</button>
+<button type="button" class="btn btn-default">Edit</button>
+<button type="button" class="btn btn-default">Map</button>
+<button type="button" class="btn btn-default">Recent Map</button>
+<button type="button" class="btn btn-default">Copy</button>
+<p>Title: <span id="row_{{ lifemark.id }}_title">{{ lifemark.title }}</span></p>
+<p>Link: <span id="row_{{ lifemark.id }}_link">{{ lifemark.link }}</span></p>
+<p>cdate: {{ lifemark.cdate }}</p>
+<p>udate: {{ lifemark.udate }}</p>
+<p>category: {{ lifemark.category }}</p>
+<p>state: {{ lifemark.is_complete }}</p>
+<p>tags: {{ lifemark.tags }}</p>
+{% if lifemark.desc %}
+    <pre id="row_{{ lifemark.id }}_desc">{{ lifemark.desc }}</pre>
+{% endif %}

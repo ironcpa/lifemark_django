@@ -65,7 +65,7 @@ class MainPageTest(FunctionalTest):
         #  - category
         category_box = self.browser.find_element_by_id('id_category')
         self.assertEqual(category_box.get_attribute('name'), 'category')
-        categorycombo = self.browser.find_element_by_id('id_existing_categories')
+        categorycombo = self.browser.find_element_by_id('id_category_sel')
         self.assertNotEqual(categorycombo, None)
         #  - is complete
         is_complete_combo = self.browser.find_element_by_id('id_is_complete')
@@ -135,15 +135,13 @@ class MainPageTest(FunctionalTest):
         # augie goes to the main page
         # this page has already existing lifemarks
         self.browser.get(self.live_server_url)
-        self.add_lifemark(title='existing item 1')
+        self.add_lifemark(title='existing item 1', desc='initial desc 1')
         self.add_lifemark(title='existing item 2')
 
         # augie click 'edit' button on list
         table = self.browser.find_element_by_id('list_recent')
-        rows = table.find_elements_by_tag_name('tr')
-        target_row = rows[0]
-        row_id = target_row.get_attribute('id')
-        target_id = row_id[row_id.index('_') + 1:]
+        tds = table.find_elements_by_xpath('.//tbody/tr[1]/td')
+        target_id = tds[0].text
 
         list_btn_edit = self.browser.find_element_by_id('id_list_btn_edit_' + target_id)
         list_btn_edit.click()
@@ -152,16 +150,20 @@ class MainPageTest(FunctionalTest):
         # and clicked item's fields are shown on form fields
         update_form = self.browser.find_element_by_id('id_update_form')
         edit_title_box = update_form.find_element_by_id('id_title')
+        edit_desc_box = update_form.find_element_by_id('id_desc')
         self.assertEqual(edit_title_box.get_attribute('value'), 'existing item 1')
+        self.assertEqual(edit_desc_box.get_attribute('value'), 'initial desc 1')
 
         # he modify some fields and click 'update' button
         # page updates, and now he can see updated data on the list
         edit_title_box.clear()
         edit_title_box.send_keys('modified item')
+        edit_desc_box.clear()
+        edit_desc_box.send_keys('modified desc')
         self.click_update_lifemark()
 
         # self.check_text_in_table('modified item')
-        self.check_row_in_list_table(0, 'modified item')
+        self.check_row_in_detail_table(0, {'title': 'modified item', 'desc': 'modified desc'})
 
     def test_delete_lifemark(self):
         # augie goes to the main page

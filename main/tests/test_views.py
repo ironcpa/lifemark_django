@@ -15,7 +15,7 @@ class BasicPageTest(TestCase):
         response = self.client.get(reverse('home'))
 
         html = response.content.decode('utf8')
-        self.assertTrue(html.startswith('<html>'))
+        self.assertTrue(html.replace('\n', '').startswith('<!DOCTYPE html><html>'))
         self.assertIn('<title>Lifemarks</title>', html)
         self.assertTrue(html.strip().endswith('</html>'))
 
