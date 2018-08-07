@@ -8,6 +8,7 @@ class LifemarkModelTest(TestCase):
     def test_saving_and_retrieving_lifemarks(self):
         first_lifemark = Lifemark()
         first_lifemark.title = 'first item'
+        first_lifemark.due_datehour = '2018123456'
         first_lifemark.save()
 
         second_lifemark = Lifemark()
@@ -20,6 +21,7 @@ class LifemarkModelTest(TestCase):
         saved_first_lifemark = all_saved[0]
         saved_second_lifemark = all_saved[1]
         self.assertEqual(saved_first_lifemark.title, 'first item')
+        self.assertEqual(saved_first_lifemark.due_datehour, '2018123456')
         self.assertEqual(saved_second_lifemark.title, 'second item')
 
     def test_lifemark_validation(self):

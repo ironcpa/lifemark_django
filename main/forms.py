@@ -24,7 +24,7 @@ class LifemarkForm(forms.models.ModelForm):
                 'placeholder': 'Enter related page link',
             }),
             'category': forms.fields.HiddenInput(),
-            'is_complete': forms.fields.Select(
+            'state': forms.fields.Select(
                 choices=CHOICES_STATE,
                 attrs={'class': 'form-control'},
             ),

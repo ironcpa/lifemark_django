@@ -1,5 +1,6 @@
 from django.contrib.staticfiles.testing import StaticLiveServerTestCase
 from selenium import webdriver
+from selenium.webdriver.support.ui import Select
 from selenium.common.exceptions import WebDriverException
 import time
 
@@ -75,11 +76,33 @@ class FunctionalTest(StaticLiveServerTestCase):
     def click_update_lifemark(self):
         self.click_button('id_btn_update')
 
-    def add_lifemark(self, title, desc=''):
-        title_box = self.browser.find_element_by_id('id_title')
-        title_box.send_keys(title)
-        desc_box = self.browser.find_element_by_id('id_desc')
-        desc_box.send_keys(desc)
+    def set_form_input(self, field, value):
+        if value:
+            input_box = self.browser.find_element_by_id('id_' + field)
+            input_box.send_keys(value)
+
+    def add_lifemark(self, title, link=None, category=None, state=None,
+                     due_datehour=None, rating=None, tags=None, desc=None,
+                     image_url=None):
+        self.set_form_input('title', title)
+        self.set_form_input('link', link)
+        if category:
+            category_txt_box = self.browser.find_element_by_id('id_category_txt')
+            category_txt_box.send_keys(category)
+        if state:
+            state_sel = Select(self.browser.find_element_by_id('id_state'))
+            state_sel.select_by_value(state)
+        if due_datehour:
+            due_date = due_datehour[:8]
+            due_hour = str(int(due_datehour[8:]))
+            due_date_box = self.browser.find_element_by_id('id_due_date')
+            due_date_box.send_keys(due_date)
+            due_hour_sel = Select(self.browser.find_element_by_id('id_due_hour'))
+            due_hour_sel.select_by_visible_text(due_hour)
+        self.set_form_input('rating', rating)
+        self.set_form_input('tags', tags)
+        self.set_form_input('desc', desc)
+
         self.click_add_lifemark()
 
     def del_lifemark(self, row_idx):

@@ -5,7 +5,7 @@ class Lifemark(models.Model):
     title = models.TextField()
     link = models.TextField(blank=True, default='')
     category = models.TextField(blank=True, default='')
-    is_complete = models.TextField(blank=True, default='')
+    state = models.TextField(blank=True, default='')
     due_datehour = models.TextField(blank=True, default='')
     rating = models.TextField(blank=True, default='')
     tags = models.TextField(blank=True, default='')

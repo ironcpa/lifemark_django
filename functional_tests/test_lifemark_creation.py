@@ -68,8 +68,8 @@ class MainPageTest(FunctionalTest):
         categorycombo = self.browser.find_element_by_id('id_category_sel')
         self.assertNotEqual(categorycombo, None)
         #  - is complete
-        is_complete_combo = self.browser.find_element_by_id('id_is_complete')
-        self.assertEqual(is_complete_combo.get_attribute('name'), 'is_complete')
+        state_combo = self.browser.find_element_by_id('id_state')
+        self.assertEqual(state_combo.get_attribute('name'), 'state')
         #  - due date
         duedate_box = self.browser.find_element_by_id('id_due_date')
         self.assertNotEqual(duedate_box, None)
@@ -94,7 +94,7 @@ class MainPageTest(FunctionalTest):
         title_box.send_keys('test entry')
         link_box.send_keys('http://aaa')
         self.browser.execute_script('fill_category_hidden("sample")')
-        Select(is_complete_combo).select_by_value('complete')
+        Select(state_combo).select_by_value('complete')
         self.browser.execute_script('fill_due_datehour_hidden("2018010100")')
         rating_box.send_keys('xxxxx')
         tags_box.send_keys('aaa bbb')
@@ -135,7 +135,17 @@ class MainPageTest(FunctionalTest):
         # augie goes to the main page
         # this page has already existing lifemarks
         self.browser.get(self.live_server_url)
-        self.add_lifemark(title='existing item 1', desc='initial desc 1')
+        self.add_lifemark(
+            title='existing item 1',
+            link='http://aaa.bbb.com',
+            category='initial category',
+            state='todo',
+            due_datehour='2018010100',
+            rating='x',
+            tags='aaa',
+            desc='initial desc 1',
+            image_url='http://aaa.com/sample.jpg'
+        )
         self.add_lifemark(title='existing item 2')
 
         # augie click 'edit' button on list
@@ -149,9 +159,21 @@ class MainPageTest(FunctionalTest):
         # then edit form is shown instead of add form
         # and clicked item's fields are shown on form fields
         update_form = self.browser.find_element_by_id('id_update_form')
+
         edit_title_box = update_form.find_element_by_id('id_title')
+        edit_link_box = update_form.find_element_by_id('id_link')
+        edit_category_sel = Select(update_form.find_element_by_id('id_category_sel'))
+        edit_state_sel = Select(update_form.find_element_by_id('id_state'))
+        edit_due_date_box = update_form.find_element_by_id('id_due_date')
+        edit_due_hour_sel = Select(update_form.find_element_by_id('id_due_hour'))
         edit_desc_box = update_form.find_element_by_id('id_desc')
+
         self.assertEqual(edit_title_box.get_attribute('value'), 'existing item 1')
+        self.assertEqual(edit_link_box.get_attribute('value'), 'http://aaa.bbb.com')
+        self.assertEqual(edit_category_sel.first_selected_option.text, 'initial category')
+        self.assertEqual(edit_state_sel.first_selected_option.text, 'todo')
+        self.assertEqual(edit_due_date_box.get_attribute('value'), '20180101')
+        self.assertEqual(edit_due_hour_sel.first_selected_option.text, '0')
         self.assertEqual(edit_desc_box.get_attribute('value'), 'initial desc 1')
 
         # he modify some fields and click 'update' button

@@ -5,11 +5,12 @@
 <button type="button" class="btn btn-default">Copy</button>
 <p>Title: <span id="row_{{ lifemark.id }}_title">{{ lifemark.title }}</span></p>
 <p>Link: <span id="row_{{ lifemark.id }}_link">{{ lifemark.link }}</span></p>
-<p>cdate: {{ lifemark.cdate }}</p>
-<p>udate: {{ lifemark.udate }}</p>
-<p>category: {{ lifemark.category }}</p>
-<p>state: {{ lifemark.is_complete }}</p>
-<p>tags: {{ lifemark.tags }}</p>
+<p>cdate: <span id="row_{{ lifemark.id }}_cdate">{{ lifemark.cdate }}</span></p>
+<p>udate: <span id="row_{{ lifemark.id }}_udate">{{ lifemark.udate }}</span></p>
+<p>category: <span id="row_{{ lifemark.id }}_category">{{ lifemark.category }}</span></p>
+<p>state: <span id="row_{{ lifemark.id }}_state">{{ lifemark.state }}</span></p>
+<p>due: <span id="row_{{ lifemark.id }}_due_datehour">{{ lifemark.due_datehour }}</span></p>
+<p>tags: <span id="row_{{ lifemark.id }}_tags">{{ lifemark.tags }}</span></p>
 {% if lifemark.desc %}
     <pre id="row_{{ lifemark.id }}_desc">{{ lifemark.desc }}</pre>
 {% endif %}

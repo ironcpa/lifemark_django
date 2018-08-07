@@ -5,18 +5,32 @@ from .models import Lifemark
 from .forms import LifemarkForm
 
 
+def get_distinct_categories():
+    qset = Lifemark.objects.values('category').distinct()
+    category_list = [e['category'] for e in qset]
+
+    if '' not in category_list:
+        category_list.append('')
+
+    return sorted(category_list)
+
+
 def home_page(request):
     lifemarks = Lifemark.objects.all()
+    existing_categories = get_distinct_categories()
 
     form = LifemarkForm()
     return render(request, 'home.html', {
         'lifemarks': lifemarks,
+        'existing_categories': existing_categories,
         'form': form,
     })
 
 
 def new_lifemark(request):
     if request.method == 'POST':
+        print('>>>>>>>>>>>>>>>>>>>>>> check new_lifemark')
+        print('category', request.POST['category'])
         form = LifemarkForm(data=request.POST)
         if form.is_valid():
             form.save()

@@ -13,7 +13,7 @@ class LifemarkFormTest(TestCase):
 
         self.assertIn('name="link"', form_text)
         self.assertIn('name="category"', form_text)
-        self.assertIn('name="is_complete"', form_text)
+        self.assertIn('name="state"', form_text)
         self.assertIn('name="due_datehour"', form_text)
         self.assertIn('name="due_datehour"', form_text)
         self.assertIn('name="rating"', form_text)

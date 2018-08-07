@@ -101,7 +101,7 @@ class ViewModelIntergrationTest(TestCase):
             'title': 'new item',
             'link': 'http://aaa.com',
             'category': 'web',
-            'is_complete': 'todo',
+            'state': 'todo',
             'due_datehour': '2018010101',
             'rating': 'xxxxx',
             'tags': 'aaa bbb',
@@ -117,7 +117,7 @@ class ViewModelIntergrationTest(TestCase):
         self.assertEqual(saved.title, 'new item')
         self.assertEqual(saved.link, 'http://aaa.com')
         self.assertEqual(saved.category, 'web')
-        self.assertEqual(saved.is_complete, 'todo')
+        self.assertEqual(saved.state, 'todo')
         self.assertEqual(saved.due_datehour, '2018010101')
         self.assertEqual(saved.rating, 'xxxxx')
         self.assertEqual(saved.tags, 'aaa bbb')
@@ -138,7 +138,7 @@ class ViewModelIntergrationTest(TestCase):
             title='init title',
             link='init link',
             category='init',
-            is_complete='todo',
+            state='todo',
             due_datehour='2018010101',
             rating='x',
             tags='aaa bbb',
@@ -152,7 +152,7 @@ class ViewModelIntergrationTest(TestCase):
             'title': 'mod title',
             'link': 'mod link',
             'category': 'mod',
-            'is_complete': 'complete',
+            'state': 'complete',
             'due_datehour': '2018020128',
             'rating': 'xxxxx',
             'tags': 'aaa bbb ccc ddd',
@@ -168,9 +168,24 @@ class ViewModelIntergrationTest(TestCase):
         self.assertEqual(updated.title, 'mod title')
         self.assertEqual(updated.link, 'mod link')
         self.assertEqual(updated.category, 'mod')
-        self.assertEqual(updated.is_complete, 'complete')
+        self.assertEqual(updated.state, 'complete')
         self.assertEqual(updated.due_datehour, '2018020128')
         self.assertEqual(updated.rating, 'xxxxx')
         self.assertEqual(updated.tags, 'aaa bbb ccc ddd')
         self.assertEqual(updated.desc, 'mod description')
         self.assertEqual(updated.image_url, 'http://sample.com/mod.jpg')
+
+    def test_can_select_saved_categories(self):
+        Lifemark.objects.create(
+            title='sample1',
+            category='aaa'
+        )
+
+        response = self.client.get(reverse('home'))
+        expected_category_select = '<select id="id_category_sel" class="form-control"><option value=""></option><option value="aaa">aaa</option></select>'
+        self.assertContains(response, expected_category_select, html=True)
+
+        Lifemark.objects.create(
+            title='sample1',
+            category='aaa'
+        )
