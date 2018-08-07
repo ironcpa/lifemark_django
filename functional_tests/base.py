@@ -57,7 +57,6 @@ class FunctionalTest(StaticLiveServerTestCase):
         td = table.find_elements_by_xpath(f'.//tbody/tr[{row + 1}]/td[1]')[0]
         for field, text in field_text_dict.items():
             actual_text = td.find_element_by_id(f'row_{id}_{field}').text
-            print(field, 'actual_text:', actual_text)
             self.assertEquals(actual_text, text)
 
     @wait
@@ -111,4 +110,13 @@ class FunctionalTest(StaticLiveServerTestCase):
         target_id = tds[0].text
 
         list_btn_del = self.browser.find_element_by_id('id_list_btn_del_' + target_id)
+        list_btn_del.click()
+
+    def del_lifemark_w_detail_button(self, row_idx):
+        table = self.browser.find_element_by_id('id_detail_list')
+        tr = table.find_elements_by_xpath(f'.//tbody/tr[{row_idx + 1}]')[0]
+        row_id = tr.get_attribute('id')
+        target_id = row_id[row_id.index('_') + 1:]
+
+        list_btn_del = self.browser.find_element_by_id('id_detail_btn_del_' + target_id)
         list_btn_del.click()

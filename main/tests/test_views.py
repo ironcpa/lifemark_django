@@ -182,10 +182,25 @@ class ViewModelIntergrationTest(TestCase):
         )
 
         response = self.client.get(reverse('home'))
-        expected_category_select = '<select id="id_category_sel" class="form-control"><option value=""></option><option value="aaa">aaa</option></select>'
+        expected_category_select = (
+            '<select id="id_category_sel" class="form-control">'
+            '<option value=""></option>'
+            '<option value="aaa">aaa</option>'
+            '</select>'
+        )
         self.assertContains(response, expected_category_select, html=True)
 
         Lifemark.objects.create(
-            title='sample1',
-            category='aaa'
+            title='sample2',
+            category='bbb'
         )
+
+        response = self.client.get(reverse('home'))
+        expected_category_select = (
+            '<select id="id_category_sel" class="form-control">'
+            '<option value=""></option>'
+            '<option value="aaa">aaa</option>'
+            '<option value="bbb">bbb</option>'
+            '</select>'
+        )
+        self.assertContains(response, expected_category_select, html=True)

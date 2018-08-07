@@ -78,6 +78,8 @@
             set_form_data($update_form, id, 'due_hour', due_hour)
 
             $update_form.attr('action', 'update/' + id + '/')
+
+            $('html, body').scrollTop(0)
         }
         function del(id) {
             console.log('delete(' + id + ')')
