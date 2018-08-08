@@ -135,8 +135,9 @@ class MainPageTest(FunctionalTest):
         # augie goes to the main page
         # this page has already existing lifemarks
         self.browser.get(self.live_server_url)
+        self.add_lifemark(title='existing item 1')
         self.add_lifemark(
-            title='existing item 1',
+            title='existing item 2',
             link='http://aaa.bbb.com',
             category='initial category',
             state='todo',
@@ -146,10 +147,9 @@ class MainPageTest(FunctionalTest):
             desc='initial desc 1',
             image_url='http://aaa.com/sample.jpg'
         )
-        self.add_lifemark(title='existing item 2')
 
         # augie click 'edit' button on list
-        table = self.browser.find_element_by_id('list_recent')
+        table = self.browser.find_element_by_id('id_recent_list')
         tds = table.find_elements_by_xpath('.//tbody/tr[1]/td')
         target_id = tds[0].text
 
@@ -168,7 +168,7 @@ class MainPageTest(FunctionalTest):
         edit_due_hour_sel = Select(update_form.find_element_by_id('id_due_hour'))
         edit_desc_box = update_form.find_element_by_id('id_desc')
 
-        self.assertEqual(edit_title_box.get_attribute('value'), 'existing item 1')
+        self.assertEqual(edit_title_box.get_attribute('value'), 'existing item 2')
         self.assertEqual(edit_link_box.get_attribute('value'), 'http://aaa.bbb.com')
         self.assertEqual(edit_category_sel.first_selected_option.text, 'initial category')
         self.assertEqual(edit_state_sel.first_selected_option.text, 'todo')
@@ -191,8 +191,9 @@ class MainPageTest(FunctionalTest):
         # augie goes to the main page
         # this page has already existing lifemarks
         self.browser.get(self.live_server_url)
+        self.add_lifemark(title='existing item 1')
         self.add_lifemark(
-            title='existing item 1',
+            title='existing item 2',
             link='http://aaa.bbb.com',
             category='initial category',
             state='todo',
@@ -202,10 +203,9 @@ class MainPageTest(FunctionalTest):
             desc='initial desc 1',
             image_url='http://aaa.com/sample.jpg'
         )
-        self.add_lifemark(title='existing item 2')
 
         # augie click 'edit' button on detail list
-        table = self.browser.find_element_by_id('list_recent')
+        table = self.browser.find_element_by_id('id_recent_list')
         tds = table.find_elements_by_xpath('.//tbody/tr[1]/td')
         target_id = tds[0].text
 
@@ -224,7 +224,7 @@ class MainPageTest(FunctionalTest):
         edit_due_hour_sel = Select(update_form.find_element_by_id('id_due_hour'))
         edit_desc_box = update_form.find_element_by_id('id_desc')
 
-        self.assertEqual(edit_title_box.get_attribute('value'), 'existing item 1')
+        self.assertEqual(edit_title_box.get_attribute('value'), 'existing item 2')
         self.assertEqual(edit_link_box.get_attribute('value'), 'http://aaa.bbb.com')
         self.assertEqual(edit_category_sel.first_selected_option.text, 'initial category')
         self.assertEqual(edit_state_sel.first_selected_option.text, 'todo')
@@ -254,7 +254,7 @@ class MainPageTest(FunctionalTest):
         # then page updates, and now clicked item is disappeared
         self.del_lifemark(0)
 
-        self.check_row_in_list_table(0, 'existing item 2')
+        self.check_row_in_list_table(0, 'existing item 1')
         self.check_row_count(1)
 
         # augie click 'del' button on the other item
@@ -274,7 +274,7 @@ class MainPageTest(FunctionalTest):
         # then page updates, and now clicked item is disappeared
         self.del_lifemark_w_detail_button(0)
 
-        self.check_row_in_list_table(0, 'existing item 2')
+        self.check_row_in_list_table(0, 'existing item 1')
         self.check_row_count(1)
 
         # augie click 'del' button on the other item

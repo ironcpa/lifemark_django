@@ -16,7 +16,8 @@ def get_distinct_categories():
 
 
 def home_page(request):
-    lifemarks = Lifemark.objects.all()
+    lifemarks = (Lifemark.objects
+                         .order_by('-udate')[:10])
     existing_categories = get_distinct_categories()
 
     form = LifemarkForm()
@@ -29,8 +30,6 @@ def home_page(request):
 
 def new_lifemark(request):
     if request.method == 'POST':
-        print('>>>>>>>>>>>>>>>>>>>>>> check new_lifemark')
-        print('category', request.POST['category'])
         form = LifemarkForm(data=request.POST)
         if form.is_valid():
             form.save()

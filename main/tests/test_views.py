@@ -6,7 +6,6 @@ from datetime import datetime
 
 
 class BasicPageTest(TestCase):
-
     def test_uses_home_template(self):
         response = self.client.get(reverse('home'))
         self.assertTemplateUsed(response, 'home.html')
@@ -92,6 +91,41 @@ class BasicPageTest(TestCase):
 
         self.assertEqual(res.status_code, 302)
         self.assertEqual(res['location'], reverse('home'))
+
+    def test_recent_list_shows_recent_10_items(self):
+        for i in range(9):
+            Lifemark.objects.create(title=f'existing item {i + 1}')
+
+        res = self.client.get(reverse('home'))
+        recent_items = res.context['lifemarks']
+        self.assertEqual(len(recent_items), 9)
+        self.assertEqual(recent_items[0].title, 'existing item 9')
+        self.assertEqual(recent_items[8].title, 'existing item 1')
+
+        Lifemark.objects.create(title=f'10th item')
+        res = self.client.get(reverse('home'))
+        recent_items = res.context['lifemarks']
+        self.assertEqual(len(recent_items), 10)
+        self.assertEqual(recent_items[0].title, '10th item')
+        self.assertEqual(recent_items[9].title, 'existing item 1')
+
+        Lifemark.objects.create(title=f'11th item')
+        res = self.client.get(reverse('home'))
+        recent_items = res.context['lifemarks']
+        self.assertEqual(len(recent_items), 10)
+        self.assertEqual(recent_items[0].title, '11th item')
+        self.assertEqual(recent_items[1].title, '10th item')
+        self.assertEqual(recent_items[9].title, 'existing item 2')
+
+        recently_updated = Lifemark.objects.get(title='10th item')
+        recently_updated.desc = 'updated desc'
+        recently_updated.save()
+        res = self.client.get(reverse('home'))
+        recent_items = res.context['lifemarks']
+        self.assertEqual(len(recent_items), 10)
+        self.assertEqual(recent_items[0].title, '10th item')
+        self.assertEqual(recent_items[1].title, '11th item')
+        self.assertEqual(recent_items[9].title, 'existing item 2')
 
 
 class ViewModelIntergrationTest(TestCase):

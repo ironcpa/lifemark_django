@@ -34,7 +34,7 @@ class FunctionalTest(StaticLiveServerTestCase):
 
     @wait
     def check_text_in_table(self, text):
-        table = self.browser.find_element_by_id('list_recent')
+        table = self.browser.find_element_by_id('id_recent_list')
         rows = table.find_elements_by_tag_name('tr')
         title_tds = []
         for row in rows:
@@ -44,7 +44,7 @@ class FunctionalTest(StaticLiveServerTestCase):
 
     @wait
     def check_row_in_list_table(self, row, text):
-        table = self.browser.find_element_by_id('list_recent')
+        table = self.browser.find_element_by_id('id_recent_list')
         tds = table.find_elements_by_xpath(f'.//tbody/tr[{row + 1}]/td')
         self.assertIn(text, [td.text for td in tds])
 
@@ -61,7 +61,7 @@ class FunctionalTest(StaticLiveServerTestCase):
 
     @wait
     def check_row_count(self, row_count):
-        table = self.browser.find_element_by_id('list_recent')
+        table = self.browser.find_element_by_id('id_recent_list')
         rows = table.find_elements_by_xpath('.//tbody/tr')
         self.assertEqual(len(rows), row_count)
 
@@ -105,7 +105,7 @@ class FunctionalTest(StaticLiveServerTestCase):
         self.click_add_lifemark()
 
     def del_lifemark(self, row_idx):
-        table = self.browser.find_element_by_id('list_recent')
+        table = self.browser.find_element_by_id('id_recent_list')
         tds = table.find_elements_by_xpath(f'.//tbody/tr[{row_idx + 1}]/td[1]')
         target_id = tds[0].text
 
