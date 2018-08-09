@@ -1,4 +1,20 @@
 from django.db import models
+from django.db.models import Q
+
+
+class LifemarkManager(models.Manager):
+    def get_matches_on_fields(self, fields, keywords_str):
+        if not keywords_str:
+            return self.none()
+
+        keywords = keywords_str.split(' ')
+
+        q_objects = Q()
+        for field in fields:
+            for keyword in keywords:
+                q_objects = q_objects | Q(**{f'{field}__contains': keyword})
+
+        return self.filter(q_objects)
 
 
 class Lifemark(models.Model):
@@ -13,6 +29,8 @@ class Lifemark(models.Model):
     image_url = models.TextField(blank=True, default='')
     cdate = models.DateTimeField(auto_now_add=True)
     udate = models.DateTimeField(auto_now=True)
+
+    objects = LifemarkManager()
 
     def __str__(self):
         return f'Lifemark: "{self.id}: {self.title}"'

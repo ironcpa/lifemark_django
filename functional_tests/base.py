@@ -21,7 +21,6 @@ def wait(fn):
 
 
 class FunctionalTest(StaticLiveServerTestCase):
-
     def setUp(self):
         self.browser = webdriver.Firefox()
 

@@ -28,6 +28,22 @@ def home_page(request):
     })
 
 
+def search(request):
+    keyword = request.GET.get('q')
+    lifemarks_qs = Lifemark.objects.get_matches_on_fields(
+        ('title', 'link', 'category', 'state', 'rating', 'tags', 'desc', 'image_url'),
+        keyword
+    ).order_by('-udate')
+    existing_categories = get_distinct_categories()
+
+    form = LifemarkForm()
+    return render(request, 'home.html', {
+        'lifemarks': list(lifemarks_qs),
+        'existing_categories': existing_categories,
+        'form': form,
+    })
+
+
 def new_lifemark(request):
     if request.method == 'POST':
         form = LifemarkForm(data=request.POST)

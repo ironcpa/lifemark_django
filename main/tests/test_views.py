@@ -1,6 +1,7 @@
 from django.test import TestCase
-from django.urls import reverse
+from django.urls import reverse, resolve
 from main.models import Lifemark
+from ..views import search
 from main.forms import LifemarkForm
 from datetime import datetime
 
@@ -128,8 +129,32 @@ class BasicPageTest(TestCase):
         self.assertEqual(recent_items[9].title, 'existing item 2')
 
 
-class ViewModelIntergrationTest(TestCase):
+class SearchViewTest(TestCase):
+    def test_search_url_resolves_search_view(self):
+        url = reverse('search')
+        view = resolve(url)
+        self.assertEquals(view.func, search)
 
+    def test_uses_home_template(self):
+        response = self.client.get(reverse('search'))
+        self.assertTemplateUsed(response, 'home.html')
+
+    def test_keyword_search(self):
+        Lifemark.objects.create(title='title:aaa')
+        Lifemark.objects.create(title='bbb', link='aaa')
+        Lifemark.objects.create(title='ddd', tags='aaa')
+        Lifemark.objects.create(title='ddd', tags='eee', desc='desc_aaa')
+
+        res = self.client.get('/search?q=aaa')
+        lifemarks = res.context['lifemarks']
+
+        self.assertEqual(len(lifemarks), 4)
+        # check order
+        self.assertEquals('desc_aaa', lifemarks[0].desc)
+        self.assertEquals('title:aaa', lifemarks[-1].title)
+
+
+class ViewModelIntergrationTest(TestCase):
     def test_post_saves_correct_model(self):
         res = self.client.post('/new', data={
             'title': 'new item',

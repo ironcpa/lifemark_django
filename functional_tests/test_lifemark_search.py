@@ -37,5 +37,20 @@ class SearchTests(FunctionalTest):
         title_tds = self.browser.find_elements_by_xpath('//table[@id="id_recent_list"]/tbody/tr/td[2]')
         self.assertNotIn(prev_last_row_title, [td.text for td in title_tds])
 
-    def test_basic_search(self):
-        pass
+    def test_keyword_search(self):
+        # augie goes to the main page
+        self.browser.get(self.live_server_url)
+        # he creates some lifemarks
+        self.add_lifemark(title='aaa')
+        self.add_lifemark(title='bbb')
+
+        # augie enter single search keyword in search text box
+        search_text_box = self.browser.find_element_by_id('id_txt_search')
+        search_text_box.send_keys('aaa')
+        # he click 'search' button
+        btn_search = self.browser.find_element_by_id('id_btn_search')
+        btn_search.click()
+
+        # page updates, and show search result in list and detail table
+        list_trs = self.browser.find_elements_by_xpath('//table[@id="id_recent_list"]/tbody/tr')
+        self.assertEqual(len(list_trs), 1)

@@ -39,3 +39,45 @@ class LifemarkModelTest(TestCase):
         except ValidationError:
             pass
         self.assertEqual(Lifemark.objects.count(), 1)
+
+    def test_lifemark_search_w_keyword(self):
+        Lifemark.objects.create(title='aaa')
+        Lifemark.objects.create(title='xxxaaa')
+        Lifemark.objects.create(title='xxxaaayyy')
+        Lifemark.objects.create(title='other')
+        Lifemark.objects.create(title='other', desc='xxxaaayyy')
+
+        lifemarks = Lifemark.objects.get_matches_on_fields(
+            ('title',),
+            'aaa'
+        )
+        self.assertEquals(len(lifemarks), 3)
+
+        lifemarks = Lifemark.objects.get_matches_on_fields(
+            ('title', 'desc'),
+            'aaa'
+        )
+        self.assertEquals(len(lifemarks), 4)
+
+    def test_lifemark_search_w_multi_keywords(self):
+        Lifemark.objects.create(title='aaabbb')
+        Lifemark.objects.create(title='aaa')
+        Lifemark.objects.create(title='aaabbb')
+        Lifemark.objects.create(title='other')
+        Lifemark.objects.create(title='other', desc='aaabbb')
+        Lifemark.objects.create(title='other', desc='xxxaaayyy')
+        Lifemark.objects.create(title='other', desc='xxxbbbyyy')
+        Lifemark.objects.create(title='other', desc='xxxaaabbbyyy')
+        Lifemark.objects.create(title='other', desc='other')
+
+        lifemarks = Lifemark.objects.get_matches_on_fields(
+            ('title',),
+            'aaa bbb'
+        )
+        self.assertEquals(len(lifemarks), 3)
+
+        lifemarks = Lifemark.objects.get_matches_on_fields(
+            ('title', 'desc'),
+            'aaa bbb'
+        )
+        self.assertEquals(len(lifemarks), 7)
