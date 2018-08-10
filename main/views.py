@@ -1,3 +1,4 @@
+from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from django.shortcuts import redirect, render
 from django.views.generic import CreateView, UpdateView, ListView, DeleteView
 from django.urls import reverse_lazy
@@ -34,11 +35,23 @@ def search(request):
         ('title', 'link', 'category', 'state', 'rating', 'tags', 'desc', 'image_url'),
         keyword
     ).order_by('-udate')
+
+    page_no = request.GET.get('page', 1)
+    paginator = Paginator(lifemarks_qs, 10)
+    try:
+        page = paginator.page(page_no)
+    except PageNotAnInteger:
+        page = paginator.page(1)
+    except EmptyPage:
+        # fallback to last_page
+        page = paginator.page(paginator.num_pages)
+
     existing_categories = get_distinct_categories()
 
     form = LifemarkForm()
     return render(request, 'home.html', {
-        'lifemarks': list(lifemarks_qs),
+        'lifemarks': page,
+        # 'q': keyword,
         'existing_categories': existing_categories,
         'form': form,
     })

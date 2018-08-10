@@ -154,6 +154,31 @@ class SearchViewTest(TestCase):
         self.assertEquals('title:aaa', lifemarks[-1].title)
 
 
+class PaginatedSearch(TestCase):
+    def test_paging_and_paged_elements_count(self):
+        for i in range(22):
+            Lifemark.objects.create(title=f'auto gen {i}')
+
+        url = reverse('search')
+        res = self.client.get(url + '?q=auto')
+        lifemarks = res.context['lifemarks']
+
+        self.assertEquals(len(lifemarks), 10)
+        self.assertEquals(lifemarks.number, 1)
+
+        res = self.client.get(url + '?q=auto&page=2')
+        lifemarks = res.context['lifemarks']
+
+        self.assertEquals(len(lifemarks), 10)
+        self.assertEquals(lifemarks.number, 2)
+
+        res = self.client.get(url + '?q=auto&page=3')
+        lifemarks = res.context['lifemarks']
+
+        self.assertEquals(len(lifemarks), 2)
+        self.assertEquals(lifemarks.number, 3)
+
+
 class ViewModelIntergrationTest(TestCase):
     def test_post_saves_correct_model(self):
         res = self.client.post('/new', data={
