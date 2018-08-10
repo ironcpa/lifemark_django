@@ -150,58 +150,7 @@
                 {% endfor %}
             </tbody>
         </table>
-        {% if lifemarks.has_other_pages %}
-            <nav aria-label="Lifemark pagination">
-                <ul class="pagination">
-                    {% if lifemarks.has_previous %}
-                        <li class="page-item">
-                            {% if request.GET.q %}
-                                <a class="page-link" href="?q={{ request.GET.q }}&page={{ lifemarks.previous_page_number }}">Prev</a>
-                            {% else %}
-                                <a class="page-link" href="?page={{ lifemarks.previous_page_number }}">Prev</a>
-                            {% endif %}
-                        </li>
-                    {% else %}
-                        <li class="page-item disabled">
-                            <span class="page-link">Prev</span>
-                        </li>
-                    {% endif %}
-
-                    {% for page_num in lifemarks.paginator.page_range %}
-                        {% if lifemarks.number == page_num %}
-                            <li class="page-item active">
-                                <span class="page-link">
-                                    {{ page_num }}
-                                    <span class="sr-only">(current)</span>
-                                </span>
-                            </li>
-                        {% else %}
-                            <li class="page-item">
-                                {% if request.GET.q %}
-                                    <a class="page-link" href="?q={{ request.GET.q }}&page={{ page_num }}">{{ page_num }}</a>
-                                {% else %}
-                                    <a class="page-link" href="?page={{ page_num }}">{{ page_num }}</a>
-                                {% endif %}
-                            </li>
-                        {% endif %}
-                    {% endfor %}
-
-                    {% if lifemarks.has_next %}
-                        <li class="page-item">
-                            {% if request.GET.q %}
-                                <a class="page-link" href="?q={{ request.GET.q }}&page={{ lifemarks.next_page_number }}">Next</a>
-                            {% else %}
-                                <a class="page-link" href="?page={{ lifemarks.next_page_number }}">Next</a>
-                            {% endif %}
-                        </li>
-                    {% else %}
-                        <li class="page-item disabled">
-                            <span class="page-link">Next</span>
-                        </li>
-                    {% endif %}
-                </ul>
-            </nav>
-        {% endif %}
+        {% include 'includes/pagination.html' %}
 
         <table id="id_detail_list" class="table">
             <tbody>

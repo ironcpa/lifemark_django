@@ -1,7 +1,7 @@
 from django.test import TestCase
 from django.urls import reverse, resolve
 from main.models import Lifemark
-from ..views import search
+from ..views import search, LifemarkSearchListView
 from main.forms import LifemarkForm
 from datetime import datetime
 
@@ -133,7 +133,8 @@ class SearchViewTest(TestCase):
     def test_search_url_resolves_search_view(self):
         url = reverse('search')
         view = resolve(url)
-        self.assertEquals(view.func, search)
+        # self.assertEquals(view.func, search)
+        self.assertEquals(view.func.view_class, LifemarkSearchListView)
 
     def test_uses_home_template(self):
         response = self.client.get(reverse('search'))
@@ -146,7 +147,7 @@ class SearchViewTest(TestCase):
         Lifemark.objects.create(title='ddd', tags='eee', desc='desc_aaa')
 
         res = self.client.get('/search?q=aaa')
-        lifemarks = res.context['lifemarks']
+        lifemarks = list(res.context['lifemarks'])
 
         self.assertEqual(len(lifemarks), 4)
         # check order
@@ -161,22 +162,22 @@ class PaginatedSearch(TestCase):
 
         url = reverse('search')
         res = self.client.get(url + '?q=auto')
-        lifemarks = res.context['lifemarks']
+        page_obj = res.context['page_obj']
 
-        self.assertEquals(len(lifemarks), 10)
-        self.assertEquals(lifemarks.number, 1)
+        self.assertEquals(len(page_obj), 10)
+        self.assertEquals(page_obj.number, 1)
 
         res = self.client.get(url + '?q=auto&page=2')
-        lifemarks = res.context['lifemarks']
+        page_obj = res.context['page_obj']
 
-        self.assertEquals(len(lifemarks), 10)
-        self.assertEquals(lifemarks.number, 2)
+        self.assertEquals(len(page_obj), 10)
+        self.assertEquals(page_obj.number, 2)
 
         res = self.client.get(url + '?q=auto&page=3')
-        lifemarks = res.context['lifemarks']
+        page_obj = res.context['page_obj']
 
-        self.assertEquals(len(lifemarks), 2)
-        self.assertEquals(lifemarks.number, 3)
+        self.assertEquals(len(page_obj), 2)
+        self.assertEquals(page_obj.number, 3)
 
 
 class ViewModelIntergrationTest(TestCase):

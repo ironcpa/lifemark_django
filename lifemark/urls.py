@@ -5,7 +5,8 @@ from main import views
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
     url(r'^$', views.home_page, name='home'),
-    url(r'^search$', views.search, name='search'),
+    # url(r'^search$', views.search, name='search'),
+    url(r'^search$', views.LifemarkSearchListView.as_view(), name='search'),
     # url(r'^new$', views.new_lifemark, name='new'),
     url(r'^new$', views.CreateLifemarkView.as_view(), name='new'),
     # url(r'^update$', views.update_lifemark, name='update'),

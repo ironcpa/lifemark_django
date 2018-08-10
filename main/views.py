@@ -57,6 +57,26 @@ def search(request):
     })
 
 
+class LifemarkSearchListView(ListView):
+    model = Lifemark
+    context_object_name = 'lifemarks'
+    template_name = 'home.html'
+    paginate_by = 10
+
+    def get_context_data(self, **kwargs):
+        kwargs['existing_categories'] = get_distinct_categories()
+        kwargs['form'] = LifemarkForm()
+        return super().get_context_data(**kwargs)
+
+    def get_queryset(self):
+        keyword = self.request.GET.get('q')
+        queryset = Lifemark.objects.get_matches_on_fields(
+            ('title', 'link', 'category', 'state', 'rating', 'tags', 'desc', 'image_url'),
+            keyword
+        ).order_by('-udate')
+        return queryset
+
+
 def new_lifemark(request):
     if request.method == 'POST':
         form = LifemarkForm(data=request.POST)
