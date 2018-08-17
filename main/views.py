@@ -1,7 +1,9 @@
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
+from django.contrib.auth.decorators import login_required
 from django.shortcuts import redirect, render
 from django.views.generic import CreateView, UpdateView, ListView, DeleteView
 from django.urls import reverse_lazy
+from django.utils.decorators import method_decorator
 from .models import Lifemark
 from .forms import LifemarkForm
 
@@ -16,6 +18,7 @@ def get_distinct_categories():
     return sorted(category_list)
 
 
+@login_required
 def home_page(request):
     lifemarks = (Lifemark.objects
                          .order_by('-udate')[:10])
@@ -29,6 +32,7 @@ def home_page(request):
     })
 
 
+@login_required
 def search(request):
     keyword = request.GET.get('q')
     lifemarks_qs = Lifemark.objects.get_matches_on_fields(
@@ -57,6 +61,7 @@ def search(request):
     })
 
 
+@method_decorator(login_required, name='dispatch')
 class LifemarkSearchListView(ListView):
     model = Lifemark
     context_object_name = 'lifemarks'

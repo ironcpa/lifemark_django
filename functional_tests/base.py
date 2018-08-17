@@ -32,6 +32,11 @@ class FunctionalTest(StaticLiveServerTestCase):
         return fn()
 
     @wait
+    def check_is_home_page(self):
+        add_form = self.browser.find_element_by_id('id_new_form')
+        self.assertNotEqual(add_form, None)
+
+    @wait
     def check_text_in_table(self, text):
         table = self.browser.find_element_by_id('id_recent_list')
         rows = table.find_elements_by_tag_name('tr')
@@ -59,6 +64,10 @@ class FunctionalTest(StaticLiveServerTestCase):
             self.assertEquals(actual_text, text)
 
     @wait
+    def check_login_required(self):
+        self.assertIn('Please login to view your lifemarks', self.browser.find_element_by_id('id_notice').text)
+
+    @wait
     def check_row_count(self, row_count):
         table = self.browser.find_element_by_id('id_recent_list')
         rows = table.find_elements_by_xpath('.//tbody/tr')
@@ -66,6 +75,10 @@ class FunctionalTest(StaticLiveServerTestCase):
 
     def click_button(self, id):
         button = self.browser.find_element_by_id(id)
+        button.click()
+
+    def click_first_submit(self):
+        button = self.browser.find_element_by_tag_name('button')
         button.click()
 
     def click_add_lifemark(self):

@@ -1,12 +1,21 @@
+from django.contrib.auth.models import User
 from django.test import TestCase
 from django.urls import reverse, resolve
 from main.models import Lifemark
-from ..views import search, LifemarkSearchListView
+from ..views import LifemarkSearchListView
 from main.forms import LifemarkForm
 from datetime import datetime
 
 
 class BasicPageTest(TestCase):
+    def setUp(self):
+        User.objects.create_user(
+            username='augie',
+            password='1234',
+            email='augie@sample.com'
+        )
+        self.client.login(username='augie', password='1234')
+
     def test_uses_home_template(self):
         response = self.client.get(reverse('home'))
         self.assertTemplateUsed(response, 'home.html')
@@ -130,6 +139,14 @@ class BasicPageTest(TestCase):
 
 
 class SearchViewTest(TestCase):
+    def setUp(self):
+        User.objects.create_user(
+            username='augie',
+            password='1234',
+            email='augie@sample.com'
+        )
+        self.client.login(username='augie', password='1234')
+
     def test_search_url_resolves_search_view(self):
         url = reverse('search')
         view = resolve(url)
@@ -156,6 +173,14 @@ class SearchViewTest(TestCase):
 
 
 class PaginatedSearch(TestCase):
+    def setUp(self):
+        User.objects.create_user(
+            username='augie',
+            password='1234',
+            email='augie@sample.com'
+        )
+        self.client.login(username='augie', password='1234')
+
     def test_paging_and_paged_elements_count(self):
         for i in range(22):
             Lifemark.objects.create(title=f'auto gen {i}')
@@ -181,6 +206,14 @@ class PaginatedSearch(TestCase):
 
 
 class ViewModelIntergrationTest(TestCase):
+    def setUp(self):
+        User.objects.create_user(
+            username='augie',
+            password='1234',
+            email='augie@sample.com'
+        )
+        self.client.login(username='augie', password='1234')
+
     def test_post_saves_correct_model(self):
         res = self.client.post('/new', data={
             'title': 'new item',
@@ -289,3 +322,19 @@ class ViewModelIntergrationTest(TestCase):
             '</select>'
         )
         self.assertContains(response, expected_category_select, html=True)
+
+
+class LoginRequriedTests(TestCase):
+
+    def setUp(self):
+        self.login_url = reverse('login')
+
+    def test_home(self):
+        target_url = reverse('home')
+        response = self.client.get(target_url)
+        self.assertRedirects(response, f'{self.login_url}?next={target_url}')
+
+    def test_search(self):
+        target_url = reverse('search')
+        response = self.client.get(target_url)
+        self.assertRedirects(response, f'{self.login_url}?next={target_url}')

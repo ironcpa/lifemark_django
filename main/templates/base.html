@@ -23,7 +23,13 @@
                     <li><a href="#">Scraps</a></li>
                 </ul>
                 <ul class="nav navbar-nav navbar-right">
-                    <li><a href="#">Login</a></li>
+                    {% if user.is_authenticated %}
+                    <li><a href="#" id="id_logged_in_user">{{ user.username }} logged in</a></li>
+                        <li><a href="{% url 'logout' %}">Logout</a></li>
+                    {% else %}
+                        <li><a id="id_btn_login" href="{% url 'login' %}"Login</a></li>
+                        <li><a id="id_btn_signup" href="{% url 'signup' %}">Signup</a></li>
+                    {% endif %}
                 </ul>
             </div>
         </nav>
