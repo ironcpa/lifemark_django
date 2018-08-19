@@ -19,3 +19,8 @@ def signup(request):
 
 def sample_view(request):
     return redirect(reverse('home'))
+
+
+def test_anon_user_view(request):
+    # return render(request, 'home.html')
+    return redirect(reverse('home'))

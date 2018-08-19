@@ -3,6 +3,11 @@ from selenium.webdriver.support.select import Select
 
 
 class MainPageTest(FunctionalTest):
+    def setUp(self):
+        super().setUp()
+        self.login()
+        # below not working
+        # self.create_pre_authenticated_session('augie', 'abcde12345')
 
     def test_enter_page_and_create_single_item(self):
         # augie enters home page
@@ -136,6 +141,7 @@ class MainPageTest(FunctionalTest):
         # this page has already existing lifemarks
         self.browser.get(self.live_server_url)
         self.add_lifemark(title='existing item 1')
+        self.check_row_in_list_table(0, 'existing item 1')
         self.add_lifemark(
             title='existing item 2',
             link='http://aaa.bbb.com',
@@ -147,6 +153,7 @@ class MainPageTest(FunctionalTest):
             desc='initial desc 1',
             image_url='http://aaa.com/sample.jpg'
         )
+        self.check_row_in_list_table(0, 'existing item 2')
 
         # augie click 'edit' button on list
         table = self.browser.find_element_by_id('id_recent_list')
@@ -168,7 +175,9 @@ class MainPageTest(FunctionalTest):
         edit_due_hour_sel = Select(update_form.find_element_by_id('id_due_hour'))
         edit_desc_box = update_form.find_element_by_id('id_desc')
 
-        self.assertEqual(edit_title_box.get_attribute('value'), 'existing item 2')
+        self.wait_for(
+            lambda: self.assertEqual(edit_title_box.get_attribute('value'), 'existing item 2')
+        )
         self.assertEqual(edit_link_box.get_attribute('value'), 'http://aaa.bbb.com')
         self.assertEqual(edit_category_sel.first_selected_option.text, 'initial category')
         self.assertEqual(edit_state_sel.first_selected_option.text, 'todo')
@@ -192,6 +201,7 @@ class MainPageTest(FunctionalTest):
         # this page has already existing lifemarks
         self.browser.get(self.live_server_url)
         self.add_lifemark(title='existing item 1')
+        self.check_row_in_list_table(0, 'existing item 1')
         self.add_lifemark(
             title='existing item 2',
             link='http://aaa.bbb.com',
@@ -203,6 +213,7 @@ class MainPageTest(FunctionalTest):
             desc='initial desc 1',
             image_url='http://aaa.com/sample.jpg'
         )
+        self.check_row_in_list_table(0, 'existing item 2')
 
         # augie click 'edit' button on detail list
         table = self.browser.find_element_by_id('id_recent_list')
@@ -224,7 +235,9 @@ class MainPageTest(FunctionalTest):
         edit_due_hour_sel = Select(update_form.find_element_by_id('id_due_hour'))
         edit_desc_box = update_form.find_element_by_id('id_desc')
 
-        self.assertEqual(edit_title_box.get_attribute('value'), 'existing item 2')
+        self.wait_for(
+            lambda: self.assertEqual(edit_title_box.get_attribute('value'), 'existing item 2')
+        )
         self.assertEqual(edit_link_box.get_attribute('value'), 'http://aaa.bbb.com')
         self.assertEqual(edit_category_sel.first_selected_option.text, 'initial category')
         self.assertEqual(edit_state_sel.first_selected_option.text, 'todo')
@@ -248,7 +261,9 @@ class MainPageTest(FunctionalTest):
         # this page has already existing 2 lifemarks
         self.browser.get(self.live_server_url)
         self.add_lifemark(title='existing item 1')
+        self.check_row_in_list_table(0, 'existing item 1')
         self.add_lifemark(title='existing item 2')
+        self.check_row_in_list_table(0, 'existing item 2')
 
         # augie click 'del' button on list
         # then page updates, and now clicked item is disappeared
@@ -268,7 +283,9 @@ class MainPageTest(FunctionalTest):
         # this page has already existing 2 lifemarks
         self.browser.get(self.live_server_url)
         self.add_lifemark(title='existing item 1')
+        self.check_row_in_list_table(0, 'existing item 1')
         self.add_lifemark(title='existing item 2')
+        self.check_row_in_list_table(0, 'existing item 2')
 
         # augie click 'del' button on detail list
         # then page updates, and now clicked item is disappeared

@@ -18,6 +18,7 @@ urlpatterns = [
     url(r'^signup/$', account_views.signup, name='signup'),
     url(r'^login/$', auth_views.LoginView.as_view(template_name='login.html'), name='login'),
     url(r'^logout/$', auth_views.LogoutView.as_view(), name='logout'),
+    url(r'^anon/$', account_views.test_anon_user_view, name='anon'),
 
     url(r'^test$', views.TestListView.as_view(), name='test_list'),
 ]

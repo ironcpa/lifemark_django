@@ -4,6 +4,11 @@ from selenium.webdriver.support.ui import Select
 from selenium.common.exceptions import WebDriverException
 import time
 
+from django.conf import settings
+from django.contrib.auth import BACKEND_SESSION_KEY, SESSION_KEY
+from django.contrib.auth.models import User
+from django.contrib.sessions.backends.db import SessionStore
+
 MAX_WAIT = 10
 
 
@@ -14,6 +19,7 @@ def wait(fn):
             try:
                 return fn(*args, **kwargs)
             except (AssertionError, WebDriverException) as e:
+                # print('>>>>>>>>>>>> error:', e)
                 if time.time() - start_time > MAX_WAIT:
                     raise e
                 time.sleep(0.5)
@@ -26,6 +32,35 @@ class FunctionalTest(StaticLiveServerTestCase):
 
     def tearDown(self):
         self.browser.quit()
+
+    def create_pre_authenticated_session(self, username, password):
+        user = User.objects.create_user(
+            username=username,
+            password=password
+        )
+        session = SessionStore()
+        session[SESSION_KEY] = user.pk
+        session[BACKEND_SESSION_KEY] = settings.AUTHENTICATION_BACKENDS[0]
+        session.save()
+        self.browser.get(self.live_server_url)
+        self.browser.add_cookie(dict(
+            name=settings.SESSION_COOKIE_NAME,
+            value=session.session_key,
+            path='/',
+        ))
+
+    def login(self):
+        User.objects.create_user(
+            username='augie',
+            password='abcde12345',
+            email='augie@sample.com'
+        )
+        self.browser.get(self.live_server_url)
+        username_box = self.browser.find_element_by_id('id_username')
+        password_box = self.browser.find_element_by_id('id_password')
+        username_box.send_keys('augie')
+        password_box.send_keys('abcde12345')
+        self.click_first_submit()
 
     @wait
     def wait_for(self, fn):

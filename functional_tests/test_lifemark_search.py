@@ -2,6 +2,9 @@ from .base import FunctionalTest
 
 
 class SearchTests(FunctionalTest):
+    def setUp(self):
+        super().setUp()
+        self.login()
 
     def test_default_search_shows_recent_10_posts(self):
         # augie goes to the main page
@@ -9,11 +12,15 @@ class SearchTests(FunctionalTest):
 
         # augie add 9 items
         for idx in range(9):
-            self.add_lifemark(title=f'existing item {idx}')
+            title = f'existing item {idx}'
+            self.add_lifemark(title=title)
+            self.check_row_in_list_table(0, title)
 
         # main page shows 9 lifemarks in list
         list_trs = self.browser.find_elements_by_xpath('//table[@id="id_recent_list"]/tbody/tr')
-        self.assertEqual(len(list_trs), 9)
+        self.wait_for(
+            lambda: self.assertEqual(len(list_trs), 9)
+        )
 
         # augie create 1 more lifemark
         # than main page shows 10 lifemarks in list
@@ -42,7 +49,9 @@ class SearchTests(FunctionalTest):
         self.browser.get(self.live_server_url)
         # he creates some lifemarks
         self.add_lifemark(title='aaa')
+        self.check_row_in_list_table(0, 'aaa')
         self.add_lifemark(title='bbb')
+        self.check_row_in_list_table(0, 'bbb')
 
         # augie enter single search keyword in search text box
         search_text_box = self.browser.find_element_by_id('id_txt_search')
@@ -53,4 +62,6 @@ class SearchTests(FunctionalTest):
 
         # page updates, and show search result in list and detail table
         list_trs = self.browser.find_elements_by_xpath('//table[@id="id_recent_list"]/tbody/tr')
-        self.assertEqual(len(list_trs), 1)
+        self.wait_for(
+            lambda: self.assertEqual(len(list_trs), 1)
+        )
