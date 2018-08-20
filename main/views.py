@@ -75,10 +75,15 @@ class LifemarkSearchListView(ListView):
 
     def get_queryset(self):
         keyword = self.request.GET.get('q')
-        queryset = Lifemark.objects.get_matches_on_fields(
-            ('title', 'link', 'category', 'state', 'rating', 'tags', 'desc', 'image_url'),
-            keyword
-        ).order_by('-udate')
+
+        if keyword:
+            queryset = Lifemark.objects.get_matches_on_fields(
+                ('title', 'link', 'category', 'state', 'rating', 'tags', 'desc', 'image_url'),
+                keyword
+            ).order_by('-udate')
+        else:
+            queryset = Lifemark.objects.all().order_by('-udate')
+
         return queryset
 
 

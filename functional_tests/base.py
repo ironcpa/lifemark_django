@@ -113,7 +113,8 @@ class FunctionalTest(StaticLiveServerTestCase):
         button.click()
 
     def click_first_submit(self):
-        button = self.browser.find_element_by_tag_name('button')
+        # button = self.browser.find_element_by_tag_name('button')
+        button = self.browser.find_element_by_xpath('//button[@type="submit"]')
         button.click()
 
     def click_add_lifemark(self):

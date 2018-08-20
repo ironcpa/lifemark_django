@@ -137,6 +137,18 @@ class BasicPageTest(TestCase):
         self.assertEqual(recent_items[1].title, '11th item')
         self.assertEqual(recent_items[9].title, 'existing item 2')
 
+    def test_home_page_is_paginated(self):
+        for i in range(11):
+            Lifemark.objects.create(title=f'existing item {i + 1}')
+
+        res = self.client.get(reverse('home'))
+        lifemarks = res.context['lifemarks']
+        page_obj = res.context['page_obj']
+        self.assertTrue(res.context['is_paginated'])
+        self.assertEqual(len(lifemarks), 10)
+        self.assertTrue(page_obj.has_next)
+        self.assertEqual(lifemarks[0].title, 'existing item 11')
+
 
 class SearchViewTest(TestCase):
     def setUp(self):

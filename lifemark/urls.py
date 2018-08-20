@@ -6,7 +6,8 @@ from accounts import views as account_views
 
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
-    url(r'^$', views.home_page, name='home'),
+    # url(r'^$', views.home_page, name='home'),
+    url(r'^$', views.LifemarkSearchListView.as_view(), name='home'),
     # url(r'^search$', views.search, name='search'),
     url(r'^search$', views.LifemarkSearchListView.as_view(), name='search'),
     # url(r'^new$', views.new_lifemark, name='new'),
