@@ -1,6 +1,16 @@
 {% if is_paginated %}
     <nav aria-label="Lifemark pagination">
         <ul class="pagination">
+            {% if page_obj.number > 1 %}
+                <li class="page-item">
+                    <a class="page-link" href="?page=1">Fisrt</a>
+                </li>
+            {% else %}
+                <li class="page-item disabled">
+                    <span class="page-link">First</span>
+                </li>
+            {% endif %}
+
             {% if page_obj.has_previous %}
                 <li class="page-item">
                     {% if request.GET.q %}
@@ -45,6 +55,16 @@
             {% else %}
                 <li class="page-item disabled">
                     <span class="page-link">Next</span>
+                </li>
+            {% endif %}
+
+            {% if page_obj.number != paginator.num_pages %}
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ paginator.num_pages }}">Last</a>
+                </li>
+            {% else %}
+                <li class="page-item disabled">
+                    <span class="page-link">Last</span>
                 </li>
             {% endif %}
         </ul>
