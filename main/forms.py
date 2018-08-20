@@ -31,15 +31,18 @@ class LifemarkForm(forms.models.ModelForm):
             'due_datehour': forms.fields.HiddenInput(),
             'rating': forms.fields.TextInput(attrs={
                 'class': 'form-control',
+                'placeholder': '0 to 5 xs(xxxxx)'
             }),
             'tags': forms.fields.TextInput(attrs={
                 'class': 'form-control',
+                'placeholder': 'Enter multiple tags with space separator'
             }),
             'desc': forms.Textarea(attrs={
                 'class': 'form-control',
             }),
             'image_url': forms.fields.TextInput(attrs={
                 'class': 'form-control',
+                'placeholder': 'Enter image url'
             }),
         }
         error_messages = {

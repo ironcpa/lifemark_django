@@ -6,19 +6,23 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <title>{% block title %}Lifemarks{% endblock %}</title>
         <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}">
+        {% include 'includes/common_css.html' %}
         <script src="{% static 'js/jquery-3.2.1.min.js' %}"></script>
         <script src="{% static 'js/jquery-ui-1.12.1.custom/jquery-ui.min.js' %}"></script>
+        <script src="{% static 'js/bootstrap.min.js' %}"></script>
         {% block javascript %}
         {% endblock javascript %}
     </head>
     <body>
+        <button onclick="topFunction()" id="id_btn_top" title="Go to top">Top</button>
+
         <nav class="navbar navbar-inverse">
             <div class="container-fluid">
                 <div class="navbar-header">
-                    <a class="navbar-brand" href="#">Lifemark</a>
+                    <a class="navbar-brand" href="{% url 'home' %}">Lifemark</a>
                 </div>
                 <ul class="nav navbar-nav">
-                    <li class="active"><a href="#">Home</a></li>
+                    <li class="active"><a href="{% url 'home' %}">Home</a></li>
                     <li><a href="#">Images</a></li>
                     <li><a href="#">Scraps</a></li>
                 </ul>
@@ -39,9 +43,28 @@
 
             {% block content %}
             {% endblock content %}
-
-            {% block init_javascript %}
-            {% endblock init_javascript %}
         </div>
+
+        {% block init_javascript %}
+        {% endblock init_javascript %}
+        <script>
+            window.onscroll = function() {scrollFunction()};
+
+            function scrollFunction() {
+                if (document.body.scrollTop > 20 ||
+                    document.documentElement.scrollTop > 20) {
+                    console.log('scroll:block')
+                    $('#id_btn_top')[0].style.display = "block"
+                } else {
+                    console.log('scroll:none')
+                    $('#id_btn_top')[0].style.display = "none"
+                }
+            }
+
+            function topFunction() {
+                document.body.scrollTop = 0
+                document.documentElement.scrollTop = 0
+            }
+        </script>
     </body>
 </html>
