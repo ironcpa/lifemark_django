@@ -112,6 +112,14 @@ class FunctionalTest(StaticLiveServerTestCase):
         button = self.browser.find_element_by_id(id)
         button.click()
 
+    def click_list_button(self, row_idx, btn_type):
+        table = self.browser.find_element_by_id('id_recent_list')
+        tds = table.find_elements_by_xpath(f'.//tbody/tr[{row_idx + 1}]/td')
+        target_id = tds[0].text
+
+        list_btn_edit = self.browser.find_element_by_id(f'id_list_btn_{btn_type}_' + target_id)
+        list_btn_edit.click()
+
     def click_first_submit(self):
         # button = self.browser.find_element_by_tag_name('button')
         button = self.browser.find_element_by_xpath('//button[@type="submit"]')
@@ -159,6 +167,8 @@ class FunctionalTest(StaticLiveServerTestCase):
 
         list_btn_del = self.browser.find_element_by_id('id_list_btn_del_' + target_id)
         list_btn_del.click()
+        alert = self.browser.switch_to_alert()
+        alert.accept()
 
     def del_lifemark_w_detail_button(self, row_idx):
         table = self.browser.find_element_by_id('id_detail_list')
@@ -168,3 +178,5 @@ class FunctionalTest(StaticLiveServerTestCase):
 
         list_btn_del = self.browser.find_element_by_id('id_detail_btn_del_' + target_id)
         list_btn_del.click()
+        alert = self.browser.switch_to_alert()
+        alert.accept()

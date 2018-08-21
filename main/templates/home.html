@@ -5,20 +5,6 @@
 {% block javascript %}
     <script src="{% static 'js/desc_editor.js' %}"></script>
     <script>
-        function fill_category_hidden(value) {
-            var $category_hidden = $('#id_category')
-            $category_hidden.val(value)
-        }
-        function fill_due_datehour_hidden(date_str) {
-            var $due_datehour_hidden = $('#id_due_datehour')
-            $due_datehour_hidden.val(date_str)
-        }
-        function toggle_form() {
-            var $new_form = $('#id_new_form')
-            var $update_form = $('#id_update_form')
-            $new_form.hide()
-            $update_form.show()
-        }
         function get_detail_val(id, field_name) {
             return $('#row_'+id+'_'+field_name).text()
         }
@@ -57,35 +43,68 @@
 
             return true
         }
-        function edit(id) {
-            console.log('edit(' + id + ')')
-            toggle_form()
-            
-            var $update_form = $('#id_update_form')
-
-            set_form_data($update_form, id, 'title')
-            set_form_data($update_form, id, 'link')
-            set_form_data($update_form, id, 'state')
-            set_form_data($update_form, id, 'desc')
+        function fill_form_w_detail($form, id) {
+            set_form_data($form, id, 'title')
+            set_form_data($form, id, 'link')
+            set_form_data($form, id, 'state')
+            set_form_data($form, id, 'desc')
 
             category = get_detail_val(id, 'category')
-            $update_form.find('#id_category_sel').val(category)
+            $form.find('#id_category_sel').val(category)
 
             due_datehour = get_detail_val(id, 'due_datehour')
             due_date = due_datehour.substring(0, 8)
             due_hour = due_datehour.substring(8) * 1 + ''
-            set_form_data($update_form, id, 'due_date', due_date)
-            set_form_data($update_form, id, 'due_hour', due_hour)
+            set_form_data($form, id, 'due_date', due_date)
+            set_form_data($form, id, 'due_hour', due_hour)
+        }
+        function edit(id) {
+            console.log('edit(' + id + ')')
+
+            toggle_forms()
+            
+            var $update_form = $('#id_update_form')
+            fill_form_w_detail($update_form, id)
 
             $update_form.attr('action', 'update/' + id + '/')
 
             $('html, body').scrollTop(0)
         }
         function del(id) {
-            console.log('delete(' + id + ')')
+            if (!confirm('Want to delete?'))
+                return
+
             var $form = $('#id_del_form')
             $form.attr('action', 'delete/' + id + '/')
             $form[0].submit()
+        }
+        function copy_lifemark(id) {
+            fill_form_w_detail($('#id_new_form'), id)
+
+            $('html, body').scrollTop(0)
+        }
+        function get_active_form() {
+            if ($('#id_new_form').is(':visible'))
+                return $('#id_new_form')
+            else
+                return $('#id_update_form')
+        }
+        function toggle_desc_editor() {
+            editor_module.set_editor(get_active_form().find('#id_desc'))
+        }
+        function toggle_due_date_picker() {
+            // todo: this doesn't work
+            //   - datepicker need one and only id in a page
+            //   - how about dynamically create due_date input?
+            //     - or moving input
+            get_active_form().find('#id_due_date').datepicker({dateFormat: 'yy-mm-dd'})
+        }
+        function toggle_forms() {
+            $('#id_new_form').toggle()
+            $('#id_update_form').toggle()
+
+            toggle_desc_editor()
+            toggle_due_date_picker()
         }
     </script>
 {% endblock javascript %}
@@ -105,7 +124,7 @@
         <div class="form-group">
             <div class="col-sm-12">
                 <button type="submit" id="id_btn_update" class="btn btn-default">Update Lifemark</button>
-                <button type="button" class="btn btn-default">Cancel</button>
+                <button type="button" class="btn btn-default" onclick="toggle_forms()">Cancel</button>
             </div>
         </div>
         {% include 'includes/lifemark_form.html' %}
@@ -143,8 +162,8 @@
                         <td>{{ lifemark.title }}</td>
                         <td>{{ lifemark.link }}</td>
                         <td>
-                            <button id="id_list_btn_edit_{{ lifemark.id }}" type="button" onclick="edit({{ lifemark.id }})">Edit</button>
-                            <button id="id_list_btn_del_{{ lifemark.id }}" type="button" onclick="del({{ lifemark.id }})">Del</button>
+                            <button id="id_list_btn_edit_{{ lifemark.id }}" type="button" class="btn btn-default" onclick="edit({{ lifemark.id }})">Edit</button>
+                            <button id="id_list_btn_del_{{ lifemark.id }}" type="button" class="btn btn-default" onclick="del({{ lifemark.id }})">Del</button>
                         </td>
                     </tr>
                 {% endfor %}
@@ -170,5 +189,15 @@
 {% block init_javascript %}
     <script>
         $('#id_update_form').hide()
+
+        $(function() {
+            var $new_form = $('#id_new_form')            
+            $new_form.find('#id_due_date').datepicker({dateFormat: 'yy-mm-dd'})
+
+            var $update_form = $('#id_update_form')            
+            $update_form.find('#id_due_date').datepicker({dateFormat: 'yy-mm-dd'})
+        })
+
+        toggle_desc_editor()
     </script>
 {% endblock init_javascript %}

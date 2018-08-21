@@ -6,6 +6,7 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <title>{% block title %}Lifemarks{% endblock %}</title>
         <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}">
+        <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
         {% include 'includes/common_css.html' %}
         <script src="{% static 'js/jquery-3.2.1.min.js' %}"></script>
         <script src="{% static 'js/jquery-ui-1.12.1.custom/jquery-ui.min.js' %}"></script>
@@ -45,18 +46,14 @@
             {% endblock content %}
         </div>
 
-        {% block init_javascript %}
-        {% endblock init_javascript %}
         <script>
             window.onscroll = function() {scrollFunction()};
 
             function scrollFunction() {
                 if (document.body.scrollTop > 20 ||
                     document.documentElement.scrollTop > 20) {
-                    console.log('scroll:block')
                     $('#id_btn_top')[0].style.display = "block"
                 } else {
-                    console.log('scroll:none')
                     $('#id_btn_top')[0].style.display = "none"
                 }
             }
@@ -66,5 +63,7 @@
                 document.documentElement.scrollTop = 0
             }
         </script>
+        {% block init_javascript %}
+        {% endblock init_javascript %}
     </body>
 </html>

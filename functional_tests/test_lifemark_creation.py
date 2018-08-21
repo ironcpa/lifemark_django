@@ -98,9 +98,7 @@ class MainPageTest(FunctionalTest):
         # augie fills in all entries
         title_box.send_keys('test entry')
         link_box.send_keys('http://aaa')
-        self.browser.execute_script('fill_category_hidden("sample")')
         Select(state_combo).select_by_value('complete')
-        self.browser.execute_script('fill_due_datehour_hidden("2018010100")')
         rating_box.send_keys('xxxxx')
         tags_box.send_keys('aaa bbb')
         desc_box.send_keys('aaaaaaa')
@@ -155,13 +153,8 @@ class MainPageTest(FunctionalTest):
         )
         self.check_row_in_list_table(0, 'existing item 2')
 
-        # augie click 'edit' button on list
-        table = self.browser.find_element_by_id('id_recent_list')
-        tds = table.find_elements_by_xpath('.//tbody/tr[1]/td')
-        target_id = tds[0].text
-
-        list_btn_edit = self.browser.find_element_by_id('id_list_btn_edit_' + target_id)
-        list_btn_edit.click()
+        # augie click 'edit' button on list's 1st row
+        self.click_list_button(0, 'edit')
 
         # then edit form is shown instead of add form
         # and clicked item's fields are shown on form fields
@@ -175,9 +168,7 @@ class MainPageTest(FunctionalTest):
         edit_due_hour_sel = Select(update_form.find_element_by_id('id_due_hour'))
         edit_desc_box = update_form.find_element_by_id('id_desc')
 
-        self.wait_for(
-            lambda: self.assertEqual(edit_title_box.get_attribute('value'), 'existing item 2')
-        )
+        self.assertEqual(edit_title_box.get_attribute('value'), 'existing item 2')
         self.assertEqual(edit_link_box.get_attribute('value'), 'http://aaa.bbb.com')
         self.assertEqual(edit_category_sel.first_selected_option.text, 'initial category')
         self.assertEqual(edit_state_sel.first_selected_option.text, 'todo')

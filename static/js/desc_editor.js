@@ -5,17 +5,17 @@ editor_module.HEADERS = {todo: '-',
                          complete: '+',
                          postpone: 'p',
                          cancel: 'x'}
-editor_module.EDITOR = 'editor'
+editor_module.$EDITOR = 'editor'
 editor_module.BUTTONS_NAME = 'editor_buttons'
-editor_module.set_editor = function(name) {
-    editor_module.EDITOR = name
+editor_module.set_editor = function($obj) {
+    editor_module.$EDITOR = $obj
     get_editor().onkeydown = handle_keys
 
     create_editor_buttons(get_editor())
 }
 
 function create_button(title, callback_name) {
-    return "<input type='button' value='"+title+"' onclick='"+callback_name+"' tabindex='-1' />"
+    return "<input type='button' value='"+title+"' class='btn btn-default' onclick='"+callback_name+"' tabindex='-1' />"
 }
 function remove_buttons() {
     $('#' + editor_module.BUTTON_NAME).remove()
@@ -38,11 +38,13 @@ function create_editor_buttons(editor) {
     table_str += '</tr></table>'
 
     remove_buttons()
-    $('#' + editor_module.EDITOR).before(table_str)
+    // $('#' + editor_module.EDITOR).before(table_str)
+    editor_module.$EDITOR.before(table_str)
 }
 function get_editor() {
     // return $('#editor')[0]
-    return $('#' + editor_module.EDITOR)[0]
+    // return $('#' + editor_module.EDITOR)[0]
+    return editor_module.$EDITOR[0]
 }
 function handle_keys(e) {
     var info = e + '\n' + e.ctrlKey + '\n' + e.keyCode
