@@ -1,16 +1,20 @@
+{% load lifemark_filters %}
+
 {{ lifemark.id }} <button type="button" id="id_detail_btn_del_{{ lifemark.id }}" class="btn btn-default" onclick="del({{ lifemark.id }})">Del</button>
 <button type="button" id="id_detail_btn_edit_{{ lifemark.id }}" class="btn btn-default" onclick="edit({{ lifemark.id }})">Edit</button>
 <button type="button" class="btn btn-default">Map</button>
 <button type="button" class="btn btn-default">Recent Map</button>
 <button type="button" class="btn btn-default" onclick="copy_lifemark({{ lifemark.id }})">Copy</button>
 <p>Title: <span id="row_{{ lifemark.id }}_title">{{ lifemark.title }}</span></p>
-<p>Link: <span id="row_{{ lifemark.id }}_link">{{ lifemark.link }}</span></p>
+{% lifemark_field lifemark.id 'link' lifemark.link 'Link' %}
 <p>cdate: <span id="row_{{ lifemark.id }}_cdate">{{ lifemark.cdate }}</span></p>
 <p>udate: <span id="row_{{ lifemark.id }}_udate">{{ lifemark.udate }}</span></p>
 <p>category: <span id="row_{{ lifemark.id }}_category">{{ lifemark.category }}</span></p>
-<p>state: <span id="row_{{ lifemark.id }}_state">{{ lifemark.state }}</span></p>
-<p>due: <span id="row_{{ lifemark.id }}_due_datehour">{{ lifemark.due_datehour }}</span></p>
-<p>tags: <span id="row_{{ lifemark.id }}_tags">{{ lifemark.tags }}</span></p>
+{% lifemark_field lifemark.id 'state' lifemark.state 'State' %}
+{% lifemark_field lifemark.id 'due_datehour' lifemark.due_datehour 'Due' %}
+{% lifemark_field lifemark.id 'rating' lifemark.rating 'Rating' %}
+{% lifemark_field lifemark.id 'tags' lifemark.tags 'Tags' %}
 {% if lifemark.desc %}
     <pre id="row_{{ lifemark.id }}_desc">{{ lifemark.desc }}</pre>
 {% endif %}
+{% lifemark_field lifemark.id 'image_url' lifemark.image_url 'Image url' %}

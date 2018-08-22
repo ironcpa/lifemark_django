@@ -68,8 +68,8 @@ class MainPageTest(FunctionalTest):
             'Enter related page link'
         )
         #  - category
-        category_box = self.browser.find_element_by_id('id_category')
-        self.assertEqual(category_box.get_attribute('name'), 'category')
+        category_box = self.browser.find_element_by_id('id_category_txt')
+        self.assertNotEqual(category_box, None)
         categorycombo = self.browser.find_element_by_id('id_category_sel')
         self.assertNotEqual(categorycombo, None)
         #  - is complete
@@ -98,7 +98,10 @@ class MainPageTest(FunctionalTest):
         # augie fills in all entries
         title_box.send_keys('test entry')
         link_box.send_keys('http://aaa')
+        category_box.send_keys('test cate')
         Select(state_combo).select_by_value('complete')
+        duedate_box.send_keys('20180801')
+        Select(due_hour_combo).select_by_value('0')
         rating_box.send_keys('xxxxx')
         tags_box.send_keys('aaa bbb')
         desc_box.send_keys('aaaaaaa')
@@ -107,10 +110,18 @@ class MainPageTest(FunctionalTest):
         # he hits 'add lifemark' button
         # page updates, and now he can see just enters lifemark on list
         self.click_add_lifemark()
-        self.check_text_in_table('test entry')
-        self.check_text_in_table('http://aaa')
-        self.check_text_in_table('http://aaa')
-        # self.fail('expected fail: need to unittest first')
+
+        self.check_row_in_detail_table(0, {
+            'title': 'test entry',
+            'link': 'http://aaa',
+            'category': 'test cate',
+            'state': 'complete',
+            'due_datehour': '2018080100',
+            'rating': 'xxxxx',
+            'tags': 'aaa bbb',
+            'desc': 'aaaaaaa',
+            'image_url': 'http://image_location/sample.jpg'
+        })
 
     def test_cannot_add_empty_titled_lifemark(self):
         # augie goes to the main page

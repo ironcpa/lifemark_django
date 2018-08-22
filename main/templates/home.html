@@ -37,7 +37,7 @@
             var $due_hour = $form.find('#id_due_hour')
             if ($due_date.val()) {
                 var $due_datehour = $form.find('#id_due_datehour')
-                var datehour = $due_date.val() + $due_hour.val()
+                var datehour = $due_date.val() + lpad($due_hour.val(), '0', 2)
                 $due_datehour.val(datehour)
             }
 
@@ -47,7 +47,6 @@
             set_form_data($form, id, 'title')
             set_form_data($form, id, 'link')
             set_form_data($form, id, 'state')
-            set_form_data($form, id, 'desc')
 
             category = get_detail_val(id, 'category')
             $form.find('#id_category_sel').val(category)
@@ -57,6 +56,11 @@
             due_hour = due_datehour.substring(8) * 1 + ''
             set_form_data($form, id, 'due_date', due_date)
             set_form_data($form, id, 'due_hour', due_hour)
+
+            set_form_data($form, id, 'rating')
+            set_form_data($form, id, 'tags')
+            set_form_data($form, id, 'desc')
+            set_form_data($form, id, 'image_url')
         }
         function edit(id) {
             console.log('edit(' + id + ')')
