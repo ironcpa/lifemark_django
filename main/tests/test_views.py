@@ -4,6 +4,7 @@ from ..views import LifemarkSearchListView, CreateLifemarkView, UpdateLifemarkVi
 from main.forms import LifemarkForm
 from datetime import datetime
 from .base import LifemarkTestCase
+from ..templatetags.imgur_filters import to_imgur_thumbnail
 
 
 class HomeTest(LifemarkTestCase):
@@ -308,6 +309,35 @@ class SearchTest(LifemarkTestCase):
 
         self.assertEquals(len(page_obj), 2)
         self.assertEquals(page_obj.number, 3)
+
+
+class LifemarkContentDetailTest(LifemarkTestCase):
+    def setUp(self):
+        self.login('augie', '1234')
+        self.url = reverse('home')
+
+    def test_show_link_as_anchor(self):
+        link = 'http://sample.link.com'
+        Lifemark.objects.create(
+            title='test',
+            link=link
+        )
+        res = self.client.get(self.url)
+
+        expecting_anchor = f'<a href="{link}">test</a>'
+        self.assertContains(res, expecting_anchor, html=True)
+
+    def test_show_image_url_as_thumbnail(self):
+        image_url = 'http://sample.com/sample_image.jpg'
+        Lifemark.objects.create(
+            title='test',
+            image_url=image_url
+        )
+        res = self.client.get(self.url)
+
+        thumbnail_image_url = to_imgur_thumbnail(image_url)
+        expecting_img_tag = f'<a href="{image_url}" target="_blank"><img src="{thumbnail_image_url}" /></a>'
+        self.assertContains(res, expecting_img_tag, html=True)
 
 
 class UtilityTest(LifemarkTestCase):

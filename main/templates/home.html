@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
 
-{% load static %}
+{% load static lifemark_filters %}
 
 {% block javascript %}
     <script src="{% static 'js/desc_editor.js' %}"></script>
@@ -24,11 +24,22 @@
         function submit_new_lifemark() {
             var $form = $('#id_new_form')
 
-            // fill hiddens
+            fill_form_hiddens($form)
+
+            return true
+        }
+        function submit_update_lifemark() {
+            var $form = $('#id_update_form')
+
+            fill_form_hiddens($form)
+
+            return true
+        }
+        function fill_form_hiddens($form) {
             var $category_hidden = $form.find('#id_category')
             var $category_txt = $form.find('#id_category_txt')
             var $category_sel = $form.find('#id_category_sel')
-            if ($('#id_category_txt').val()) 
+            if ($category_txt.val()) 
                 $category_hidden.val($category_txt.val())
             else
                 $category_hidden.val($category_sel.val())
@@ -40,8 +51,6 @@
                 var datehour = $due_date.val() + lpad($due_hour.val(), '0', 2)
                 $due_datehour.val(datehour)
             }
-
-            return true
         }
         function fill_form_w_detail($form, id) {
             set_form_data($form, id, 'title')
@@ -123,7 +132,7 @@
         </div>
         {% include 'includes/lifemark_form.html' %}
     </form>
-    <form class="form-horizontal" id="id_update_form" method="POST" action="">
+    <form class="form-horizontal" id="id_update_form" method="POST" onsubmit="return submit_update_lifemark()" action="">
         {% csrf_token %}
         <div class="form-group">
             <div class="col-sm-12">
@@ -161,7 +170,7 @@
             </thead>
             <tbody>
                 {% for lifemark in lifemarks %}
-                    <tr>
+                    <tr class="{{ lifemark|td_class }}">
                         <td>{{ lifemark.id }}</td>
                         <td>{{ lifemark.title }}</td>
                         <td>{{ lifemark.link }}</td>
@@ -178,7 +187,7 @@
         <table id="id_detail_list" class="table">
             <tbody>
                 {% for lifemark in lifemarks %}
-                    <tr id="row_{{ lifemark.id }}">
+                    <tr id="row_{{ lifemark.id }}" class="{{ lifemark|td_class }}">
                         <td>
                             {% include 'includes/lifemark_detail.html' %}
                         </td>

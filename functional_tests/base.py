@@ -95,7 +95,11 @@ class FunctionalTest(StaticLiveServerTestCase):
         id = row_id[row_id.index('_') + 1:]
         td = table.find_elements_by_xpath(f'.//tbody/tr[{row + 1}]/td[1]')[0]
         for field, text in field_text_dict.items():
-            actual_text = td.find_element_by_id(f'row_{id}_{field}').text
+            span = td.find_element_by_id(f'row_{id}_{field}')
+            if span.is_displayed():
+                actual_text = span.text
+            else:
+                actual_text = span.get_attribute('innerHTML')
             self.assertEquals(actual_text, text)
 
     @wait

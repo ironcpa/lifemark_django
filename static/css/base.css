@@ -1,4 +1,23 @@
-<style>
+pre {
+    background-color: white;
+}
+
+.row_ref {
+    background-color: blue;
+}
+
+.row_todo {
+    background-color: yellow;
+}
+
+.row_working {
+    background-color: cyan;
+}
+
+.row_complete {
+    background-color: lightgray;
+}
+
 #id_btn_top {
     display: none;
     position: fixed;
@@ -17,4 +36,3 @@
 #id_btn_top:hover {
     background-color: #555;
 }
-</style>
