@@ -1,0 +1,94 @@
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>Lifemarks</title>
+        <link rel="stylesheet" href="css/bootstrap4.min.css">
+        <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+        <link rel="stylesheet" href="css/base.css">
+        <script src="js/jquery-3.2.1.min.js"></script>
+        <script src="js/jquery-ui-1.12.1.custom/jquery-ui.min.js"></script>
+        <script src="js/bootstrap4.min.js"></script>
+    </head>
+    <body>
+
+<!--
+    basic layout
+      - use .form-group on fieldset or div to group
+      - use .form-control on input to width: 100%
+-->
+<form>
+    <fieldset class="form-group">
+        <label for="id_first_name">First Name</label>
+        <input type="text" class="form-control" id="id_first_name">
+    </fieldset>
+    <fieldset class="form-group">
+        <label for="id_last_name">Last Name</label>
+        <input type="text" class="form-control" id="id_last_name">
+    </fieldset>
+</form>
+
+<!--
+    inline layout
+      - use .form-inline on form tag
+      - groups don't affect layout, so don't use it
+      - default spacing zero, so need to adjust space between label and inputs w/ .mr-*, .mb-* utilities
+-->
+<form class="form-inline">
+    <label class="mr-sm-2 mb-0" for="id_first_name">First Name</label>
+    <input type="text" class="form-control mr-sm-2 mb-2 mb-sm-0" id="id_first_name">
+    <label class="mr-sm-2 mb-0" for="id_last_name">Last Name</label>
+    <input type="text" class="form-control mr-sm-2 mb-2 mb-sm-0" id="id_last_name">
+</form>
+
+<!--
+    hidden label
+      - always use label even if you don't want to show them.
+        - there's screenrender problems possible
+      - use .sr-only class on labels to hide them
+      - use placeholder attr to provide hint for input
+-->
+<form class="form-inline">
+    <label class="mr-sm-2 mb-0 sr-only" for="id_first_name">First Name</label>
+    <input type="text" class="form-control mr-sm-2 mb-2 mb-sm-0" placeholder="First Name" id="id_first_name">
+    <label class="mr-sm-2 mb-0 sr-only" for="id_last_name">Last Name</label>
+    <input type="text" class="form-control mr-sm-2 mb-2 mb-sm-0" placeholder="Last Name" id="id_last_name">
+</form>
+
+<!--
+    horizontal layout
+      - no more .form-horizontal on form tag like bs4
+      - use grid system instead
+        - .row, .form-group, .col-*-*
+      - you need .col-form-label on label to vertical center alignment in relation to inputs
+      - use form-row instead of .row for more compact spacing
+      ? i don't know why and how to stretch input width to fill column
+        - if use col-sm-3, col-sm-9 layout breaks
+-->
+<div class="container">
+    <form>
+        <div class="form-group form-row">
+            <label class="col-xs-3 col-form-label mr-2" for="id_first_name">First Name</label>
+            <div class="col-xs-9">
+                <input type="text" class="form-control" id="id_first_name">
+            </div>
+        </div>
+        <div class="form-group form-row">
+            <label class="col-xs-3 col-form-label mr-2" for="id_last_name">Last Name</label>
+            <div class="col-xs-9">
+                <input type="text" class="form-control" id="id_last_name">
+            </div>
+        </div>
+    </form>
+</div>
+
+<div class="container">
+    <div class="row bg-primary">
+        <div class="col-3 bg-warning">col-3</div>
+        <div class="col-8 bg-success">col-9</div>
+    </div>
+</div>
+
+    </body>
+</html>

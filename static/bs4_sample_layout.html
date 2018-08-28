@@ -1,0 +1,982 @@
+<!DOCTYPE html>
+<!--
+    bootstrap4 migration note
+        - col-xs <- col-sm
+        - navbar fix
+-->
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>Lifemarks</title>
+        <link rel="stylesheet" href="css/bootstrap4.min.css">
+        <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+        <link rel="stylesheet" href="css/base.css">
+        <script src="js/jquery-3.2.1.min.js"></script>
+        <script src="js/jquery-ui-1.12.1.custom/jquery-ui.min.js"></script>
+        <script src="js/bootstrap4.min.js"></script>
+        
+    <script src="js/desc_editor.js"></script>
+    <script>
+        function get_detail_val(id, field_name) {
+            return $('#row_'+id+'_'+field_name).text()
+        }
+        function set_form_data($form, id, field_name, val) {
+            if (val)
+                $form.find('#id_'+field_name).val(val)
+            else
+                $form.find('#id_'+field_name).val(get_detail_val(id, field_name))
+        }
+        function lpad(str, pad, len) {
+            padstr = ''
+            while (padstr.length < len)
+                padstr += pad
+            constr = padstr + str
+            return constr.substring(constr.length - len)
+        }
+        function submit_new_lifemark() {
+            var $form = $('#id_new_form')
+
+            fill_form_hiddens($form)
+
+            return true
+        }
+        function submit_update_lifemark() {
+            var $form = $('#id_update_form')
+
+            fill_form_hiddens($form)
+
+            return true
+        }
+        function fill_form_hiddens($form) {
+            var $category_hidden = $form.find('#id_category')
+            var $category_txt = $form.find('#id_category_txt')
+            var $category_sel = $form.find('#id_category_sel')
+            if ($category_txt.val()) 
+                $category_hidden.val($category_txt.val())
+            else
+                $category_hidden.val($category_sel.val())
+
+            var $due_date = $form.find('#id_due_date')
+            var $due_hour = $form.find('#id_due_hour')
+            if ($due_date.val()) {
+                var $due_datehour = $form.find('#id_due_datehour')
+                var datehour = $due_date.val() + lpad($due_hour.val(), '0', 2)
+                $due_datehour.val(datehour)
+            }
+        }
+        function fill_form_w_detail($form, id) {
+            set_form_data($form, id, 'title')
+            set_form_data($form, id, 'link')
+            set_form_data($form, id, 'state')
+
+            category = get_detail_val(id, 'category')
+            $form.find('#id_category_sel').val(category)
+
+            due_datehour = get_detail_val(id, 'due_datehour')
+            due_date = due_datehour.substring(0, 8)
+            due_hour = due_datehour.substring(8) * 1 + ''
+            set_form_data($form, id, 'due_date', due_date)
+            set_form_data($form, id, 'due_hour', due_hour)
+
+            set_form_data($form, id, 'rating')
+            set_form_data($form, id, 'tags')
+            set_form_data($form, id, 'desc')
+            set_form_data($form, id, 'image_url')
+        }
+        function edit(id) {
+            console.log('edit(' + id + ')')
+
+            toggle_forms()
+            
+            var $update_form = $('#id_update_form')
+            fill_form_w_detail($update_form, id)
+
+            $update_form.attr('action', 'update/' + id + '/')
+
+            $('html, body').scrollTop(0)
+        }
+        function del(id) {
+            if (!confirm('Want to delete?'))
+                return
+
+            var $form = $('#id_del_form')
+            $form.attr('action', 'delete/' + id + '/')
+            $form[0].submit()
+        }
+        function copy_lifemark(id) {
+            fill_form_w_detail($('#id_new_form'), id)
+
+            $('html, body').scrollTop(0)
+        }
+        function get_active_form() {
+            if ($('#id_new_form').is(':visible'))
+                return $('#id_new_form')
+            else
+                return $('#id_update_form')
+        }
+        function toggle_desc_editor() {
+            editor_module.set_editor(get_active_form().find('#id_desc'))
+        }
+        function toggle_due_date_picker() {
+            // todo: this doesn't work
+            //   - datepicker need one and only id in a page
+            //   - how about dynamically create due_date input?
+            //     - or moving input
+            get_active_form().find('#id_due_date').datepicker({dateFormat: 'yy-mm-dd'})
+        }
+        function toggle_forms() {
+            $('#id_new_form').toggle()
+            $('#id_update_form').toggle()
+
+            toggle_desc_editor()
+            toggle_due_date_picker()
+        }
+        function goto_detail(key, line) {
+            var $row = $('#row_'+key)
+            if (! line) {
+                $row.get(0).scrollIntoView()
+            } else {
+                var desc_pre = $row.find('pre')
+                
+                var pre_top = desc_pre.offset().top
+                var pre_height = desc_pre.height()
+                var total_line = desc_pre.html().split(/\n/).length
+
+                var line_height = pre_height / total_line
+                var target_pixcel = pre_top + line * line_height
+
+                window.scrollTo(0, target_pixcel)
+            }
+        }
+    </script>
+
+    </head>
+    <body>
+        <button onclick="topFunction()" id="id_btn_top" title="Go to top">Top</button>
+
+        <nav class="navbar navbar-expand-sm bg-dark navbar-dark">
+            <a class="navbar-brand" href="/">Lifemark</a>
+            <ul class="navbar-nav mr-auto">
+                <li class="nav-item active"><a class="nav-link" href="/">Home</a></li>
+                <li class="nav-item"><a class="nav-link" href="#">Images</a></li>
+                <li class="nav_item"><a class="nav-link" href="#">Scraps</a></li>
+            </ul>
+            <ul class="navbar-nav navbar-right">
+                <li class="nav-item"><a class="nav-link" href="#" id="id_logged_in_user">augie logged in</a></li>
+                <li class="nav-item"><a class="nav-link" href="/logout/">Logout</a></li>
+            </ul>
+        </nav>
+
+
+
+        <div class="container-fluid">
+    <form class="form-horizontal" id="id_new_form" method="POST" onsubmit="return submit_new_lifemark()" action="/new">
+
+        <input type='hidden' name='csrfmiddlewaretoken' value='NwIvmGenSklyYdnXHzyc89a91xYLkRx0xHKMvSExCbcdBKkwSVTRk4LSmzeNrXyd' />
+        <div class="form-group">
+            <div class="col-xs-12">
+                <button type="submit" id="id_btn_new" class="btn btn-default">Add Lifemark</button>
+            </div>
+        </div>
+        <div class="form-group">
+    <label class="control-label col-xs-2" for="id_title">Title</label>
+    <div class="col-xs-10"><input type="text" name="title" class="form-control" placeholder="Enter lifemark title" required id="id_title" /></div>
+</div>
+<div class="form-group">
+    <label class="control-label col-xs-2" for="id_link">Link</label>
+    <div class="col-xs-10"><input type="url" name="link" class="form-control" placeholder="Enter related page link" id="id_link" /></div>
+</div>
+<div class="form-group">
+    <label class="control-label col-xs-2" for="id_category_txt">Category</label>
+    <div class="col-xs-10">
+        <div class="row">
+            <div class="col-xs-8">
+                <input type="text" class="form-control" id="id_category_txt" placeholder="Enter or select category">
+            </div>
+            <div class="col-xs-4">
+                <select id="id_category_sel" class="form-control">
+                    
+                        <option value=""></option>
+                    
+                        <option value="initial categoy">initial categoy</option>
+                    
+                        <option value="ref">ref</option>
+                    
+                        <option value="sample_cate">sample_cate</option>
+                    
+                        <option value="todo">todo</option>
+                    
+                        <option value="xxx">xxx</option>
+                    
+                </select>
+            </div>
+        </div>
+    </div>
+    <input type="hidden" name="category" id="id_category" />
+</div>
+<div class="form-group">
+    <label class="control-label col-xs-2" for="id_state">State</label>
+    <div class="col-xs-10"><select name="state" class="form-control" id="id_state">
+  <option value="" selected></option>
+
+  <option value="todo">todo</option>
+
+  <option value="working">working</option>
+
+  <option value="complete">complete</option>
+
+</select></div>
+</div>
+<div class="form-group">
+    <label class="control-label col-xs-2" for="id_due_date">Due Date</label>
+    <div class="col-xs-10">
+        <div class="row">
+            <div class="col-xs-8">
+                <input type="text" class="form-control" id="id_due_date" placeholder="Choose Date">
+            </div>
+            <div class="col-xs-4">
+                <select id="id_due_hour" class="form-control">
+                    <option value="0">0</option>
+                    <option value="1">1</option>
+                    <option value="2">2</option>
+                    <option value="3">3</option>
+                    <option value="4">4</option>
+                    <option value="5">5</option>
+                    <option value="6">6</option>
+                    <option value="7">7</option>
+                    <option value="8">8</option>
+                    <option value="9">9</option>
+                    <option value="10">10</option>
+                    <option value="11">11</option>
+                    <option value="12">12</option>
+                </select>
+            </div>
+        </div>
+    </div>
+    <input type="hidden" name="due_datehour" id="id_due_datehour" />
+</div>
+<div class="form-group">
+    <label class="control-label col-xs-2" for="id_rating">Rating</label>
+    <div class="col-xs-10"><input type="text" name="rating" class="form-control" placeholder="0 to 5 xs(xxxxx)" id="id_rating" /></div>
+</div>
+<div class="form-group">
+    <label class="control-label col-xs-2" for="id_tags">Tags</label>
+    <div class="col-xs-10"><input type="text" name="tags" class="form-control" placeholder="Enter multiple tags with space separator" id="id_tags" /></div>
+</div>
+<div class="form-group">
+    <div class="col-xs-12"><textarea name="desc" cols="40" rows="10" class="form-control" id="id_desc">
+</textarea></div>
+</div>
+<div class="form-group">
+    <label class="control-label col-xs-2" for="id_img_url">Iamge Url</label>
+    <div class="col-xs-10"><input type="text" name="image_url" class="form-control" placeholder="Enter image url" id="id_image_url" /></div>
+</div>
+
+    </form>
+    <form class="form-horizontal" id="id_update_form" method="POST" onsubmit="return submit_update_lifemark()" action="">
+        <input type='hidden' name='csrfmiddlewaretoken' value='NwIvmGenSklyYdnXHzyc89a91xYLkRx0xHKMvSExCbcdBKkwSVTRk4LSmzeNrXyd' />
+        <div class="form-group">
+            <div class="col-xs-12">
+                <button type="submit" id="id_btn_update" class="btn btn-default">Update Lifemark</button>
+                <button type="button" class="btn btn-default" onclick="toggle_forms()">Cancel</button>
+            </div>
+        </div>
+        <div class="form-group">
+    <label class="control-label col-xs-2" for="id_title">Title</label>
+    <div class="col-xs-10"><input type="text" name="title" class="form-control" placeholder="Enter lifemark title" required id="id_title" /></div>
+</div>
+<div class="form-group">
+    <label class="control-label col-xs-2" for="id_link">Link</label>
+    <div class="col-xs-10"><input type="url" name="link" class="form-control" placeholder="Enter related page link" id="id_link" /></div>
+</div>
+<div class="form-group">
+    <label class="control-label col-xs-2" for="id_category_txt">Category</label>
+    <div class="col-xs-10">
+        <div class="row">
+            <div class="col-xs-8">
+                <input type="text" class="form-control" id="id_category_txt" placeholder="Enter or select category">
+            </div>
+            <div class="col-xs-4">
+                <select id="id_category_sel" class="form-control">
+                    
+                        <option value=""></option>
+                    
+                        <option value="initial categoy">initial categoy</option>
+                    
+                        <option value="ref">ref</option>
+                    
+                        <option value="sample_cate">sample_cate</option>
+                    
+                        <option value="todo">todo</option>
+                    
+                        <option value="xxx">xxx</option>
+                    
+                </select>
+            </div>
+        </div>
+    </div>
+    <input type="hidden" name="category" id="id_category" />
+</div>
+<div class="form-group">
+    <label class="control-label col-xs-2" for="id_state">State</label>
+    <div class="col-xs-10"><select name="state" class="form-control" id="id_state">
+  <option value="" selected></option>
+
+  <option value="todo">todo</option>
+
+  <option value="working">working</option>
+
+  <option value="complete">complete</option>
+
+</select></div>
+</div>
+<div class="form-group">
+    <label class="control-label col-xs-2" for="id_due_date">Due Date</label>
+    <div class="col-xs-10">
+        <div class="row">
+            <div class="col-xs-8">
+                <input type="text" class="form-control" id="id_due_date" placeholder="Choose Date">
+            </div>
+            <div class="col-xs-4">
+                <select id="id_due_hour" class="form-control">
+                    <option value="0">0</option>
+                    <option value="1">1</option>
+                    <option value="2">2</option>
+                    <option value="3">3</option>
+                    <option value="4">4</option>
+                    <option value="5">5</option>
+                    <option value="6">6</option>
+                    <option value="7">7</option>
+                    <option value="8">8</option>
+                    <option value="9">9</option>
+                    <option value="10">10</option>
+                    <option value="11">11</option>
+                    <option value="12">12</option>
+                </select>
+            </div>
+        </div>
+    </div>
+    <input type="hidden" name="due_datehour" id="id_due_datehour" />
+</div>
+<div class="form-group">
+    <label class="control-label col-xs-2" for="id_rating">Rating</label>
+    <div class="col-xs-10"><input type="text" name="rating" class="form-control" placeholder="0 to 5 xs(xxxxx)" id="id_rating" /></div>
+</div>
+<div class="form-group">
+    <label class="control-label col-xs-2" for="id_tags">Tags</label>
+    <div class="col-xs-10"><input type="text" name="tags" class="form-control" placeholder="Enter multiple tags with space separator" id="id_tags" /></div>
+</div>
+<div class="form-group">
+    <div class="col-xs-12"><textarea name="desc" cols="40" rows="10" class="form-control" id="id_desc">
+</textarea></div>
+</div>
+<div class="form-group">
+    <label class="control-label col-xs-2" for="id_img_url">Iamge Url</label>
+    <div class="col-xs-10"><input type="text" name="image_url" class="form-control" placeholder="Enter image url" id="id_image_url" /></div>
+</div>
+
+    </form>
+
+
+            
+    <form id="id_search_form" method="GET" action="/search">
+        <div class="row bg-primary" style="margin-top: 3rem">
+            <div class="col-xs-2">
+                <button type="submit" class="btn btn-default" id="id_btn_search">Search</button>
+            </div>
+            <div class="col-xs-10">
+                <input type="text" class="form-control" id="id_txt_search" name="q">
+            </div>
+        </div>
+    </form>
+
+    <form id="id_del_form" method="POST" action="">
+        <input type='hidden' name='csrfmiddlewaretoken' value='NwIvmGenSklyYdnXHzyc89a91xYLkRx0xHKMvSExCbcdBKkwSVTRk4LSmzeNrXyd' />
+
+        <table id="id_recent_list" class="table table-hover">
+            <thead class="thead-dark">
+                <tr>
+                    <th>ID</th>
+                    <th>Title</th>
+                    <th>Link</th>
+                    <th>Buttons</th>
+                </tr>
+            </thead>
+            <tbody>
+                
+                    <tr class="bg-secondary text-white" onclick="goto_detail(59)">
+                        <td>59</td>
+                        <td>test category update</td>
+                        <td></td>
+                        <td>
+                            <button id="id_list_btn_edit_59" type="button" class="btn btn-default" onclick="edit(59)">Edit</button>
+                            <button id="id_list_btn_del_59" type="button" class="btn btn-default" onclick="del(59)">Del</button>
+                        </td>
+                    </tr>
+                
+                    <tr class="bg-success text-white" onclick="goto_detail(60)">
+                        <td>60</td>
+                        <td>test category</td>
+                        <td></td>
+                        <td>
+                            <button id="id_list_btn_edit_60" type="button" class="btn btn-default" onclick="edit(60)">Edit</button>
+                            <button id="id_list_btn_del_60" type="button" class="btn btn-default" onclick="del(60)">Del</button>
+                        </td>
+                    </tr>
+                
+                    <tr class="bg-danger text-white" onclick="goto_detail(58)">
+                        <td>58</td>
+                        <td>desc test</td>
+                        <td></td>
+                        <td>
+                            <button id="id_list_btn_edit_58" type="button" class="btn btn-default" onclick="edit(58)">Edit</button>
+                            <button id="id_list_btn_del_58" type="button" class="btn btn-default" onclick="del(58)">Del</button>
+                        </td>
+                    </tr>
+                
+                    <tr class="bg-danger text-white" onclick="goto_detail(57)">
+                        <td>57</td>
+                        <td>test0821 modified</td>
+                        <td>http://aaa.bbb</td>
+                        <td>
+                            <button id="id_list_btn_edit_57" type="button" class="btn btn-default" onclick="edit(57)">Edit</button>
+                            <button id="id_list_btn_del_57" type="button" class="btn btn-default" onclick="del(57)">Del</button>
+                        </td>
+                    </tr>
+                
+                    <tr class="bg-primary text-white" onclick="goto_detail(55)">
+                        <td>55</td>
+                        <td>오늘은 무얼할까? aaabbbccc</td>
+                        <td>http://chocoff.tistory.com/359</td>
+                        <td>
+                            <button id="id_list_btn_edit_55" type="button" class="btn btn-default" onclick="edit(55)">Edit</button>
+                            <button id="id_list_btn_del_55" type="button" class="btn btn-default" onclick="del(55)">Del</button>
+                        </td>
+                    </tr>
+                
+                    <tr class="bg-danger text-white" onclick="goto_detail(56)">
+                        <td>56</td>
+                        <td>오늘은 무얼할까? - copyed sample</td>
+                        <td></td>
+                        <td>
+                            <button id="id_list_btn_edit_56" type="button" class="btn btn-default" onclick="edit(56)">Edit</button>
+                            <button id="id_list_btn_del_56" type="button" class="btn btn-default" onclick="del(56)">Del</button>
+                        </td>
+                    </tr>
+                
+                    <tr class="" onclick="goto_detail(48)">
+                        <td>48</td>
+                        <td>auto gen 23 for paging</td>
+                        <td></td>
+                        <td>
+                            <button id="id_list_btn_edit_48" type="button" class="btn btn-default" onclick="edit(48)">Edit</button>
+                            <button id="id_list_btn_del_48" type="button" class="btn btn-default" onclick="del(48)">Del</button>
+                        </td>
+                    </tr>
+                
+                    <tr class="" onclick="goto_detail(47)">
+                        <td>47</td>
+                        <td>auto gen 22 for paging</td>
+                        <td></td>
+                        <td>
+                            <button id="id_list_btn_edit_47" type="button" class="btn btn-default" onclick="edit(47)">Edit</button>
+                            <button id="id_list_btn_del_47" type="button" class="btn btn-default" onclick="del(47)">Del</button>
+                        </td>
+                    </tr>
+                
+                    <tr class="" onclick="goto_detail(46)">
+                        <td>46</td>
+                        <td>auto gen 21 for paging</td>
+                        <td></td>
+                        <td>
+                            <button id="id_list_btn_edit_46" type="button" class="btn btn-default" onclick="edit(46)">Edit</button>
+                            <button id="id_list_btn_del_46" type="button" class="btn btn-default" onclick="del(46)">Del</button>
+                        </td>
+                    </tr>
+                
+                    <tr class="" onclick="goto_detail(45)">
+                        <td>45</td>
+                        <td>auto gen 20 for paging</td>
+                        <td></td>
+                        <td>
+                            <button id="id_list_btn_edit_45" type="button" class="btn btn-default" onclick="edit(45)">Edit</button>
+                            <button id="id_list_btn_del_45" type="button" class="btn btn-default" onclick="del(45)">Del</button>
+                        </td>
+                    </tr>
+                
+            </tbody>
+        </table>
+        
+    <nav aria-label="Lifemark pagination">
+        <ul class="pagination">
+            
+                <li class="page-item disabled">
+                    <span class="page-link">First</span>
+                </li>
+            
+
+            
+                <li class="page-item disabled">
+                    <span class="page-link">Prev</span>
+                </li>
+            
+
+            
+                
+                    <li class="page-item active">
+                        <span class="page-link">
+                            1
+                            <span class="sr-only">(current)</span>
+                        </span>
+                    </li>
+                
+            
+                
+                    <li class="page-item">
+                        
+                            <a class="page-link" href="?page=2">2</a>
+                        
+                    </li>
+                
+            
+                
+                    <li class="page-item">
+                        
+                            <a class="page-link" href="?page=3">3</a>
+                        
+                    </li>
+                
+            
+                
+                    <li class="page-item">
+                        
+                            <a class="page-link" href="?page=4">4</a>
+                        
+                    </li>
+                
+            
+                
+                    <li class="page-item">
+                        
+                            <a class="page-link" href="?page=5">5</a>
+                        
+                    </li>
+                
+            
+
+            
+                <li class="page-item">
+                    
+                        <a class="page-link" href="?page=2">Next</a>
+                    
+                </li>
+            
+
+            
+                <li class="page-item">
+                    <a class="page-link" href="?page=5">Last</a>
+                </li>
+            
+        </ul>
+    </nav>
+
+
+
+
+
+        <table id="id_detail_list" class="table">
+            <tbody>
+                
+                    <tr id="row_59" class="bg-secondary text-white">
+                        <td>
+                            
+
+59 <button type="button" id="id_detail_btn_del_59" class="btn btn-default" onclick="del(59)">Del</button>
+<button type="button" id="id_detail_btn_edit_59" class="btn btn-default" onclick="edit(59)">Edit</button>
+<button type="button" class="btn btn-default">Map</button>
+<button type="button" class="btn btn-default">Recent Map</button>
+<button type="button" class="btn btn-default" onclick="copy_lifemark(59)">Copy</button>
+<p>Title: 
+    <span style="display: none" id="row_59_title">test category update</span>
+    <span style="display: none" id="row_59_link"></span>
+    <a href="">test category update</a>
+</p>
+<p>cdate: <span id="row_59_cdate">Aug. 25, 2018, 4:04 a.m.</span></p>
+<p>udate: <span id="row_59_udate">Aug. 25, 2018, 5:14 a.m.</span></p>
+<p>category: <span id="row_59_category"></span></p>
+<p>State: <span id="row_59_state">complete</span></p>
+
+
+
+
+
+
+                        </td>
+                    </tr>
+                
+                    <tr id="row_60" class="bg-success text-white">
+                        <td>
+                            
+
+60 <button type="button" id="id_detail_btn_del_60" class="btn btn-default" onclick="del(60)">Del</button>
+<button type="button" id="id_detail_btn_edit_60" class="btn btn-default" onclick="edit(60)">Edit</button>
+<button type="button" class="btn btn-default">Map</button>
+<button type="button" class="btn btn-default">Recent Map</button>
+<button type="button" class="btn btn-default" onclick="copy_lifemark(60)">Copy</button>
+<p>Title: 
+    <span style="display: none" id="row_60_title">test category</span>
+    <span style="display: none" id="row_60_link"></span>
+    <a href="">test category</a>
+</p>
+<p>cdate: <span id="row_60_cdate">Aug. 25, 2018, 4:29 a.m.</span></p>
+<p>udate: <span id="row_60_udate">Aug. 25, 2018, 4:50 a.m.</span></p>
+<p>category: <span id="row_60_category">ref</span></p>
+
+
+
+
+
+
+
+                        </td>
+                    </tr>
+                
+                    <tr id="row_58" class="bg-danger text-white">
+                        <td>
+                            
+
+58 <button type="button" id="id_detail_btn_del_58" class="btn btn-default" onclick="del(58)">Del</button>
+<button type="button" id="id_detail_btn_edit_58" class="btn btn-default" onclick="edit(58)">Edit</button>
+<button type="button" class="btn btn-default">Map</button>
+<button type="button" class="btn btn-default">Recent Map</button>
+<button type="button" class="btn btn-default" onclick="copy_lifemark(58)">Copy</button>
+<p>Title: 
+    <span style="display: none" id="row_58_title">desc test</span>
+    <span style="display: none" id="row_58_link"></span>
+    <a href="">desc test</a>
+</p>
+<p>cdate: <span id="row_58_cdate">Aug. 23, 2018, 9:13 a.m.</span></p>
+<p>udate: <span id="row_58_udate">Aug. 25, 2018, 4:29 a.m.</span></p>
+<p>category: <span id="row_58_category"></span></p>
+<p>State: <span id="row_58_state">todo</span></p>
+
+
+
+
+    <pre id="row_58_desc">[원칙]
+  + django의 다양한 기능을 이용한다.
+  + tdd 로 개발한다.
+[todo[
+  + lifemark model
+    + create
+      + pk for lifemark: use default id field
+      + db validation
+    + update
+    + delete
+  + lifemark form
+    + make fields from model
+    + show error: 취소: html page validation 으로 대체함
+    x custom form field for text with combo
+      x FT fail position!!!
+      x multiwidget 과 modelform 함께 사용하기에 실패
+    + 조합 input은 hidden 정의 + javascript처리 하기로 결정함: 더이상 시간 허비 아까움
+    - validation
+      + logic
+      &gt; show ui
+  + add lifemark w/ url
+    + using form data
+    + save to db
+    + url for add lifemark
+  &gt; layout &amp; style test
+    &gt; test framework
+      + setup
+      - apply
+    + using bootstrap css
+  + search
+    + query
+    + paging
+      + basic paging
+      + CBV paing
+  + login
+  - consider using docker
+  + using GCBVs
+  - consider using 2view+2form+1model pattern
+  - consider validation for category : two-scoop-book ex12.2
+    - but it is possible to insert new category in lifemark, so can&#39;t apply this logic, just ref
+  + apply bootstrap
+    + form
+    + list ui
+    + margin, spacing
+  + apply editor javascript
+  &gt; apply datepicker: meet some edit problem
+    + 구조 장착
+    - picker target id 중복 문제: date pick 시 항상 페이지의 첫번째 input에 값 반영됨
+  + templatetag
+    + check existance of fields for lifemark_detail.html
+  &gt; fulfill all features remaing
+    - various searches: todo search, ref search
+    &gt;&gt;&gt; show detail correctly
+      + link as anchor
+      - readable desc style
+      + image link to show image thumbnail
+      - way to show big image: ext link?
+    - imgur api integration
+    - color by state
+  - deploy on aws
+  - using postgre
+    - migrate from service db
+[refactor]
+  + sort out tests
+    + 역할에 맞게 적재적소에 위치하도록 정리 필요
+    + test 커버리지 개선 중</pre>
+
+
+
+                        </td>
+                    </tr>
+                
+                    <tr id="row_57" class="bg-danger text-white">
+                        <td>
+                            
+
+57 <button type="button" id="id_detail_btn_del_57" class="btn btn-default" onclick="del(57)">Del</button>
+<button type="button" id="id_detail_btn_edit_57" class="btn btn-default" onclick="edit(57)">Edit</button>
+<button type="button" class="btn btn-default">Map</button>
+<button type="button" class="btn btn-default">Recent Map</button>
+<button type="button" class="btn btn-default" onclick="copy_lifemark(57)">Copy</button>
+<p>Title: 
+    <span style="display: none" id="row_57_title">test0821 modified</span>
+    <span style="display: none" id="row_57_link">http://aaa.bbb</span>
+    <a href="http://aaa.bbb">test0821 modified</a>
+</p>
+<p>cdate: <span id="row_57_cdate">Aug. 21, 2018, 1:19 a.m.</span></p>
+<p>udate: <span id="row_57_udate">Aug. 23, 2018, 8:49 a.m.</span></p>
+<p>category: <span id="row_57_category"></span></p>
+<p>State: <span id="row_57_state">todo</span></p>
+
+<p>Rating: <span id="row_57_rating">xx</span></p>
+<p>Tags: <span id="row_57_tags">aaa bbb</span></p>
+
+    <pre id="row_57_desc">aaa</pre>
+
+
+    <a href="http://sample.com/aaa.jpg" target="_blank"><img src="http://sample.com/aaas.jpg"></a>
+    <span style="display: none" id="row_57_image_url">http://sample.com/aaa.jpg</span>
+
+
+                        </td>
+                    </tr>
+                
+                    <tr id="row_55" class="bg-primary text-white">
+                        <td>
+                            
+
+55 <button type="button" id="id_detail_btn_del_55" class="btn btn-default" onclick="del(55)">Del</button>
+<button type="button" id="id_detail_btn_edit_55" class="btn btn-default" onclick="edit(55)">Edit</button>
+<button type="button" class="btn btn-default">Map</button>
+<button type="button" class="btn btn-default">Recent Map</button>
+<button type="button" class="btn btn-default" onclick="copy_lifemark(55)">Copy</button>
+<p>Title: 
+    <span style="display: none" id="row_55_title">오늘은 무얼할까? aaabbbccc</span>
+    <span style="display: none" id="row_55_link">http://chocoff.tistory.com/359</span>
+    <a href="http://chocoff.tistory.com/359">오늘은 무얼할까? aaabbbccc</a>
+</p>
+<p>cdate: <span id="row_55_cdate">Aug. 20, 2018, 2:52 a.m.</span></p>
+<p>udate: <span id="row_55_udate">Aug. 20, 2018, 10:14 a.m.</span></p>
+<p>category: <span id="row_55_category"></span></p>
+<p>State: <span id="row_55_state">working</span></p>
+
+
+
+
+    <pre id="row_55_desc">aofeja
+aofijeawo
+aefewf</pre>
+
+
+
+                        </td>
+                    </tr>
+                
+                    <tr id="row_56" class="bg-danger text-white">
+                        <td>
+                            
+
+56 <button type="button" id="id_detail_btn_del_56" class="btn btn-default" onclick="del(56)">Del</button>
+<button type="button" id="id_detail_btn_edit_56" class="btn btn-default" onclick="edit(56)">Edit</button>
+<button type="button" class="btn btn-default">Map</button>
+<button type="button" class="btn btn-default">Recent Map</button>
+<button type="button" class="btn btn-default" onclick="copy_lifemark(56)">Copy</button>
+<p>Title: 
+    <span style="display: none" id="row_56_title">오늘은 무얼할까? - copyed sample</span>
+    <span style="display: none" id="row_56_link"></span>
+    <a href="">오늘은 무얼할까? - copyed sample</a>
+</p>
+<p>cdate: <span id="row_56_cdate">Aug. 20, 2018, 9:43 a.m.</span></p>
+<p>udate: <span id="row_56_udate">Aug. 20, 2018, 9:43 a.m.</span></p>
+<p>category: <span id="row_56_category">todo</span></p>
+<p>State: <span id="row_56_state">todo</span></p>
+
+
+
+
+    <pre id="row_56_desc">aofeja
+aofijeawo</pre>
+
+
+
+                        </td>
+                    </tr>
+                
+                    <tr id="row_48" class="">
+                        <td>
+                            
+
+48 <button type="button" id="id_detail_btn_del_48" class="btn btn-default" onclick="del(48)">Del</button>
+<button type="button" id="id_detail_btn_edit_48" class="btn btn-default" onclick="edit(48)">Edit</button>
+<button type="button" class="btn btn-default">Map</button>
+<button type="button" class="btn btn-default">Recent Map</button>
+<button type="button" class="btn btn-default" onclick="copy_lifemark(48)">Copy</button>
+<p>Title: 
+    <span style="display: none" id="row_48_title">auto gen 23 for paging</span>
+    <span style="display: none" id="row_48_link"></span>
+    <a href="">auto gen 23 for paging</a>
+</p>
+<p>cdate: <span id="row_48_cdate">Aug. 9, 2018, 9:14 a.m.</span></p>
+<p>udate: <span id="row_48_udate">Aug. 9, 2018, 9:14 a.m.</span></p>
+<p>category: <span id="row_48_category"></span></p>
+
+
+
+
+
+
+
+                        </td>
+                    </tr>
+                
+                    <tr id="row_47" class="">
+                        <td>
+                            
+
+47 <button type="button" id="id_detail_btn_del_47" class="btn btn-default" onclick="del(47)">Del</button>
+<button type="button" id="id_detail_btn_edit_47" class="btn btn-default" onclick="edit(47)">Edit</button>
+<button type="button" class="btn btn-default">Map</button>
+<button type="button" class="btn btn-default">Recent Map</button>
+<button type="button" class="btn btn-default" onclick="copy_lifemark(47)">Copy</button>
+<p>Title: 
+    <span style="display: none" id="row_47_title">auto gen 22 for paging</span>
+    <span style="display: none" id="row_47_link"></span>
+    <a href="">auto gen 22 for paging</a>
+</p>
+<p>cdate: <span id="row_47_cdate">Aug. 9, 2018, 9:14 a.m.</span></p>
+<p>udate: <span id="row_47_udate">Aug. 9, 2018, 9:14 a.m.</span></p>
+<p>category: <span id="row_47_category"></span></p>
+
+
+
+
+
+
+
+                        </td>
+                    </tr>
+                
+                    <tr id="row_46" class="">
+                        <td>
+                            
+
+46 <button type="button" id="id_detail_btn_del_46" class="btn btn-default" onclick="del(46)">Del</button>
+<button type="button" id="id_detail_btn_edit_46" class="btn btn-default" onclick="edit(46)">Edit</button>
+<button type="button" class="btn btn-default">Map</button>
+<button type="button" class="btn btn-default">Recent Map</button>
+<button type="button" class="btn btn-default" onclick="copy_lifemark(46)">Copy</button>
+<p>Title: 
+    <span style="display: none" id="row_46_title">auto gen 21 for paging</span>
+    <span style="display: none" id="row_46_link"></span>
+    <a href="">auto gen 21 for paging</a>
+</p>
+<p>cdate: <span id="row_46_cdate">Aug. 9, 2018, 9:14 a.m.</span></p>
+<p>udate: <span id="row_46_udate">Aug. 9, 2018, 9:14 a.m.</span></p>
+<p>category: <span id="row_46_category"></span></p>
+
+
+
+
+
+
+
+                        </td>
+                    </tr>
+                
+                    <tr id="row_45" class="">
+                        <td>
+                            
+
+45 <button type="button" id="id_detail_btn_del_45" class="btn btn-default" onclick="del(45)">Del</button>
+<button type="button" id="id_detail_btn_edit_45" class="btn btn-default" onclick="edit(45)">Edit</button>
+<button type="button" class="btn btn-default">Map</button>
+<button type="button" class="btn btn-default">Recent Map</button>
+<button type="button" class="btn btn-default" onclick="copy_lifemark(45)">Copy</button>
+<p>Title: 
+    <span style="display: none" id="row_45_title">auto gen 20 for paging</span>
+    <span style="display: none" id="row_45_link"></span>
+    <a href="">auto gen 20 for paging</a>
+</p>
+<p>cdate: <span id="row_45_cdate">Aug. 9, 2018, 9:14 a.m.</span></p>
+<p>udate: <span id="row_45_udate">Aug. 9, 2018, 9:14 a.m.</span></p>
+<p>category: <span id="row_45_category"></span></p>
+
+
+
+
+
+
+
+                        </td>
+                    </tr>
+                
+            </tbody>
+        </table>
+
+    </form>
+
+        </div>
+
+        <script>
+            window.onscroll = function() {scrollFunction()};
+
+            function scrollFunction() {
+                if (document.body.scrollTop > 20 ||
+                    document.documentElement.scrollTop > 20) {
+                    $('#id_btn_top')[0].style.display = "block"
+                } else {
+                    $('#id_btn_top')[0].style.display = "none"
+                }
+            }
+
+            function topFunction() {
+                document.body.scrollTop = 0
+                document.documentElement.scrollTop = 0
+            }
+        </script>
+        
+    <script>
+        $('#id_update_form').hide()
+
+        $(function() {
+            var $new_form = $('#id_new_form')            
+            $new_form.find('#id_due_date').datepicker({dateFormat: 'yy-mm-dd'})
+
+            var $update_form = $('#id_update_form')            
+            $update_form.find('#id_due_date').datepicker({dateFormat: 'yy-mm-dd'})
+        })
+
+        toggle_desc_editor()
+    </script>
+
+    </body>
+</html>
+

@@ -148,13 +148,11 @@ class MainPageTest(FunctionalTest):
     def test_update_existing_lifemark(self):
         # augie goes to the main page
         # this page has already existing lifemarks
-        self.browser.get(self.live_server_url)
-        self.add_lifemark(
+        self.create_lifemark_on_db(
             title='existing item 1',
             category='other category'
         )
-        self.check_row_in_list_table(0, 'existing item 1')
-        self.add_lifemark(
+        self.create_lifemark_on_db(
             title='existing item 2',
             link='http://aaa.bbb.com',
             category='initial category',
@@ -165,7 +163,7 @@ class MainPageTest(FunctionalTest):
             desc='initial desc 1',
             image_url='http://aaa.com/sample.jpg'
         )
-        self.check_row_in_list_table(0, 'existing item 2')
+        self.browser.get(self.live_server_url)
 
         # augie click 'edit' button on list's 1st row
         self.click_list_button(0, 'edit')
@@ -209,10 +207,8 @@ class MainPageTest(FunctionalTest):
     def test_update_existing_lifemark_w_category_txt(self):
         # augie goes to the main page
         # this page has already existing lifemarks
-        self.browser.get(self.live_server_url)
-        self.add_lifemark(title='existing item 1')
-        self.check_row_in_list_table(0, 'existing item 1')
-        self.add_lifemark(
+        self.create_lifemark_on_db(title='existing item 1')
+        self.create_lifemark_on_db(
             title='existing item 2',
             link='http://aaa.bbb.com',
             category='initial category',
@@ -223,7 +219,7 @@ class MainPageTest(FunctionalTest):
             desc='initial desc 1',
             image_url='http://aaa.com/sample.jpg'
         )
-        self.check_row_in_list_table(0, 'existing item 2')
+        self.browser.get(self.live_server_url)
 
         # augie click 'edit' button on list's 1st row
         self.click_list_button(0, 'edit')
@@ -268,10 +264,8 @@ class MainPageTest(FunctionalTest):
     def test_update_existing_lifemark_w_detail_button(self):
         # augie goes to the main page
         # this page has already existing lifemarks
-        self.browser.get(self.live_server_url)
-        self.add_lifemark(title='existing item 1')
-        self.check_row_in_list_table(0, 'existing item 1')
-        self.add_lifemark(
+        self.create_lifemark_on_db(title='existing item 1')
+        self.create_lifemark_on_db(
             title='existing item 2',
             link='http://aaa.bbb.com',
             category='initial category',
@@ -282,7 +276,7 @@ class MainPageTest(FunctionalTest):
             desc='initial desc 1',
             image_url='http://aaa.com/sample.jpg'
         )
-        self.check_row_in_list_table(0, 'existing item 2')
+        self.browser.get(self.live_server_url)
 
         # augie click 'edit' button on detail list
         table = self.browser.find_element_by_id('id_recent_list')
@@ -328,11 +322,9 @@ class MainPageTest(FunctionalTest):
     def test_delete_lifemark(self):
         # augie goes to the main page
         # this page has already existing 2 lifemarks
+        self.create_lifemark_on_db(title='existing item 1')
+        self.create_lifemark_on_db(title='existing item 2')
         self.browser.get(self.live_server_url)
-        self.add_lifemark(title='existing item 1')
-        self.check_row_in_list_table(0, 'existing item 1')
-        self.add_lifemark(title='existing item 2')
-        self.check_row_in_list_table(0, 'existing item 2')
 
         # augie click 'del' button on list
         # then page updates, and now clicked item is disappeared
@@ -350,11 +342,9 @@ class MainPageTest(FunctionalTest):
     def test_delete_lifemark_w_detail_button(self):
         # augie goes to the main page
         # this page has already existing 2 lifemarks
+        self.create_lifemark_on_db(title='existing item 1')
+        self.create_lifemark_on_db(title='existing item 2')
         self.browser.get(self.live_server_url)
-        self.add_lifemark(title='existing item 1')
-        self.check_row_in_list_table(0, 'existing item 1')
-        self.add_lifemark(title='existing item 2')
-        self.check_row_in_list_table(0, 'existing item 2')
 
         # augie click 'del' button on detail list
         # then page updates, and now clicked item is disappeared

@@ -1,8 +1,10 @@
+from datetime import datetime
 from django.urls import reverse, resolve
+from django.test import TestCase
 from main.models import Lifemark
+from bs4 import BeautifulSoup
 from ..views import LifemarkSearchListView, CreateLifemarkView, UpdateLifemarkView, DeleteLifemarkView
 from main.forms import LifemarkForm
-from datetime import datetime
 from .base import LifemarkTestCase
 from ..templatetags.imgur_filters import to_imgur_thumbnail
 
@@ -291,24 +293,55 @@ class SearchTest(LifemarkTestCase):
         for i in range(22):
             Lifemark.objects.create(title=f'auto gen {i}')
 
-        url = reverse('search')
-        res = self.client.get(url + '?q=auto')
+        res = self.client.get(self.url + '?q=auto')
         page_obj = res.context['page_obj']
 
         self.assertEquals(len(page_obj), 10)
         self.assertEquals(page_obj.number, 1)
 
-        res = self.client.get(url + '?q=auto&page=2')
+        res = self.client.get(self.url + '?q=auto&page=2')
         page_obj = res.context['page_obj']
 
         self.assertEquals(len(page_obj), 10)
         self.assertEquals(page_obj.number, 2)
 
-        res = self.client.get(url + '?q=auto&page=3')
+        res = self.client.get(self.url + '?q=auto&page=3')
         page_obj = res.context['page_obj']
 
         self.assertEquals(len(page_obj), 2)
         self.assertEquals(page_obj.number, 3)
+
+    def test_search_shows_keyword_lines(self):
+        Lifemark.objects.create(title='keyword aaa')
+        Lifemark.objects.create(title='bbb', tags='keyword')
+        Lifemark.objects.create(title='ccc keyword', desc='ccc\nccc keyword ccc\nccc')
+        Lifemark.objects.create(title='ddd', tags='xxx yyy')
+        Lifemark.objects.create(title='eee', desc='xxxxx\nyyyyy')
+
+        res = self.client.get(self.url + '?q=keyword')
+        lifemarks = list(res.context['lifemarks'])
+        lifemark_line_data = res.context['lifemark_line_data']
+        match_line_count = sum([len(v['lines']) for k, v in lifemark_line_data.items()])
+        first_row_title = list(lifemark_line_data.values())[0]['lifemark'].title
+
+        self.assertEqual(len(lifemarks), 3)
+        self.assertEqual(len(lifemark_line_data), 3)
+        self.assertEqual(match_line_count, 4)
+        self.assertEqual(first_row_title, 'ccc keyword')
+
+        bs = BeautifulSoup(res.content.decode('utf8'), 'html.parser')
+        list_table = bs.find('table', {'id': 'id_recent_list'})
+        tr = list_table.find('tr', {'onclick': 'goto_detail(1, 0)'})
+
+        check_lifemark_id = Lifemark.objects.get(title='keyword aaa').id
+        expecting_keyword_line = '\n'.join([
+            f'<tr onclick="goto_detail({check_lifemark_id}, 0)">',
+            '<td></td>',
+            '<td>title</td>',
+            '<td>0</td>',
+            '<td>keyword aaa</td>'  # ignore tailing tags for buttons
+        ])
+        self.assertTrue(expecting_keyword_line in str(tr))
 
 
 class LifemarkContentDetailTest(LifemarkTestCase):
@@ -388,3 +421,52 @@ class LoginRequriedTests(LifemarkTestCase):
         target_url = reverse('search')
         res = self.client.get(target_url)
         self.assertRedirects(res, f'{self.login_url}?next={target_url}')
+
+
+class FunctionTest(TestCase):
+    def test_get_keyword_lines(self):
+        Lifemark.objects.create(title='aaa keyword')
+        Lifemark.objects.create(title='bbb',
+                                tags='xxx keyword')
+        Lifemark.objects.create(title='ccc',
+                                tags='xxx yyy',
+                                desc='blahblah\r\nkeyword blah\r\nblah')
+        Lifemark.objects.create(title='ddd')
+        Lifemark.objects.create(title='eee')
+        Lifemark.objects.create(title='fff')
+
+        lifemarks = Lifemark.objects.all()
+
+        viewclass = LifemarkSearchListView()
+        keywords_str = 'keyword'
+        search_fieldnames = ['title', 'tags', 'desc']
+        line_results = viewclass.get_keywords_lines(lifemarks, keywords_str, search_fieldnames)
+        # line results includes all query result
+        self.assertEqual(len(line_results), 6)
+        keyword_lines = sum([len(v['lines']) for k, v in line_results.items()])
+        self.assertEqual(keyword_lines, 3)
+
+    def test_get_keyword_lines_w_multi_keywords(self):
+        Lifemark.objects.create(title='aaa keyword')
+        Lifemark.objects.create(title='bbb',
+                                tags='xxx keyword')
+        Lifemark.objects.create(title='ccc',
+                                tags='xxx yyy',
+                                desc='blahblah\r\nkeyword blah\r\nblah')
+        Lifemark.objects.create(title='ddd',
+                                tags='xxx yyy otherkw',
+                                desc='....')
+        Lifemark.objects.create(title='eee',
+                                desc='awfawfewaf\r\nkeyword\r\nafaw\r\nfaw otherkw xefw')
+        Lifemark.objects.create(title='fff')
+        Lifemark.objects.create(title='ggg')
+
+        lifemarks = Lifemark.objects.all()
+
+        viewclass = LifemarkSearchListView()
+        keywords_str = 'keyword otherkw'
+        search_fieldnames = ['title', 'tags', 'desc']
+        line_results = viewclass.get_keywords_lines(lifemarks, keywords_str, search_fieldnames)
+        self.assertEqual(len(line_results), 7)
+        expecting_lines = sum([len(v['lines']) for k, v in line_results.items()])
+        self.assertEqual(expecting_lines, 6)

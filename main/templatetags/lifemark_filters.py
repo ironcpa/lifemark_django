@@ -3,10 +3,10 @@ from django.utils.safestring import mark_safe
 
 register = template.Library()
 
-LIFEMARK_TD_CLASS_REF = 'bg-success text-white'
-LIFEMARK_TD_CLASS_TODO = 'bg-danger text-white'
-LIFEMARK_TD_CLASS_WORKING = 'bg-primary text-white'
-LIFEMARK_TD_CLASS_COMPLETE = 'bg-secondary text-white'
+LIFEMARK_TD_CLASS_REF = 'bg-success'
+LIFEMARK_TD_CLASS_TODO = 'bg-danger'
+LIFEMARK_TD_CLASS_WORKING = 'bg-warning'
+LIFEMARK_TD_CLASS_COMPLETE = 'bg-info'
 
 
 @register.simple_tag

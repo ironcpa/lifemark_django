@@ -71,10 +71,10 @@
             set_form_data($form, id, 'desc')
             set_form_data($form, id, 'image_url')
         }
-        function edit(id) {
-            console.log('edit(' + id + ')')
+        function edit(e, id) {
+            e.stopPropagation()
 
-            toggle_forms()
+            show_form('update')
             
             var $update_form = $('#id_update_form')
             fill_form_w_detail($update_form, id)
@@ -112,12 +112,37 @@
             //     - or moving input
             get_active_form().find('#id_due_date').datepicker({dateFormat: 'yy-mm-dd'})
         }
-        function toggle_forms() {
-            $('#id_new_form').toggle()
-            $('#id_update_form').toggle()
+        function show_form(form_type) {
+            var $new_form = $('#id_new_form')
+            var $update_form = $('#id_update_form')
+
+            if (form_type == 'new') {
+                $new_form.show()
+                $update_form.hide()
+            } else {
+                $new_form.hide()
+                $update_form.show()
+            }
 
             toggle_desc_editor()
             toggle_due_date_picker()
+        }
+        function goto_detail(key, line) {
+            var $row = $('#row_'+key)
+            if (! line) {
+                $row.get(0).scrollIntoView()
+            } else {
+                var desc_pre = $row.find('pre')
+                
+                var pre_top = desc_pre.offset().top
+                var pre_height = desc_pre.height()
+                var total_line = desc_pre.html().split(/\n/).length
+
+                var line_height = pre_height / total_line
+                var target_pixcel = pre_top + line * line_height
+
+                window.scrollTo(0, target_pixcel)
+            }
         }
     </script>
 {% endblock javascript %}
@@ -137,7 +162,7 @@
         <div class="form-group">
             <div class="col-sm-12">
                 <button type="submit" id="id_btn_update" class="btn btn-default">Update Lifemark</button>
-                <button type="button" class="btn btn-default" onclick="toggle_forms()">Cancel</button>
+                <button type="button" class="btn btn-default" onclick="show_form('new')">Cancel</button>
             </div>
         </div>
         {% include 'includes/lifemark_form.html' %}
@@ -163,22 +188,47 @@
             <thead class="thead-dark">
                 <tr>
                     <th>ID</th>
-                    <th>Title</th>
-                    <th>Link</th>
-                    <th>Buttons</th>
+                    <th>Category</th>
+                    <th colspan="2">Title</th>
+                    <th></th>
                 </tr>
             </thead>
             <tbody>
+                <!--
                 {% for lifemark in lifemarks %}
-                    <tr class="{{ lifemark|td_class }}">
+                    <tr class="{{ lifemark|td_class }}" onclick="goto_detail({{ lifemark.id }})">
                         <td>{{ lifemark.id }}</td>
                         <td>{{ lifemark.title }}</td>
                         <td>{{ lifemark.link }}</td>
                         <td>
-                            <button id="id_list_btn_edit_{{ lifemark.id }}" type="button" class="btn btn-default" onclick="edit({{ lifemark.id }})">Edit</button>
+                            <button id="id_list_btn_edit_{{ lifemark.id }}" type="button" class="btn btn-default" onclick="edit(event, {{ lifemark.id }})">Edit</button>
                             <button id="id_list_btn_del_{{ lifemark.id }}" type="button" class="btn btn-default" onclick="del({{ lifemark.id }})">Del</button>
                         </td>
                     </tr>
+                {% endfor %}
+                -->
+
+                {% for key, line_data in lifemark_line_data.items %}
+                    <tr onclick="goto_detail({{ key }})" class="{{ line_data.lifemark|td_class }}">
+                        <td>{{ key }}</td>
+                        <td>{{ line_data.lifemark.category }}</td>
+                        <td colspan="2">
+                            {{ line_data.lifemark.title }}
+                        </td>
+                        <td>
+                            <button id="id_list_btn_edit_{{ key }}" type="button" class="btn btn-default" onclick="edit(event, {{ key }})">Edit</button>
+                            <button id="id_list_btn_del_{{ key }}" type="button" class="btn btn-default" onclick="del({{ key }})">Del</button>
+                        </td>
+                    </tr>
+                    {% for match_line in line_data.lines %}
+                        <tr onclick="goto_detail({{ key }}, {{ match_line.1 }})">
+                            <td></td>
+                            <td>{{ match_line.0 }}</td>
+                            <td>{{ match_line.1 }}</td>
+                            <td>{{ match_line.2 }}</td>
+                            <td></td>
+                        </tr>
+                    {% endfor %}
                 {% endfor %}
             </tbody>
         </table>
