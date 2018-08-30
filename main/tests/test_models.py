@@ -49,12 +49,14 @@ class LifemarkModelTest(TestCase):
 
         lifemarks = Lifemark.objects.get_matches_on_fields(
             ('title',),
+            '',
             'aaa'
         )
         self.assertEquals(len(lifemarks), 3)
 
         lifemarks = Lifemark.objects.get_matches_on_fields(
             ('title', 'desc'),
+            '',
             'aaa'
         )
         self.assertEquals(len(lifemarks), 4)
@@ -72,12 +74,36 @@ class LifemarkModelTest(TestCase):
 
         lifemarks = Lifemark.objects.get_matches_on_fields(
             ('title',),
+            '',
             'aaa bbb'
         )
         self.assertEquals(len(lifemarks), 3)
 
         lifemarks = Lifemark.objects.get_matches_on_fields(
             ('title', 'desc'),
+            '',
             'aaa bbb'
         )
         self.assertEquals(len(lifemarks), 7)
+
+    def test_lifemark_searh_w_category(self):
+        Lifemark.objects.create(title='aaa')
+        Lifemark.objects.create(title='aaa')
+        Lifemark.objects.create(title='aaa', category='xxx')
+        Lifemark.objects.create(title='aaa', category='yyy')
+        Lifemark.objects.create(title='bbb', category='xxx')
+        Lifemark.objects.create(title='bbb', category='xxx', desc='aaa')
+
+        lifemarks = Lifemark.objects.get_matches_on_fields(
+            ('title', 'category', 'desc'),
+            'xxx',
+            ''
+        )
+        self.assertEqual(len(lifemarks), 3)
+
+        lifemarks = Lifemark.objects.get_matches_on_fields(
+            ('title', 'category', 'desc'),
+            'xxx',
+            'aaa'
+        )
+        self.assertEqual(len(lifemarks), 2)

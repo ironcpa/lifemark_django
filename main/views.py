@@ -10,6 +10,16 @@ from .forms import LifemarkForm
 from core.models import LifemarkLineSearchData, LifemarkLineListData
 
 
+DEFAULT_SEARCH_FIELDS = ('title',
+                         'link',
+                         'category',
+                         'state',
+                         'rating',
+                         'tags',
+                         'desc',
+                         'image_url')
+
+
 def get_distinct_categories():
     qset = Lifemark.objects.values('category').distinct()
     category_list = [e['category'] for e in qset]
@@ -38,14 +48,19 @@ def home_page(request):
 def search(request):
     param_keyword = request.GET.get('q')
     keywords = param_keyword.split()
-    search_fields = ('title',
-                     'link',
-                     'category',
-                     'state',
-                     'rating',
-                     'tags',
-                     'desc',
-                     'image_url')
+    param_fields = request.GET.get('f')
+    if param_fields:
+        search_fields = param_fields.split()
+    else:
+        search_fields = ('title',
+                         'link',
+                         'category',
+                         'state',
+                         'rating',
+                         'tags',
+                         'desc',
+                         'image_url')
+
     lifemarks_qs = Lifemark.objects.get_matches_on_fields(
         search_fields,
         keywords
@@ -77,14 +92,7 @@ class LifemarkSearchListView(ListView):
     context_object_name = 'lifemarks'
     template_name = 'home.html'
     paginate_by = 10
-    search_fields = ('title',
-                     'link',
-                     'category',
-                     'state',
-                     'rating',
-                     'tags',
-                     'desc',
-                     'image_url')
+    search_fields = DEFAULT_SEARCH_FIELDS
 
     def get_context_data(self, **kwargs):
         kwargs['existing_categories'] = get_distinct_categories()
@@ -101,10 +109,12 @@ class LifemarkSearchListView(ListView):
 
     def get_queryset(self):
         keywords = self.request.GET.get('q')
+        search_category = self.request.GET.get('c')
 
-        if keywords:
+        if keywords or search_category:
             queryset = Lifemark.objects.get_matches_on_fields(
                 self.search_fields,
+                search_category,
                 keywords
             ).order_by('-udate')
         else:

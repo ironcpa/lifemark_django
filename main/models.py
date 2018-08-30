@@ -3,18 +3,24 @@ from django.db.models import Q
 
 
 class LifemarkManager(models.Manager):
-    def get_matches_on_fields(self, fields, keywords_str):
-        if not keywords_str:
-            return self.none()
+    def get_matches_on_fields(self, fields, category, keywords_str):
+        if keywords_str:
+            keywords = keywords_str.split(' ')
+        else:
+            keywords = ''
 
-        keywords = keywords_str.split(' ')
+        if category:
+            qs = self.filter(category=category)
+        else:
+            qs = self.all()
 
         q_objects = Q()
-        for field in fields:
-            for keyword in keywords:
-                q_objects = q_objects | Q(**{f'{field}__contains': keyword})
+        if keywords:
+            for field in fields:
+                for keyword in keywords:
+                    q_objects = q_objects | Q(**{f'{field}__contains': keyword})
 
-        return self.filter(q_objects)
+        return qs.filter(q_objects)
 
 
 class Lifemark(models.Model):

@@ -343,6 +343,49 @@ class SearchTest(LifemarkTestCase):
         ])
         self.assertTrue(expecting_keyword_line in str(tr))
 
+    def test_search_todo_category(self):
+        Lifemark.objects.create(title='aaa')
+        Lifemark.objects.create(title='bbb', category='xxx')
+        Lifemark.objects.create(title='ccc', category='todo')
+        Lifemark.objects.create(title='ddd', category='todo')
+        Lifemark.objects.create(title='eee', category='todo')
+        Lifemark.objects.create(title='eee', category='yyy')
+
+        res = self.client.get(self.url + '?c=todo')
+
+        lifemarks = list(res.context['lifemarks'])
+
+        self.assertEqual(len(lifemarks), 3)
+
+    def test_search_todo_category_w_keyword(self):
+        Lifemark.objects.create(title='aaa')
+        Lifemark.objects.create(title='bbb', category='xxx')
+        Lifemark.objects.create(title='ccc', category='todo', desc='keyword')
+        Lifemark.objects.create(title='ddd', category='todo', desc='keyword')
+        Lifemark.objects.create(title='eee', category='todo')
+        Lifemark.objects.create(title='eee', category='todo', desc='seoaifj')
+        Lifemark.objects.create(title='eee', category='yyy')
+
+        res = self.client.get(self.url + '?q=keyword&c=todo')
+
+        lifemarks = list(res.context['lifemarks'])
+
+        self.assertEqual(len(lifemarks), 2)
+
+    def test_search_ref_category(self):
+        Lifemark.objects.create(title='aaa')
+        Lifemark.objects.create(title='bbb', category='xxx')
+        Lifemark.objects.create(title='ccc', category='ref')
+        Lifemark.objects.create(title='ddd', category='ref')
+        Lifemark.objects.create(title='eee', category='ref')
+        Lifemark.objects.create(title='eee', category='yyy')
+
+        res = self.client.get(self.url + '?c=ref')
+
+        lifemarks = list(res.context['lifemarks'])
+
+        self.assertEqual(len(lifemarks), 3)
+
 
 class LifemarkContentDetailTest(LifemarkTestCase):
     def setUp(self):

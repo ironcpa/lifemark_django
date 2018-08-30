@@ -114,6 +114,11 @@ class FunctionalTest(StaticLiveServerTestCase):
         rows = table.find_elements_by_xpath('.//tbody/tr')
         self.assertEqual(len(rows), row_count)
 
+    @wait
+    def check_detail_row_count(self, row_count):
+        detail_trs = self.browser.find_elements_by_xpath('//table[@id="id_detail_list"]/tbody/tr')
+        self.assertEqual(len(detail_trs), row_count)
+
     def click_button(self, id):
         button = self.browser.find_element_by_id(id)
         button.click()

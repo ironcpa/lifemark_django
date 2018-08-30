@@ -1,4 +1,5 @@
 from .base import FunctionalTest
+from main.models import Lifemark
 
 
 class SearchTests(FunctionalTest):
@@ -57,8 +58,7 @@ class SearchTests(FunctionalTest):
         search_text_box = self.browser.find_element_by_id('id_txt_search')
         search_text_box.send_keys('aaa')
         # he click 'search' button
-        btn_search = self.browser.find_element_by_id('id_btn_search')
-        btn_search.click()
+        self.click_button('id_btn_search')
         self.check_row_in_list_table(0, 'aaa')
 
         # page updates, and show search result in list and detail table
@@ -66,3 +66,65 @@ class SearchTests(FunctionalTest):
         self.wait_for(
             lambda: self.assertEqual(len(list_trs), 1)
         )
+
+    def test_todo_category_only_search(self):
+        # augie has 10 lifemarks and
+        # 4 of them are 'todo' category for scheduling
+        for i in range(10):
+            self.create_lifemark_on_db(title=f'existing {i+1}', category=f'category{i*10}')
+        for i in range(4):
+            lifemark = Lifemark.objects.get(title=f'existing {i+1}')
+            lifemark.category = 'todo'
+            lifemark.save()
+
+        # augie goes to the main page
+        # and he click 'todo search' button
+        self.browser.get(self.live_server_url)
+        self.click_button('id_btn_search_todo')
+
+        # then page updates, and shows search results only for 4 todo items in list and detail tables
+        self.check_detail_row_count(4)
+        list_trs = self.browser.find_elements_by_xpath('//table[@id="id_recent_list"]/tbody/tr')
+        self.wait_for(
+            lambda: self.assertEqual(len(list_trs), 4)
+        )
+
+        # augie now has two 'xxx' keyword item on both 'todo' and non todo category items
+        lifemark = Lifemark.objects.get(category='category90')
+        lifemark.desc = 'xxx'
+        lifemark.save()
+        lifemark = Lifemark.objects.filter(category='todo')[0]
+        lifemark.desc = 'xxx'
+        lifemark.save()
+
+        # augie goes to the main page again
+        # he now enter 'xxx' in search text box
+        # and click 'todo search'
+        self.browser.get(self.live_server_url)
+        search_text_box = self.browser.find_element_by_id('id_txt_search')
+        search_text_box.send_keys('xxx')
+        self.click_button('id_btn_search_todo')
+
+        # then page only shows 'todo' category item with 'xxx'
+        self.check_detail_row_count(1)
+
+    def test_ref_category_only_search(self):
+        # augie has 10 lifemarks and
+        # 4 of them are 'ref' category
+        for i in range(10):
+            self.create_lifemark_on_db(title=f'existing {i+1}', category=f'category{i+10}')
+        for i in range(4):
+            lifemark = Lifemark.objects.get(title=f'existing {i+1}')
+            lifemark.category = 'ref'
+            lifemark.save()
+
+        # augie goes to the main page
+        # and he click 'ref search' button
+        self.browser.get(self.live_server_url)
+        self.click_button('id_btn_search_ref')
+
+        # then page updates, and shows search results only for 4 ref items in list and detail tables
+        self.check_detail_row_count(4)
+
+        # mixed with keyword is same to 'todo' category search
+        # i confirmed to ignore this test
