@@ -220,12 +220,12 @@
                             <button id="id_list_btn_del_{{ key }}" type="button" class="btn btn-default" onclick="del({{ key }})">Del</button>
                         </td>
                     </tr>
-                    {% for match_line in line_data.lines %}
-                        <tr onclick="goto_detail({{ key }}, {{ match_line.1 }})">
+                    {% for line_search_data in line_data.lines %}
+                        <tr onclick="goto_detail({{ key }}, {{ line_search_data.line_no }})">
                             <td></td>
-                            <td>{{ match_line.0 }}</td>
-                            <td>{{ match_line.1 }}</td>
-                            <td>{{ match_line.2 }}</td>
+                            <td>{{ line_search_data.field }}</td>
+                            <td>{{ line_search_data.line_no }}</td>
+                            <td>{{ line_search_data.match_line }}</td>
                             <td></td>
                         </tr>
                     {% endfor %}

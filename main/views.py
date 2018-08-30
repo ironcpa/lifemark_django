@@ -7,6 +7,7 @@ from django.urls import reverse_lazy
 from django.utils.decorators import method_decorator
 from .models import Lifemark
 from .forms import LifemarkForm
+from core.models import LifemarkLineSearchData, LifemarkLineListData
 
 
 def get_distinct_categories():
@@ -124,18 +125,17 @@ class LifemarkSearchListView(ListView):
         search_line_data = OrderedDict()
 
         for lm in lifemarks:
-            match_lines = []
+            line_search_data = []
             for fieldname in search_fieldnames:
                 field_lines = getattr(lm, fieldname).split('\r\n')
                 for line_no, line in enumerate(field_lines):
                     for keyword in keywords:
                         if line and keyword.lower() in line:
-                            match_line_data = (fieldname, line_no, line)
-                            if match_line_data not in match_lines:
-                                match_lines.append(match_line_data)
+                            match_line_data = LifemarkLineSearchData(fieldname, line_no, line)
+                            if match_line_data not in line_search_data:
+                                line_search_data.append(match_line_data)
 
-            search_line_data[lm.id] = {'lifemark': lm,
-                                       'lines': match_lines}
+            search_line_data[lm.id] = LifemarkLineListData(lm, line_search_data)
 
         return search_line_data
 

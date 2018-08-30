@@ -321,8 +321,8 @@ class SearchTest(LifemarkTestCase):
         res = self.client.get(self.url + '?q=keyword')
         lifemarks = list(res.context['lifemarks'])
         lifemark_line_data = res.context['lifemark_line_data']
-        match_line_count = sum([len(v['lines']) for k, v in lifemark_line_data.items()])
-        first_row_title = list(lifemark_line_data.values())[0]['lifemark'].title
+        match_line_count = sum([len(v.lines) for k, v in lifemark_line_data.items()])
+        first_row_title = list(lifemark_line_data.values())[0].lifemark.title
 
         self.assertEqual(len(lifemarks), 3)
         self.assertEqual(len(lifemark_line_data), 3)
@@ -440,10 +440,10 @@ class FunctionTest(TestCase):
         viewclass = LifemarkSearchListView()
         keywords_str = 'keyword'
         search_fieldnames = ['title', 'tags', 'desc']
-        line_results = viewclass.get_keywords_lines(lifemarks, keywords_str, search_fieldnames)
+        line_datas = viewclass.get_keywords_lines(lifemarks, keywords_str, search_fieldnames)
         # line results includes all query result
-        self.assertEqual(len(line_results), 6)
-        keyword_lines = sum([len(v['lines']) for k, v in line_results.items()])
+        self.assertEqual(len(line_datas), 6)
+        keyword_lines = sum([len(v.lines) for k, v in line_datas.items()])
         self.assertEqual(keyword_lines, 3)
 
     def test_get_keyword_lines_w_multi_keywords(self):
@@ -466,7 +466,7 @@ class FunctionTest(TestCase):
         viewclass = LifemarkSearchListView()
         keywords_str = 'keyword otherkw'
         search_fieldnames = ['title', 'tags', 'desc']
-        line_results = viewclass.get_keywords_lines(lifemarks, keywords_str, search_fieldnames)
-        self.assertEqual(len(line_results), 7)
-        expecting_lines = sum([len(v['lines']) for k, v in line_results.items()])
+        line_datas = viewclass.get_keywords_lines(lifemarks, keywords_str, search_fieldnames)
+        self.assertEqual(len(line_datas), 7)
+        expecting_lines = sum([len(v.lines) for k, v in line_datas.items()])
         self.assertEqual(expecting_lines, 6)
