@@ -172,11 +172,12 @@ class UpdateLifemarkTest(LifemarkTestCase):
 
     def test_update_with_post(self):
         lifemark = Lifemark.objects.create(title='initial title')
+        pk = lifemark.pk
         self.assertEqual(lifemark.title, 'initial title')
 
-        self.client.post(reverse('update', kwargs={'pk': 1}), data={'id': 1, 'title': 'modified title'})
+        self.client.post(reverse('update', kwargs={'pk': pk}), data={'id': pk, 'title': 'modified title'})
 
-        updated = Lifemark.objects.get(id=1)
+        updated = Lifemark.objects.get(id=pk)
         self.assertEqual(updated.title, 'modified title')
 
     def test_redirects_after_update(self):
@@ -329,11 +330,12 @@ class SearchTest(LifemarkTestCase):
         self.assertEqual(match_line_count, 4)
         self.assertEqual(first_row_title, 'ccc keyword')
 
+        check_lifemark_id = Lifemark.objects.get(title='keyword aaa').id
+
         bs = BeautifulSoup(res.content.decode('utf8'), 'html.parser')
         list_table = bs.find('table', {'id': 'id_recent_list'})
-        tr = list_table.find('tr', {'onclick': 'goto_detail(1, 0)'})
+        tr = list_table.find('tr', {'onclick': f'goto_detail({check_lifemark_id}, 0)'})
 
-        check_lifemark_id = Lifemark.objects.get(title='keyword aaa').id
         expecting_keyword_line = '\n'.join([
             f'<tr onclick="goto_detail({check_lifemark_id}, 0)">',
             '<td></td>',
