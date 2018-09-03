@@ -21,25 +21,51 @@
             constr = padstr + str
             return constr.substring(constr.length - len)
         }
-        function submit_new_lifemark() {
-            var $form = $('#id_new_form')
-
+        function submit_form(form) {
+            $form = $(form)
             fill_form_hiddens($form)
 
-            return true
-        }
-        function submit_update_lifemark() {
-            var $form = $('#id_update_form')
-
-            fill_form_hiddens($form)
-
-            return true
+            get_geo_location($form, function() {
+                console.log($form.find('#id_geo_lat').val())
+                form.submit()
+            })
+            
+            return false
         }
         function submit_category_search(category) {
             var $form = $('#id_search_form')
             $form.find('#id_hdn_search_category').val(category)
 
             return true
+        }
+        function get_geo_location($form, callback) {
+            var $geo_lat = $form.find('#id_geo_lat')
+            var $geo_lon = $form.find('#id_geo_lon')
+
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(
+                    function(pos) {
+                        var lat = pos.coords.latitude.toFixed(6)
+                        var lon = pos.coords.longitude.toFixed(6)
+
+                        $geo_lat.val(lat)
+                        $geo_lon.val(lon)
+
+                        callback()
+                    },
+                    function() {
+                        $geo_lat.val(0)
+                        $geo_lon.val(0)
+
+                        callback()
+                    }
+                )
+            } else {
+                $geo_lat.val(0)
+                $geo_lon.val(0)
+
+                callback()
+            }
         }
         function fill_form_hiddens($form) {
             var $category_hidden = $form.find('#id_category')
@@ -57,6 +83,25 @@
                 var datehour = $due_date.val() + lpad($due_hour.val(), '0', 2)
                 $due_datehour.val(datehour)
             }
+            
+            /*
+            var $geo_lat = $form.find('#id_geo_lat')
+            var $geo_lon = $form.find('#id_geo_lon')
+
+            navigator.geolocation.getCurrentPosition(
+                function(pos) {
+                    var lat = pos.coords.latitude
+                    var lon = pos.coords.longitude
+
+                    $geo_lat.val(lat)
+                    $geo_lon.val(lon)
+                },
+                function() {
+                    $geo_lat.val(0)
+                    $geo_lon.val(0)
+                }
+            )
+            */
         }
         function fill_form_w_detail($form, id) {
             set_form_data($form, id, 'title')
@@ -154,7 +199,7 @@
 {% endblock javascript %}
 
 {% block form %}
-    <form class="form-horizontal" id="id_new_form" method="POST" onsubmit="return submit_new_lifemark()" action="{% url 'new' %}">
+    <form class="form-horizontal" id="id_new_form" method="POST" onsubmit="return submit_form(this)" action="{% url 'new' %}">
         {% csrf_token %}
         <div class="form-group">
             <div class="col-sm-12">
@@ -163,12 +208,12 @@
         </div>
         {% include 'includes/lifemark_form.html' %}
     </form>
-    <form class="form-horizontal" id="id_update_form" method="POST" onsubmit="return submit_update_lifemark()" action="">
+    <form class="form-horizontal" id="id_update_form" method="POST" onsubmit="return submit_form(this)" action="">
         {% csrf_token %}
         <div class="form-group">
             <div class="col-sm-12">
                 <button type="submit" id="id_btn_update" class="btn btn-default">Update Lifemark</button>
-                <button type="button" class="btn btn-default" onclick="show_form('new')">Cancel</button>
+                <button class="btn btn-default" onclick="show_form('new')">Cancel</button>
             </div>
         </div>
         {% include 'includes/lifemark_form.html' %}

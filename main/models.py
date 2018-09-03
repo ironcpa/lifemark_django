@@ -35,6 +35,8 @@ class Lifemark(models.Model):
     image_url = models.TextField(blank=True, default='')
     cdate = models.DateTimeField(auto_now_add=True)
     udate = models.DateTimeField(auto_now=True)
+    geo_lat = models.DecimalField(max_digits=9, decimal_places=6, blank=True, null=True)
+    geo_lon = models.DecimalField(max_digits=9, decimal_places=6, blank=True, null=True)
 
     objects = LifemarkManager()
 

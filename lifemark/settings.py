@@ -87,7 +87,17 @@ DATABASES = {
         'PORT': '',
     }
 }
-
+# legacy local db ======================
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.postgresql',
+#         'NAME': 'mylocaldb',
+#         'USER': 'hjchoi',
+#         'PASSWORD': os.environ.get('LIFEMARK_PWD', ''),
+#         'HOST': 'localhost',
+#         'PORT': '',
+#     }
+# }
 
 # Password validation
 # https://docs.djangoproject.com/en/1.11/ref/settings/#auth-password-validators

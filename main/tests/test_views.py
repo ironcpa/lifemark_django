@@ -3,7 +3,7 @@ from django.urls import reverse, resolve
 from django.test import TestCase
 from main.models import Lifemark
 from bs4 import BeautifulSoup
-from ..views import LifemarkSearchListView, CreateLifemarkView, UpdateLifemarkView, DeleteLifemarkView
+from ..views import LifemarkSearchListView, CreateLifemarkView, UpdateLifemarkView, DeleteLifemarkView, show_map
 from main.forms import LifemarkForm
 from .base import LifemarkTestCase
 from ..templatetags.imgur_filters import to_imgur_thumbnail
@@ -139,7 +139,9 @@ class CreateLifemarkTest(LifemarkTestCase):
             'rating': 'xxxxx',
             'tags': 'aaa bbb',
             'desc': 'aaaabbbbccccdddd',
-            'image_url': 'http://aaa.com/img/sample.jpeg'
+            'image_url': 'http://aaa.com/img/sample.jpeg',
+            'geo_lat': '38.5',
+            'geo_lon': '49.78',
         })
 
         self.assertEqual(res.status_code, 302)
@@ -156,6 +158,8 @@ class CreateLifemarkTest(LifemarkTestCase):
         self.assertEqual(saved.tags, 'aaa bbb')
         self.assertEqual(saved.desc, 'aaaabbbbccccdddd')
         self.assertEqual(saved.image_url, 'http://aaa.com/img/sample.jpeg')
+        self.assertEqual(float(saved.geo_lat), 38.5)
+        self.assertEqual(float(saved.geo_lon), 49.78)
 
     def test_invalid_do_not_saved_on_db(self):
         self.client.post(self.url)
@@ -515,3 +519,26 @@ class FunctionTest(TestCase):
         self.assertEqual(len(line_datas), 7)
         expecting_lines = sum([len(v.lines) for k, v in line_datas.items()])
         self.assertEqual(expecting_lines, 6)
+
+
+class ShowMapTests(LifemarkTestCase):
+    def setUp(self):
+        self.url = reverse('show_map')
+        self.res = self.client.get(self.url + '?lat=0&lon0')
+
+    def test_url_existance(self):
+        view = resolve(self.url)
+        self.assertEqual(view.func, show_map)
+
+    def test_status_code(self):
+        self.assertEquals(self.res.status_code, 200)
+
+    def test_uses_template(self):
+        res = self.client.get(self.url)
+        self.assertTemplateUsed(res, 'show_map.html')
+
+    def test_page_contents(self):
+        expecting_map_js_func = 'function initMap()'
+
+        html = self.res.content.decode('utf8')
+        self.assertTrue(expecting_map_js_func in html)

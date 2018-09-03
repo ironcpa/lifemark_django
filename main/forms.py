@@ -44,6 +44,8 @@ class LifemarkForm(forms.models.ModelForm):
                 'class': 'form-control',
                 'placeholder': 'Enter image url'
             }),
+            'geo_lat': forms.fields.HiddenInput(),
+            'geo_lon': forms.fields.HiddenInput(),
         }
         error_messages = {
             'title': {'required': "You need a valid title"}

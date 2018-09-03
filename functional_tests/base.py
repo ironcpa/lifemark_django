@@ -20,7 +20,7 @@ def wait(fn):
         while True:
             try:
                 return fn(*args, **kwargs)
-            except (AssertionError, WebDriverException) as e:
+            except (AssertionError, WebDriverException, IndexError) as e:
                 # print('>>>>>>>>>>>> error:', e)
                 if time.time() - start_time > MAX_WAIT:
                     raise e
@@ -30,7 +30,12 @@ def wait(fn):
 
 class FunctionalTest(StaticLiveServerTestCase):
     def setUp(self):
-        self.browser = webdriver.Firefox()
+        # todo: profile move to class level
+        profile = webdriver.FirefoxProfile()
+        profile.set_preference("geo.prompt.testing", True)
+        profile.set_preference("geo.prompt.testing.allow", True)
+        profile.set_preference('geo.wifi.uri', 'firefox_geo_test_setting.json')
+        self.browser = webdriver.Firefox(firefox_profile=profile)
 
     def tearDown(self):
         self.browser.quit()
@@ -67,6 +72,12 @@ class FunctionalTest(StaticLiveServerTestCase):
     @wait
     def wait_for(self, fn):
         return fn()
+
+    @wait
+    def get_first_row_id(self):
+        table = self.browser.find_element_by_id('id_recent_list')
+        first_id_td = table.find_element_by_xpath(f'.//tbody/tr[1]/td[1]')
+        return int(first_id_td.text)
 
     @wait
     def check_is_home_page(self):

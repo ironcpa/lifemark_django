@@ -123,6 +123,15 @@ class MainPageTest(FunctionalTest):
             'image_url': 'http://image_location/sample.jpg'
         })
 
+        target_id = self.get_first_row_id()
+        base_map_url = "location.href='show_map?lat="
+
+        # map buttons has correct links
+        btn_map = self.browser.find_element_by_id(f'id_detail_btn_map_{target_id}')
+        btn_recent_map = self.browser.find_element_by_id(f'id_detail_btn_recent_map_{target_id}')
+        self.assertNotEqual(btn_map.get_attribute('onclick').startswith(base_map_url), None)
+        self.assertNotEqual(btn_recent_map.get_attribute('onclick').startswith(base_map_url), None)
+
     def test_cannot_add_empty_titled_lifemark(self):
         # augie goes to the main page
         # with empty title, he clicks 'add lifemark' button

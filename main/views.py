@@ -187,6 +187,16 @@ class UpdateLifemarkView(UpdateView):
     success_url = reverse_lazy('home')
 
 
+def show_map(request):
+    latitude = request.GET.get('lat')
+    longitude = request.GET.get('lon')
+
+    return render(request, 'show_map.html', {
+        'latitude': latitude,
+        'longitude': longitude,
+    })
+
+
 class DeleteLifemarkView(DeleteView):
     model = Lifemark
     success_url = reverse_lazy('home')
