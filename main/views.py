@@ -167,6 +167,14 @@ class CreateLifemarkView(CreateView):
     # success_url = reverse('home')
     success_url = reverse_lazy('home')
 
+    def form_valid(self, form):
+        form.instance.c_geo_lat = form['geo_lat'].value()
+        form.instance.c_geo_lon = form['geo_lon'].value()
+        form.instance.u_geo_lat = form['geo_lat'].value()
+        form.instance.u_geo_lon = form['geo_lon'].value()
+
+        return super().form_valid(form)
+
 
 def update_lifemark(request):
     if request.method == 'POST':
@@ -185,6 +193,12 @@ class UpdateLifemarkView(UpdateView):
     template_name = 'home.html'
     # below code failed w/ no reason i can catch!
     success_url = reverse_lazy('home')
+
+    def form_valid(self, form):
+        form.instance.u_geo_lat = form['geo_lat'].value()
+        form.instance.u_geo_lon = form['geo_lon'].value()
+
+        return super().form_valid(form)
 
 
 def show_map(request):

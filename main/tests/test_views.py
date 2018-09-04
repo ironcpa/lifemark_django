@@ -142,6 +142,8 @@ class CreateLifemarkTest(LifemarkTestCase):
             'image_url': 'http://aaa.com/img/sample.jpeg',
             'geo_lat': '38.5',
             'geo_lon': '49.78',
+            'u_geo_lat': '38.5',
+            'u_geo_lon': '49.78',
         })
 
         self.assertEqual(res.status_code, 302)
@@ -158,8 +160,8 @@ class CreateLifemarkTest(LifemarkTestCase):
         self.assertEqual(saved.tags, 'aaa bbb')
         self.assertEqual(saved.desc, 'aaaabbbbccccdddd')
         self.assertEqual(saved.image_url, 'http://aaa.com/img/sample.jpeg')
-        self.assertEqual(float(saved.geo_lat), 38.5)
-        self.assertEqual(float(saved.geo_lon), 49.78)
+        self.assertEqual(float(saved.c_geo_lat), 38.5)
+        self.assertEqual(float(saved.c_geo_lon), 49.78)
 
     def test_invalid_do_not_saved_on_db(self):
         self.client.post(self.url)
@@ -206,7 +208,9 @@ class UpdateLifemarkTest(LifemarkTestCase):
             rating='x',
             tags='aaa bbb',
             desc='init description',
-            image_url='http://sample.com/init.jpg'
+            image_url='http://sample.com/init.jpg',
+            c_geo_lat=67.89,
+            c_geo_lon=56.78
         )
         pk = lifemark.id
 
@@ -221,6 +225,8 @@ class UpdateLifemarkTest(LifemarkTestCase):
             'tags': 'aaa bbb ccc ddd',
             'desc': 'mod description',
             'image_url': 'http://sample.com/mod.jpg',
+            'geo_lat': '12.34',
+            'geo_lon': '23.45',
         })
 
         self.assertEqual(res.status_code, 302)
@@ -237,6 +243,10 @@ class UpdateLifemarkTest(LifemarkTestCase):
         self.assertEqual(updated.tags, 'aaa bbb ccc ddd')
         self.assertEqual(updated.desc, 'mod description')
         self.assertEqual(updated.image_url, 'http://sample.com/mod.jpg')
+        self.assertEqual(float(updated.c_geo_lat), 67.89)  # creat location doesn't change
+        self.assertEqual(float(updated.c_geo_lon), 56.78)
+        self.assertEqual(float(updated.u_geo_lat), 12.34)  # update location is set
+        self.assertEqual(float(updated.u_geo_lon), 23.45)
 
 
 class DeleteLifemarkTest(LifemarkTestCase):

@@ -10,10 +10,13 @@ CHOICES_STATE = (
 
 
 class LifemarkForm(forms.models.ModelForm):
+    geo_lat = forms.DecimalField(required=False, widget=forms.fields.HiddenInput())
+    geo_lon = forms.DecimalField(required=False, widget=forms.fields.HiddenInput())
 
     class Meta:
         model = Lifemark
         fields = '__all__'
+        exclude = ('c_geo_lat', 'c_geo_lon', 'u_geo_lat', 'u_geo_lon',)
         widgets = {
             'title': forms.fields.TextInput(attrs={
                 'class': 'form-control',
@@ -44,8 +47,6 @@ class LifemarkForm(forms.models.ModelForm):
                 'class': 'form-control',
                 'placeholder': 'Enter image url'
             }),
-            'geo_lat': forms.fields.HiddenInput(),
-            'geo_lon': forms.fields.HiddenInput(),
         }
         error_messages = {
             'title': {'required': "You need a valid title"}

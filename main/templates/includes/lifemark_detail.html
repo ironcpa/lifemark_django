@@ -2,8 +2,8 @@
 
 {{ lifemark.id }} <button type="button" id="id_detail_btn_del_{{ lifemark.id }}" class="btn btn-default" onclick="del({{ lifemark.id }})">Del</button>
 <button type="button" id="id_detail_btn_edit_{{ lifemark.id }}" class="btn btn-default" onclick="edit(event, {{ lifemark.id }})">Edit</button>
-<button type="button" id="id_detail_btn_map_{{ lifemark.id }}" class="btn btn-default" onclick="location.href='{% url 'show_map' %}?lat={{ lifemark.geo_lat }}&lon={{ lifemark.geo_lon }}'">Map</button>
-<button type="button" id="id_detail_btn_recent_map_{{ lifemark.id }}" class="btn btn-default" onclick="location.href='{% url 'show_map' %}?lat={{ lifemark.geo_lat }}&lon={{ lifemark.geo_lon }}'">Recent Map</button>
+<button type="button" id="id_detail_btn_map_{{ lifemark.id }}" class="btn btn-default" onclick="location.href='{% url 'show_map' %}?lat={{ lifemark.c_geo_lat }}&lon={{ lifemark.c_geo_lon }}'">Map</button>
+<button type="button" id="id_detail_btn_recent_map_{{ lifemark.id }}" class="btn btn-default" onclick="location.href='{% url 'show_map' %}?lat={{ lifemark.u_geo_lat }}&lon={{ lifemark.u_geo_lon }}'">Recent Map</button>
 <button type="button" id="id_detail_btn_copy_{{ lifemark.id }}" class="btn btn-default" onclick="copy_lifemark({{ lifemark.id }})">Copy</button>
 <p>Title: 
     <span style="display: none" id="row_{{ lifemark.id }}_title">{{ lifemark.title }}</span>

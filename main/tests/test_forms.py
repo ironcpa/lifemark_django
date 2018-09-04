@@ -1,6 +1,5 @@
 from django.test import TestCase
 from main.forms import LifemarkForm
-from main.models import Lifemark
 
 
 class LifemarkFormTest(TestCase):
@@ -41,13 +40,11 @@ class LifemarkFormTest(TestCase):
         self.assertTrue(form.is_valid())
 
     def test_form_saves_model(self):
+        # don't test geo_lat/lon cuz i intended to save those fields on view layer
+        #   - cuz create n update view share formclass
         form = LifemarkForm(data={
             'title': 'aaa',
-            'geo_lat': 98.76,
-            'geo_lon': 87.65
         })
         lifemark = form.save()
 
         self.assertEqual(lifemark.title, 'aaa')
-        self.assertEqual(float(lifemark.geo_lat), 98.76)
-        self.assertEqual(float(lifemark.geo_lon), 87.65)
