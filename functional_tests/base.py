@@ -75,9 +75,15 @@ class FunctionalTest(StaticLiveServerTestCase):
         password_box.send_keys('abcde12345')
         self.click_first_submit()
 
+    '''
     @wait
     def wait_for(self, fn):
         return fn()
+        '''
+
+    def wait_for(self, *fns):
+        for fn in fns:
+            return wait(fn)
 
     @wait
     def get_first_row_id(self):
