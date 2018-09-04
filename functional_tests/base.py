@@ -31,10 +31,16 @@ def wait(fn):
 class FunctionalTest(StaticLiveServerTestCase):
     def setUp(self):
         # todo: profile move to class level
+        # # ==============================================
+        # geolocation option for firefox
         profile = webdriver.FirefoxProfile()
+        # allow location data ----------------------------
         profile.set_preference("geo.prompt.testing", True)
         profile.set_preference("geo.prompt.testing.allow", True)
-        profile.set_preference('geo.wifi.uri', 'firefox_geo_test_setting.json')
+        # # === can force location data ------------------
+        # profile.set_preference('geo.wifi.uri', 'firefox_geo_test_setting.json')
+        # # === disable geolocation: for faster test -----
+        # profile.set_preference("geo.enabled", False)
         self.browser = webdriver.Firefox(firefox_profile=profile)
 
     def tearDown(self):
