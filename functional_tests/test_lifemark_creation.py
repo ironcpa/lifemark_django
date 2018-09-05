@@ -2,7 +2,8 @@ from .base import FunctionalTest
 from selenium.webdriver.support.select import Select
 
 
-class MainPageTest(FunctionalTest):
+class LifemarkCreateTest(FunctionalTest):
+
     def setUp(self):
         super().setUp()
         self.login()
@@ -100,8 +101,8 @@ class MainPageTest(FunctionalTest):
         link_box.send_keys('http://aaa')
         category_box.send_keys('test cate')
         Select(state_combo).select_by_value('complete')
-        duedate_box.send_keys('20180801')
-        Select(due_hour_combo).select_by_value('0')
+        duedate_box.send_keys('2018-08-01')
+        Select(due_hour_combo).select_by_value('2')
         rating_box.send_keys('xxxxx')
         tags_box.send_keys('aaa bbb')
         desc_box.send_keys('aaaaaaa')
@@ -116,7 +117,7 @@ class MainPageTest(FunctionalTest):
             'link': 'http://aaa',
             'category': 'test cate',
             'state': 'complete',
-            'due_datehour': '2018080100',
+            'due_datehour': '2018-08-01 02',
             'rating': 'xxxxx',
             'tags': 'aaa bbb',
             'desc': 'aaaaaaa',
@@ -132,7 +133,7 @@ class MainPageTest(FunctionalTest):
         self.assertNotEqual(btn_map.get_attribute('onclick').startswith(base_map_url), None)
         self.assertNotEqual(btn_recent_map.get_attribute('onclick').startswith(base_map_url), None)
 
-    def test_cannot_add_empty_titled_lifemark(self):
+    def test_cannot_add_lifemark_w_empty_title(self):
         # augie goes to the main page
         # with empty title, he clicks 'add lifemark' button
         self.browser.get(self.live_server_url)
@@ -154,216 +155,32 @@ class MainPageTest(FunctionalTest):
         self.click_add_lifemark()
         self.check_text_in_table('new item')
 
-    def test_update_existing_lifemark(self):
+    def test_cannot_add_lifemark_w_invalid_duedate(self):
         # augie goes to the main page
-        # this page has already existing lifemarks
-        self.create_lifemark_on_db(
-            title='existing item 1',
-            category='other category'
-        )
-        self.create_lifemark_on_db(
-            title='existing item 2',
-            link='http://aaa.bbb.com',
-            category='initial category',
-            state='todo',
-            due_datehour='2018010100',
-            rating='x',
-            tags='aaa',
-            desc='initial desc 1',
-            image_url='http://aaa.com/sample.jpg'
-        )
+        # with invalid format duedate, he clicks 'add lifemark' button
         self.browser.get(self.live_server_url)
+        title_box = self.browser.find_element_by_id('id_title')
+        title_box.send_keys('duedate validation test item')
+        duedate_box = self.browser.find_element_by_id('id_due_date')
+        #   - devnote: datepicker doesn't allow non number inputs
+        duedate_box.send_keys('20180102')
+        self.click_add_lifemark()
 
-        # augie click 'edit' button on list's 1st row
-        self.click_list_button(0, 'edit')
+        # page updates, then no item created
+        # and shows validation error message
+        self.wait_for(lambda: self.browser.find_element_by_css_selector(
+            '.has-error'
+        ))
+        error_box = self.browser.find_element_by_css_selector('.has-error')
+        error_span = error_box.find_element_by_xpath('.//span')
+        self.assertIn('Invalid date hour format:', error_span.text)
 
-        # then edit form is shown instead of add form
-        # and clicked item's fields are shown on form fields
-        update_form = self.browser.find_element_by_id('id_update_form')
+        # he fix duedate with expected format
+        # and he can submit with 'add lifemark' as usual
+        duedate_box = self.browser.find_element_by_id('id_due_date')
+        duedate_box.clear()
+        duedate_box.send_keys('2018-01-02')
+        self.click_add_lifemark()
 
-        edit_title_box = update_form.find_element_by_id('id_title')
-        edit_link_box = update_form.find_element_by_id('id_link')
-        edit_category_sel = Select(update_form.find_element_by_id('id_category_sel'))
-        edit_state_sel = Select(update_form.find_element_by_id('id_state'))
-        edit_due_date_box = update_form.find_element_by_id('id_due_date')
-        edit_due_hour_sel = Select(update_form.find_element_by_id('id_due_hour'))
-        edit_desc_box = update_form.find_element_by_id('id_desc')
-
-        self.assertEqual(edit_title_box.get_attribute('value'), 'existing item 2')
-        self.assertEqual(edit_link_box.get_attribute('value'), 'http://aaa.bbb.com')
-        self.assertEqual(edit_category_sel.first_selected_option.text, 'initial category')
-        self.assertEqual(edit_state_sel.first_selected_option.text, 'todo')
-        self.assertEqual(edit_due_date_box.get_attribute('value'), '20180101')
-        self.assertEqual(edit_due_hour_sel.first_selected_option.text, '0')
-        self.assertEqual(edit_desc_box.get_attribute('value'), 'initial desc 1')
-
-        # he modify some fields and click 'update' button
-        # page updates, and now he can see updated data on the list
-        edit_title_box.clear()
-        edit_title_box.send_keys('modified item')
-        edit_category_sel.select_by_value('other category')
-        edit_desc_box.clear()
-        edit_desc_box.send_keys('modified desc')
-        self.click_update_lifemark()
-
-        # self.check_text_in_table('modified item')
-        self.check_row_in_detail_table(0, {
-            'title': 'modified item',
-            'category': 'other category',
-            'desc': 'modified desc'
-        })
-
-    def test_update_existing_lifemark_w_category_txt(self):
-        # augie goes to the main page
-        # this page has already existing lifemarks
-        self.create_lifemark_on_db(title='existing item 1')
-        self.create_lifemark_on_db(
-            title='existing item 2',
-            link='http://aaa.bbb.com',
-            category='initial category',
-            state='todo',
-            due_datehour='2018010100',
-            rating='x',
-            tags='aaa',
-            desc='initial desc 1',
-            image_url='http://aaa.com/sample.jpg'
-        )
-        self.browser.get(self.live_server_url)
-
-        # augie click 'edit' button on list's 1st row
-        self.click_list_button(0, 'edit')
-
-        # then edit form is shown instead of add form
-        # and clicked item's fields are shown on form fields
-        update_form = self.browser.find_element_by_id('id_update_form')
-
-        edit_title_box = update_form.find_element_by_id('id_title')
-        edit_link_box = update_form.find_element_by_id('id_link')
-        edit_category_sel = Select(update_form.find_element_by_id('id_category_sel'))
-        edit_category_txt = update_form.find_element_by_id('id_category_txt')
-        edit_state_sel = Select(update_form.find_element_by_id('id_state'))
-        edit_due_date_box = update_form.find_element_by_id('id_due_date')
-        edit_due_hour_sel = Select(update_form.find_element_by_id('id_due_hour'))
-        edit_desc_box = update_form.find_element_by_id('id_desc')
-
-        self.assertEqual(edit_title_box.get_attribute('value'), 'existing item 2')
-        self.assertEqual(edit_link_box.get_attribute('value'), 'http://aaa.bbb.com')
-        self.assertEqual(edit_category_sel.first_selected_option.text, 'initial category')
-        self.assertEqual(edit_state_sel.first_selected_option.text, 'todo')
-        self.assertEqual(edit_due_date_box.get_attribute('value'), '20180101')
-        self.assertEqual(edit_due_hour_sel.first_selected_option.text, '0')
-        self.assertEqual(edit_desc_box.get_attribute('value'), 'initial desc 1')
-
-        # he modify some fields and click 'update' button
-        # page updates, and now he can see updated data on the list
-        edit_title_box.clear()
-        edit_title_box.send_keys('modified item')
-        edit_category_txt.send_keys('modified category')
-        edit_desc_box.clear()
-        edit_desc_box.send_keys('modified desc')
-        self.click_update_lifemark()
-
-        # self.check_text_in_table('modified item')
-        self.check_row_in_detail_table(0, {
-            'title': 'modified item',
-            'category': 'modified category',
-            'desc': 'modified desc'
-        })
-
-    def test_update_existing_lifemark_w_detail_button(self):
-        # augie goes to the main page
-        # this page has already existing lifemarks
-        self.create_lifemark_on_db(title='existing item 1')
-        self.create_lifemark_on_db(
-            title='existing item 2',
-            link='http://aaa.bbb.com',
-            category='initial category',
-            state='todo',
-            due_datehour='2018010100',
-            rating='x',
-            tags='aaa',
-            desc='initial desc 1',
-            image_url='http://aaa.com/sample.jpg'
-        )
-        self.browser.get(self.live_server_url)
-
-        # augie click 'edit' button on detail list
-        table = self.browser.find_element_by_id('id_recent_list')
-        tds = table.find_elements_by_xpath('.//tbody/tr[1]/td')
-        target_id = tds[0].text
-
-        detail_btn_edit = self.browser.find_element_by_id('id_detail_btn_edit_' + target_id)
-        detail_btn_edit.click()
-
-        # then edit form is shown instead of add form
-        # and clicked item's fields are shown on form fields
-        update_form = self.browser.find_element_by_id('id_update_form')
-
-        edit_title_box = update_form.find_element_by_id('id_title')
-        edit_link_box = update_form.find_element_by_id('id_link')
-        edit_category_sel = Select(update_form.find_element_by_id('id_category_sel'))
-        edit_state_sel = Select(update_form.find_element_by_id('id_state'))
-        edit_due_date_box = update_form.find_element_by_id('id_due_date')
-        edit_due_hour_sel = Select(update_form.find_element_by_id('id_due_hour'))
-        edit_desc_box = update_form.find_element_by_id('id_desc')
-
-        self.wait_for(
-            lambda: self.assertEqual(edit_title_box.get_attribute('value'), 'existing item 2')
-        )
-        self.assertEqual(edit_link_box.get_attribute('value'), 'http://aaa.bbb.com')
-        self.assertEqual(edit_category_sel.first_selected_option.text, 'initial category')
-        self.assertEqual(edit_state_sel.first_selected_option.text, 'todo')
-        self.assertEqual(edit_due_date_box.get_attribute('value'), '20180101')
-        self.assertEqual(edit_due_hour_sel.first_selected_option.text, '0')
-        self.assertEqual(edit_desc_box.get_attribute('value'), 'initial desc 1')
-
-        # he modify some fields and click 'update' button
-        # page updates, and now he can see updated data on the list
-        edit_title_box.clear()
-        edit_title_box.send_keys('modified item')
-        edit_desc_box.clear()
-        edit_desc_box.send_keys('modified desc')
-        self.click_update_lifemark()
-
-        # self.check_text_in_table('modified item')
-        self.check_row_in_detail_table(0, {'title': 'modified item', 'desc': 'modified desc'})
-
-    def test_delete_lifemark(self):
-        # augie goes to the main page
-        # this page has already existing 2 lifemarks
-        self.create_lifemark_on_db(title='existing item 1')
-        self.create_lifemark_on_db(title='existing item 2')
-        self.browser.get(self.live_server_url)
-
-        # augie click 'del' button on list
-        # then page updates, and now clicked item is disappeared
-        self.del_lifemark(0)
-
-        self.check_row_in_list_table(0, 'existing item 1')
-        self.check_row_count(1)
-
-        # augie click 'del' button on the other item
-        # then page updates, and there're no items in list table
-        self.del_lifemark(0)
-
-        self.check_row_count(0)
-
-    def test_delete_lifemark_w_detail_button(self):
-        # augie goes to the main page
-        # this page has already existing 2 lifemarks
-        self.create_lifemark_on_db(title='existing item 1')
-        self.create_lifemark_on_db(title='existing item 2')
-        self.browser.get(self.live_server_url)
-
-        # augie click 'del' button on detail list
-        # then page updates, and now clicked item is disappeared
-        self.del_lifemark_w_detail_button(0)
-
-        self.check_row_in_list_table(0, 'existing item 1')
-        self.check_row_count(1)
-
-        # augie click 'del' button on the other item
-        # then page updates, and there're no items in list table
-        self.del_lifemark_w_detail_button(0)
-
-        self.check_row_count(0)
+        self.check_text_in_table('duedate validation test item')
+        self.check_detail_row_count(1)

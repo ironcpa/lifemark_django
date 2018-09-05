@@ -175,6 +175,22 @@ class CreateLifemarkView(CreateView):
 
         return super().form_valid(form)
 
+    def get_context_data(self, **kwargs):
+        # add context data for no-redirect to success_url case
+        #   - just like list view
+        #     - but can't show prev list here
+        #     - only set categories here
+        #   - but 'form' is already set automatically by GCBV logic
+        kwargs['existing_categories'] = get_distinct_categories()
+
+        return super().get_context_data(**kwargs)
+
+    '''
+    def render_to_response(self, context, **response_kwargs):
+        # for debug before response
+        return super().render_to_response(context, response_kwargs)
+        '''
+
 
 def update_lifemark(request):
     if request.method == 'POST':

@@ -67,6 +67,9 @@
                 callback()
             }
         }
+        function make_datehour(date, hour) {
+            return date + ' ' + hour
+        }
         function fill_form_hiddens($form) {
             var $category_hidden = $form.find('#id_category')
             var $category_txt = $form.find('#id_category_txt')
@@ -80,7 +83,7 @@
             var $due_hour = $form.find('#id_due_hour')
             if ($due_date.val()) {
                 var $due_datehour = $form.find('#id_due_datehour')
-                var datehour = $due_date.val() + lpad($due_hour.val(), '0', 2)
+                var datehour = make_datehour($due_date.val(), lpad($due_hour.val(), '0', 2))
                 $due_datehour.val(datehour)
             }
             
@@ -108,12 +111,13 @@
             set_form_data($form, id, 'link')
             set_form_data($form, id, 'state')
 
-            category = get_detail_val(id, 'category')
+            var category = get_detail_val(id, 'category')
             $form.find('#id_category_sel').val(category)
 
-            due_datehour = get_detail_val(id, 'due_datehour')
-            due_date = due_datehour.substring(0, 8)
-            due_hour = due_datehour.substring(8) * 1 + ''
+            // due_datehour format=2018-01-02 03
+            var due_datehour = get_detail_val(id, 'due_datehour')
+            due_date = due_datehour.substring(0, 10)
+            due_hour = due_datehour.substring(10) * 1 + ''
             set_form_data($form, id, 'due_date', due_date)
             set_form_data($form, id, 'due_hour', due_hour)
 
@@ -218,6 +222,13 @@
         </div>
         {% include 'includes/lifemark_form.html' %}
     </form>
+    {% if form.errors %}
+        <div class="has-error">
+            <span class="help-block">
+                {{ form.errors }}
+            </span>
+        </div>
+    {% endif %}
 {% endblock form %}
 
 {% block content %}

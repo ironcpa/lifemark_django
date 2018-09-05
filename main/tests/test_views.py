@@ -135,7 +135,7 @@ class CreateLifemarkTest(LifemarkTestCase):
             'link': 'http://aaa.com',
             'category': 'web',
             'state': 'todo',
-            'due_datehour': '2018010101',
+            'due_datehour': '2018-01-01 01',
             'rating': 'xxxxx',
             'tags': 'aaa bbb',
             'desc': 'aaaabbbbccccdddd',
@@ -155,7 +155,7 @@ class CreateLifemarkTest(LifemarkTestCase):
         self.assertEqual(saved.link, 'http://aaa.com')
         self.assertEqual(saved.category, 'web')
         self.assertEqual(saved.state, 'todo')
-        self.assertEqual(saved.due_datehour, '2018010101')
+        self.assertEqual(saved.due_datehour, '2018-01-01 01')
         self.assertEqual(saved.rating, 'xxxxx')
         self.assertEqual(saved.tags, 'aaa bbb')
         self.assertEqual(saved.desc, 'aaaabbbbccccdddd')
@@ -220,7 +220,7 @@ class UpdateLifemarkTest(LifemarkTestCase):
             'link': 'mod link',
             'category': 'mod',
             'state': 'complete',
-            'due_datehour': '2018020128',
+            'due_datehour': '2018-02-01 28',
             'rating': 'xxxxx',
             'tags': 'aaa bbb ccc ddd',
             'desc': 'mod description',
@@ -238,7 +238,7 @@ class UpdateLifemarkTest(LifemarkTestCase):
         self.assertEqual(updated.link, 'mod link')
         self.assertEqual(updated.category, 'mod')
         self.assertEqual(updated.state, 'complete')
-        self.assertEqual(updated.due_datehour, '2018020128')
+        self.assertEqual(updated.due_datehour, '2018-02-01 28')
         self.assertEqual(updated.rating, 'xxxxx')
         self.assertEqual(updated.tags, 'aaa bbb ccc ddd')
         self.assertEqual(updated.desc, 'mod description')

@@ -32,12 +32,32 @@ class LifemarkFormTest(TestCase):
             ["You need a valid title"]
         )
 
-    def test_form_successful_validation_for_full_entires(self):
+    def test_form_successful_validation_for_required_field(self):
         form = LifemarkForm(data={
             'title': 'aaa',
         })
 
         self.assertTrue(form.is_valid())
+
+    def test_form_successful_validation_for_full_valid_fields(self):
+        form = LifemarkForm(data={
+            'title': 'aaa',
+            'due_datehour': '2018-01-02 03'
+        })
+
+        self.assertTrue(form.is_valid())
+
+    def test_form_failed_validation_for_invalid_due_datehour(self):
+        form = LifemarkForm(data={
+            'title': 'test',
+            'due_datehour': '20180102 03'
+        })
+
+        self.assertFalse(form.is_valid())
+        self.assertEqual(
+            form.errors['due_datehour'],
+            ['Invalid date hour format: 20180102 03']
+        )
 
     def test_form_saves_model(self):
         # don't test geo_lat/lon cuz i intended to save those fields on view layer

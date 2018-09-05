@@ -1,3 +1,5 @@
+{% load lifemark_filters %}
+
 <div class="form-group">
     <label class="control-label col-sm-2" for="id_title">Title</label>
     <div class="col-sm-10">{{ form.title }}</div>
@@ -37,19 +39,9 @@
             </div>
             <div class="col-sm-4">
                 <select id="id_due_hour" class="form-control">
-                    <option value="0">0</option>
-                    <option value="1">1</option>
-                    <option value="2">2</option>
-                    <option value="3">3</option>
-                    <option value="4">4</option>
-                    <option value="5">5</option>
-                    <option value="6">6</option>
-                    <option value="7">7</option>
-                    <option value="8">8</option>
-                    <option value="9">9</option>
-                    <option value="10">10</option>
-                    <option value="11">11</option>
-                    <option value="12">12</option>
+                    {% for hour in 24|times %}
+                        <option value="{{ hour }}">{{ hour }}</option>
+                    {% endfor %}
                 </select>
             </div>
         </div>

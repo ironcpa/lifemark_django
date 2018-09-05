@@ -1,3 +1,4 @@
+import re
 from django import forms
 from main.models import Lifemark
 
@@ -7,6 +8,8 @@ CHOICES_STATE = (
     ('working', 'working'),
     ('complete', 'complete'),
 )
+
+DATEHOUR_PATTERN = re.compile('\d{4}-\d{2}-\d{2} \d{2}')
 
 
 class LifemarkForm(forms.models.ModelForm):
@@ -54,3 +57,10 @@ class LifemarkForm(forms.models.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super(LifemarkForm, self).__init__(*args, **kwargs)
+
+    def clean_due_datehour(self):
+        data = self.cleaned_data['due_datehour']
+        if data and not DATEHOUR_PATTERN.match(data):
+            raise forms.ValidationError(f"Invalid date hour format: {data}")
+
+        return data

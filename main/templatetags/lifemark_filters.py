@@ -28,3 +28,8 @@ def td_class(lifemark):
         return LIFEMARK_TD_CLASS_COMPLETE
 
     return ''
+
+
+@register.filter
+def times(number):
+    return range(number)
