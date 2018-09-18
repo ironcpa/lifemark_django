@@ -38,7 +38,7 @@ class LifemarkUpdateTest(FunctionalTest):
         edit_link_box = update_form.find_element_by_id('id_link')
         edit_category_sel = Select(update_form.find_element_by_id('id_category_sel'))
         edit_state_sel = Select(update_form.find_element_by_id('id_state'))
-        edit_due_date_box = update_form.find_element_by_id('id_due_date')
+        edit_due_date_box = update_form.find_element_by_id('id_update_due_date')
         edit_due_hour_sel = Select(update_form.find_element_by_id('id_due_hour'))
         edit_desc_box = update_form.find_element_by_id('id_desc')
 
@@ -95,7 +95,7 @@ class LifemarkUpdateTest(FunctionalTest):
         edit_category_sel = Select(update_form.find_element_by_id('id_category_sel'))
         edit_category_txt = update_form.find_element_by_id('id_category_txt')
         edit_state_sel = Select(update_form.find_element_by_id('id_state'))
-        edit_due_date_box = update_form.find_element_by_id('id_due_date')
+        edit_due_date_box = update_form.find_element_by_id('id_update_due_date')
         edit_due_hour_sel = Select(update_form.find_element_by_id('id_due_hour'))
         edit_desc_box = update_form.find_element_by_id('id_desc')
 
@@ -156,7 +156,7 @@ class LifemarkUpdateTest(FunctionalTest):
         edit_link_box = update_form.find_element_by_id('id_link')
         edit_category_sel = Select(update_form.find_element_by_id('id_category_sel'))
         edit_state_sel = Select(update_form.find_element_by_id('id_state'))
-        edit_due_date_box = update_form.find_element_by_id('id_due_date')
+        edit_due_date_box = update_form.find_element_by_id('id_update_due_date')
         edit_due_hour_sel = Select(update_form.find_element_by_id('id_due_hour'))
         edit_desc_box = update_form.find_element_by_id('id_desc')
 

@@ -1,3 +1,22 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>{% block title %}Lifemarks{% endblock %}</title>
+        <link rel="stylesheet" href="css/bootstrap.min.css'">
+        <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+        <link rel="stylesheet" href="css/base.css">
+        <script src="js/jquery-3.2.1.min.js"></script>
+        <script src="js/jquery-ui-1.12.1.custom/jquery-ui.min.js"></script>
+        <script src="js/bootstrap.min.js"></script>
+    </head>
+    <body>
+
+<input id='id_date_1'>
+<input id='id_date_2'>
+
 <div style="border-width: 2px; border-color: #000; border-style: solid; max-width: 200px">
     foiwfja foiwfja foiwfja foiwfja foiwfja foiwfja foiwfja foiwfja foiwfja foiwfja foiwfja foiwfja foiwfja foiwfja foiwfja foiwfja foiwfja foiwfja foiwfja foiwfja foiwfja foiwfja foiwfja foiwfja foiwfja foiwfja foiwfja foiwfja foiwfja foiwfja foiwfja foiwfja foiwfja foiwfja foiwfja foiwfja
 </div>
@@ -9,3 +28,13 @@ awofeijwaofjeiwfjwai
     awoefiewjofjawf
 </textarea>
 <a href='https://i.imgur.com/8IOtaEb.jpg' target="_blank"><img src='https://i.imgur.com/8IOtaEbs.jpg'></a>
+
+        <script>
+            $(function() {
+                $('#id_date_1').datepicker({dateFormat: 'yy-mm-dd'})
+                //$('#id_date_2').datepicker({dateFormat: 'yy-mm-dd'})
+            })
+        </script>
+
+    </body>
+</html>
