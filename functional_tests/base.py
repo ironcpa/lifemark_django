@@ -3,6 +3,7 @@ from selenium import webdriver
 from selenium.webdriver.support.ui import Select
 from selenium.common.exceptions import WebDriverException
 import time
+import os
 
 from django.conf import settings
 from django.contrib.auth import BACKEND_SESSION_KEY, SESSION_KEY
@@ -41,7 +42,12 @@ class FunctionalTest(StaticLiveServerTestCase):
         # profile.set_preference('geo.wifi.uri', 'firefox_geo_test_setting.json')
         # # === disable geolocation: for faster test -----
         # profile.set_preference("geo.enabled", False)
+
         self.browser = webdriver.Firefox(firefox_profile=profile)
+
+        staging_server = os.environ.get('STAGING_SERVER')
+        if staging_server:
+            self.live_server_url = staging_server
 
     def tearDown(self):
         self.browser.quit()
