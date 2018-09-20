@@ -61,7 +61,7 @@ def search(request):
                          'desc',
                          'image_url')
 
-    lifemarks_qs = Lifemark.objects.get_matches_on_fields(
+    lifemarks_qs = Lifemark.objects.get_all_matches_on_any_fields(
         search_fields,
         keywords
     ).order_by('-udate')
@@ -112,7 +112,7 @@ class LifemarkSearchListView(ListView):
         search_category = self.request.GET.get('c')
 
         if keywords or search_category:
-            queryset = Lifemark.objects.get_matches_on_fields(
+            queryset = Lifemark.objects.get_all_matches_on_any_fields(
                 self.search_fields,
                 search_category,
                 keywords

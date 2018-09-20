@@ -3,7 +3,7 @@ from django.db.models import Q
 
 
 class LifemarkManager(models.Manager):
-    def get_matches_on_fields(self, fields, category, keywords_str):
+    def get_any_matches_on_any_fields(self, fields, category, keywords_str):
         if keywords_str:
             keywords = keywords_str.split(' ')
         else:
@@ -19,6 +19,27 @@ class LifemarkManager(models.Manager):
             for field in fields:
                 for keyword in keywords:
                     q_objects = q_objects | Q(**{f'{field}__contains': keyword})
+
+        return qs.filter(q_objects)
+
+    def get_all_matches_on_any_fields(self, fields, category, keywords_str):
+        if keywords_str:
+            keywords = keywords_str.split(' ')
+        else:
+            keywords = ''
+
+        if category:
+            qs = self.filter(category=category)
+        else:
+            qs = self.all()
+
+        q_objects = Q()
+        if keywords:
+            for keyword in keywords:
+                q_keyword = Q()
+                for field in fields:
+                    q_keyword = q_keyword | Q(**{f'{field}__contains': keyword})
+                q_objects = q_objects & q_keyword
 
         return qs.filter(q_objects)
 

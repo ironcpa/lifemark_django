@@ -402,6 +402,19 @@ class SearchTest(LifemarkTestCase):
 
         self.assertEqual(len(lifemarks), 3)
 
+    def test_search_multi_keywords(self):
+        Lifemark.objects.create(title='aaa1')
+        Lifemark.objects.create(title='aaa2', desc='bbb')
+        Lifemark.objects.create(title='aaa3', desc='bbb ccc')
+
+        keywords = 'aaa bbb ccc'
+        res = self.client.get(self.url + '?q=' + keywords)
+
+        lifemarks = list(res.context['lifemarks'])
+
+        self.assertEqual(len(lifemarks), 1)
+        self.assertEqual(lifemarks[0].title, 'aaa3')
+
 
 class LifemarkContentDetailTest(LifemarkTestCase):
     def setUp(self):

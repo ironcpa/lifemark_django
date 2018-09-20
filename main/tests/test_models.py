@@ -47,14 +47,14 @@ class LifemarkModelTest(TestCase):
         Lifemark.objects.create(title='other')
         Lifemark.objects.create(title='other', desc='xxxaaayyy')
 
-        lifemarks = Lifemark.objects.get_matches_on_fields(
+        lifemarks = Lifemark.objects.get_all_matches_on_any_fields(
             ('title',),
             '',
             'aaa'
         )
         self.assertEquals(len(lifemarks), 3)
 
-        lifemarks = Lifemark.objects.get_matches_on_fields(
+        lifemarks = Lifemark.objects.get_all_matches_on_any_fields(
             ('title', 'desc'),
             '',
             'aaa'
@@ -72,19 +72,33 @@ class LifemarkModelTest(TestCase):
         Lifemark.objects.create(title='other', desc='xxxaaabbbyyy')
         Lifemark.objects.create(title='other', desc='other')
 
-        lifemarks = Lifemark.objects.get_matches_on_fields(
+        lifemarks = Lifemark.objects.get_any_matches_on_any_fields(
             ('title',),
             '',
             'aaa bbb'
         )
         self.assertEquals(len(lifemarks), 3)
 
-        lifemarks = Lifemark.objects.get_matches_on_fields(
+        lifemarks = Lifemark.objects.get_all_matches_on_any_fields(
+            ('title',),
+            '',
+            'aaa bbb'
+        )
+        self.assertEquals(len(lifemarks), 2)
+
+        lifemarks = Lifemark.objects.get_any_matches_on_any_fields(
             ('title', 'desc'),
             '',
             'aaa bbb'
         )
         self.assertEquals(len(lifemarks), 7)
+
+        lifemarks = Lifemark.objects.get_all_matches_on_any_fields(
+            ('title', 'desc'),
+            '',
+            'aaa bbb'
+        )
+        self.assertEquals(len(lifemarks), 4)
 
     def test_lifemark_searh_w_category(self):
         Lifemark.objects.create(title='aaa')
@@ -94,14 +108,14 @@ class LifemarkModelTest(TestCase):
         Lifemark.objects.create(title='bbb', category='xxx')
         Lifemark.objects.create(title='bbb', category='xxx', desc='aaa')
 
-        lifemarks = Lifemark.objects.get_matches_on_fields(
+        lifemarks = Lifemark.objects.get_all_matches_on_any_fields(
             ('title', 'category', 'desc'),
             'xxx',
             ''
         )
         self.assertEqual(len(lifemarks), 3)
 
-        lifemarks = Lifemark.objects.get_matches_on_fields(
+        lifemarks = Lifemark.objects.get_all_matches_on_any_fields(
             ('title', 'category', 'desc'),
             'xxx',
             'aaa'
