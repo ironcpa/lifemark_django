@@ -80,7 +80,8 @@ WSGI_APPLICATION = 'lifemark.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'django_orm_test',
+        # 'NAME': 'django_orm_test',
+        'NAME': 'lifemark_orm',
         'USER': 'django_db_user',
         'PASSWORD': '1234',
         'HOST': 'localhost',
