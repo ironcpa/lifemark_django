@@ -83,7 +83,7 @@ DATABASES = {
         # 'NAME': 'django_orm_test',
         'NAME': 'lifemark_orm',
         'USER': 'django_db_user',
-        'PASSWORD': '1234',
+        'PASSWORD': os.environ.get('DJANGO_DB_USER_PWD'),
         'HOST': 'localhost',
         'PORT': '',
     }
