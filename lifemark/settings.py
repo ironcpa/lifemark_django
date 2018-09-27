@@ -25,7 +25,7 @@ SECRET_KEY = '$@5hy+r7me5^z(e1qw^0k6nqo8=(xf+kzmb7!=0&8=x(mo4wqe'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['www.ironcpa.net']
 
 
 # Application definition
