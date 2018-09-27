@@ -11,7 +11,7 @@ class SearchTests(FunctionalTest):
         # augie already has 9 items
         for idx in range(9):
             title = f'existing item {idx}'
-            self.create_lifemark_on_db(title=title)
+            self.add_lifemark(title=title)
 
         # augie goes to the main page
         self.browser.get(self.live_server_url)
@@ -48,8 +48,8 @@ class SearchTests(FunctionalTest):
 
     def test_keyword_search(self):
         # augie has 2 lifemarks
-        self.create_lifemark_on_db(title='aaa')
-        self.create_lifemark_on_db(title='bbb')
+        self.add_lifemark(title='aaa')
+        self.add_lifemark(title='bbb')
 
         # augie goes to the main page
         self.browser.get(self.live_server_url)
@@ -71,7 +71,7 @@ class SearchTests(FunctionalTest):
         # augie has 10 lifemarks and
         # 4 of them are 'todo' category for scheduling
         for i in range(10):
-            self.create_lifemark_on_db(title=f'existing {i+1}', category=f'category{i*10}')
+            self.add_lifemark(title=f'existing {i+1}', category=f'category{i*10}')
         for i in range(4):
             lifemark = Lifemark.objects.get(title=f'existing {i+1}')
             lifemark.category = 'todo'
@@ -112,7 +112,7 @@ class SearchTests(FunctionalTest):
         # augie has 10 lifemarks and
         # 4 of them are 'ref' category
         for i in range(10):
-            self.create_lifemark_on_db(title=f'existing {i+1}', category=f'category{i+10}')
+            self.add_lifemark(title=f'existing {i+1}', category=f'category{i+10}')
         for i in range(4):
             lifemark = Lifemark.objects.get(title=f'existing {i+1}')
             lifemark.category = 'ref'

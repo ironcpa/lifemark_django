@@ -10,8 +10,6 @@ from django.contrib.auth import BACKEND_SESSION_KEY, SESSION_KEY
 from django.contrib.auth.models import User
 from django.contrib.sessions.backends.db import SessionStore
 
-from main.models import Lifemark
-
 MAX_WAIT = 10
 
 
@@ -186,8 +184,8 @@ class FunctionalTest(StaticLiveServerTestCase):
             state_sel = Select(self.browser.find_element_by_id('id_state'))
             state_sel.select_by_value(state)
         if due_datehour:
-            due_date = due_datehour[:8]
-            due_hour = str(int(due_datehour[8:]))
+            due_date = due_datehour[:10]
+            due_hour = str(int(due_datehour[10:]))
             due_date_box = self.browser.find_element_by_id('id_due_date')
             due_date_box.send_keys(due_date)
             due_hour_sel = Select(self.browser.find_element_by_id('id_due_hour'))
@@ -198,28 +196,7 @@ class FunctionalTest(StaticLiveServerTestCase):
 
         self.click_add_lifemark()
 
-    def create_lifemark_on_db(self, title, link=None, category=None, state=None,
-                              due_datehour=None, rating=None, tags=None, desc=None,
-                              image_url=None):
-        lifemark = Lifemark(title=title)
-        if link:
-            lifemark.link = link
-        if category:
-            lifemark.category = category
-        if state:
-            lifemark.state = state
-        if due_datehour:
-            lifemark.due_datehour = due_datehour
-        if rating:
-            lifemark.rating = rating
-        if tags:
-            lifemark.tags = tags
-        if desc:
-            lifemark.desc = desc
-        if image_url:
-            lifemark.image_url = image_url
-
-        lifemark.save()
+        self.check_row_in_detail_table(0, {'title': title})
 
     def del_lifemark(self, row_idx):
         table = self.browser.find_element_by_id('id_recent_list')

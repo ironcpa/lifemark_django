@@ -10,11 +10,11 @@ class LifemarkUpdateTest(FunctionalTest):
     def test_update_existing_lifemark(self):
         # augie goes to the main page
         # this page has already existing lifemarks
-        self.create_lifemark_on_db(
+        self.add_lifemark(
             title='existing item 1',
             category='other category'
         )
-        self.create_lifemark_on_db(
+        self.add_lifemark(
             title='existing item 2',
             link='http://aaa.bbb.com',
             category='initial category',
@@ -69,8 +69,8 @@ class LifemarkUpdateTest(FunctionalTest):
     def test_update_existing_lifemark_w_category_txt(self):
         # augie goes to the main page
         # this page has already existing lifemarks
-        self.create_lifemark_on_db(title='existing item 1')
-        self.create_lifemark_on_db(
+        self.add_lifemark(title='existing item 1')
+        self.add_lifemark(
             title='existing item 2',
             link='http://aaa.bbb.com',
             category='initial category',
@@ -126,8 +126,8 @@ class LifemarkUpdateTest(FunctionalTest):
     def test_update_existing_lifemark_w_detail_button(self):
         # augie goes to the main page
         # this page has already existing lifemarks
-        self.create_lifemark_on_db(title='existing item 1')
-        self.create_lifemark_on_db(
+        self.add_lifemark(title='existing item 1')
+        self.add_lifemark(
             title='existing item 2',
             link='http://aaa.bbb.com',
             category='initial category',

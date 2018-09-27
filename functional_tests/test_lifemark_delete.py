@@ -10,8 +10,8 @@ class LifemarkDeleteTest(FunctionalTest):
     def test_delete_lifemark(self):
         # augie goes to the main page
         # this page has already existing 2 lifemarks
-        self.create_lifemark_on_db(title='existing item 1')
-        self.create_lifemark_on_db(title='existing item 2')
+        self.add_lifemark(title='existing item 1')
+        self.add_lifemark(title='existing item 2')
         self.browser.get(self.live_server_url)
 
         # augie click 'del' button on list
@@ -30,8 +30,8 @@ class LifemarkDeleteTest(FunctionalTest):
     def test_delete_lifemark_w_detail_button(self):
         # augie goes to the main page
         # this page has already existing 2 lifemarks
-        self.create_lifemark_on_db(title='existing item 1')
-        self.create_lifemark_on_db(title='existing item 2')
+        self.add_lifemark(title='existing item 1')
+        self.add_lifemark(title='existing item 2')
         self.browser.get(self.live_server_url)
 
         # augie click 'del' button on detail list
