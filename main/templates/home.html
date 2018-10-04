@@ -252,8 +252,8 @@
                             {{ line_data.lifemark.title }}
                         </td>
                         <td>
-                            <button id="id_list_btn_edit_{{ key }}" type="button" class="btn btn-default" onclick="edit(event, {{ key }})">Edit</button>
-                            <button id="id_list_btn_del_{{ key }}" type="button" class="btn btn-default" onclick="del({{ key }})">Del</button>
+                            <button id="id_list_btn_edit_{{ key }}" type="button" class="btn btn-default btn-xs" onclick="edit(event, {{ key }})">Edit</button>
+                            <button id="id_list_btn_del_{{ key }}" type="button" class="btn btn-default btn-xs" onclick="del({{ key }})">Del</button>
                         </td>
                     </tr>
                     {% for line_search_data in line_data.lines %}
