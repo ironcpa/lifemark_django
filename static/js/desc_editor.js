@@ -15,7 +15,7 @@ editor_module.set_editor = function($obj) {
 }
 
 function create_button(title, callback_name) {
-    return "<input type='button' value='"+title+"' class='btn btn-default' onclick='"+callback_name+"' tabindex='-1' />"
+    return "<input type='button' value='"+title+"' class='btn btn-default btn-sm' onclick='"+callback_name+"' tabindex='-1' />"
 }
 function remove_buttons() {
     $('#' + editor_module.BUTTON_NAME).remove()
