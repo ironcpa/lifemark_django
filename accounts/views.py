@@ -31,9 +31,10 @@ def test_anon_user_view(request):
 def test_create_user(request):
     username = request.GET['username']
     password = request.GET['password']
-    User.objects.create_user(
-        username=username,
-        password=password
-    )
+    if not User.objects.filter(username=username).exists():
+        User.objects.create_user(
+            username=username,
+            password=password
+        )
 
     return HttpResponse('create test user')

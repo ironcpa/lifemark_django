@@ -251,10 +251,11 @@ def test_view(request):
 def test_login(request):
     username = request.GET['username']
     password = request.GET['password']
-    User.objects.create_user(
-        username=username,
-        password=password
-    )
+    if not User.objects.filter(username=username).exists():
+        User.objects.create_user(
+            username=username,
+            password=password
+        )
     user = authenticate(request, username=username, password=password)
     login(request, user)
 

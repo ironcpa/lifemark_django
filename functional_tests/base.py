@@ -76,7 +76,7 @@ class FunctionalTest(StaticLiveServerTestCase):
             path='/',
         ))
         '''
-        self.browser.get(self.live_server_url + '/test_login?username=test&password=1234')
+        self.browser.get(self.live_server_url + '/test_login?username=testxxx&password=1234')
 
     def login(self):
         '''
