@@ -1,6 +1,7 @@
 from collections import OrderedDict
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from django.contrib.auth.decorators import login_required
+from django.http import HttpResponse
 from django.shortcuts import redirect, render
 from django.views.generic import CreateView, UpdateView, ListView, DeleteView
 from django.urls import reverse_lazy
@@ -242,4 +243,4 @@ class TestUpdateView(UpdateView):
 
 
 def test_view(request):
-    return '<table><tr><td></td><td>title</td><td>0</td><td>aaa keyword</td></tr></table>'
+    return HttpResponse('<table><tr><td></td><td>title</td><td>0</td><td>aaa keyword</td></tr></table>')

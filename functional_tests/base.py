@@ -50,16 +50,25 @@ class FunctionalTest(StaticLiveServerTestCase):
     def tearDown(self):
         self.browser.quit()
 
-    def create_pre_authenticated_session(self, username, password):
+    def create_pre_authenticated_session(self, username, password, email):
+        """this isn't working as intended
+        can't pass @login_required on view
+        """
+        # create user in db
         user = User.objects.create_user(
             username=username,
-            password=password
+            password=password,
+            email=email
         )
+
+        # set session_key on server
         session = SessionStore()
         session[SESSION_KEY] = user.pk
         session[BACKEND_SESSION_KEY] = settings.AUTHENTICATION_BACKENDS[0]
         session.save()
-        self.browser.get(self.live_server_url)
+
+        # set same session_key on browser
+        self.browser.get(self.live_server_url + '/404_no_such_url/')
         self.browser.add_cookie(dict(
             name=settings.SESSION_COOKIE_NAME,
             value=session.session_key,
@@ -73,11 +82,21 @@ class FunctionalTest(StaticLiveServerTestCase):
             email='augie@sample.com'
         )
         self.browser.get(self.live_server_url)
+        self.check_login_required()
+
         username_box = self.browser.find_element_by_id('id_username')
         password_box = self.browser.find_element_by_id('id_password')
         username_box.send_keys('augie')
         password_box.send_keys('abcde12345')
         self.click_first_submit()
+
+        '''
+        self.create_pre_authenticated_session(
+            'augie',
+            'abcde12345',
+            'augie@sample.com'
+        )
+        '''
 
     @wait
     def wait_for_single(self, fn):

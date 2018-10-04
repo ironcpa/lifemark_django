@@ -23,5 +23,5 @@ urlpatterns = [
     url(r'^anon/$', account_views.test_anon_user_view, name='anon'),
 
     # url(r'^test$', views.TestListView.as_view(), name='test_list'),
-    url(r'^test$', views.test_view, name='test'),
+    url(r'^test/$', views.test_view, name='test'),
 ]
