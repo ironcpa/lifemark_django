@@ -40,11 +40,14 @@ class AccountAndLoginTest(FunctionalTest):
 
     def test_member_login(self):
         # member augie has account
+        '''
         User.objects.create_user(
             username='augie',
             password='abcde12345',
             email='augie@sample.com'
         )
+        '''
+        self.browser.get(self.live_server_url + '/test_create_user?username=augie&password=abcde12345')
 
         # member augie enters home page
         # he only found 'Please Login to view your lifemarks' on the page

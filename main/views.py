@@ -1,6 +1,8 @@
 from collections import OrderedDict
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
+from django.contrib.auth import authenticate, login
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.models import User
 from django.http import HttpResponse
 from django.shortcuts import redirect, render
 from django.views.generic import CreateView, UpdateView, ListView, DeleteView
@@ -244,3 +246,16 @@ class TestUpdateView(UpdateView):
 
 def test_view(request):
     return HttpResponse('<table><tr><td></td><td>title</td><td>0</td><td>aaa keyword</td></tr></table>')
+
+
+def test_login(request):
+    username = request.GET['username']
+    password = request.GET['password']
+    User.objects.create_user(
+        username=username,
+        password=password
+    )
+    user = authenticate(request, username=username, password=password)
+    login(request, user)
+
+    return HttpResponse('create test login session')

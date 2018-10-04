@@ -24,4 +24,6 @@ urlpatterns = [
 
     # url(r'^test$', views.TestListView.as_view(), name='test_list'),
     url(r'^test/$', views.test_view, name='test'),
+    url(r'^test_create_user/$', account_views.test_create_user, name='test_create_user'),
+    url(r'^test_login/$', views.test_login, name='test_login'),
 ]

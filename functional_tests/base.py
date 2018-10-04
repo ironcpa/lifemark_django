@@ -54,6 +54,7 @@ class FunctionalTest(StaticLiveServerTestCase):
         """this isn't working as intended
         can't pass @login_required on view
         """
+        '''
         # create user in db
         user = User.objects.create_user(
             username=username,
@@ -74,8 +75,11 @@ class FunctionalTest(StaticLiveServerTestCase):
             value=session.session_key,
             path='/',
         ))
+        '''
+        self.browser.get(self.live_server_url + '/test_login?username=test&password=1234')
 
     def login(self):
+        '''
         User.objects.create_user(
             username='augie',
             password='abcde12345',
@@ -96,7 +100,6 @@ class FunctionalTest(StaticLiveServerTestCase):
             'abcde12345',
             'augie@sample.com'
         )
-        '''
 
     @wait
     def wait_for_single(self, fn):
