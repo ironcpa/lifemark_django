@@ -1,0 +1,20 @@
+서버상 db 끼리이므로 dump 없이 작업
+작업 테이블
+  - old_lifemark.lifemark: legacy table 
+  - old_lifemark.copy_lifemark: 원본 table 복사본
+    - 존재이유: postgre copy 이용 시 new_table의 numeric 컬럼에 매칭될 컬럼값 중 null을 0으로 변경하기 위함
+      - 다른 방법도 있겠으나 가장 빨리 생각난 방법이 원본값을 수정하는 방법임
+      - 다른 이유는 없음
+  - new_lifemark.main_lifemark: django orm이 생성하는 새 table
+  - new_lifemark.copy_lifemark: main_lifemark 복사본
+    - 존재이유: 검증용, main_lifemark에 정합한 데이터 한번에 붓기 위해
+
+old_db.copy_lifemark 생성
+  old_db=> create table copy_lifemark( like lifemark including all )
+  lifemark 테이블 데이터 붓기
+    - query or \copy 명령: 작업에는 \copy를 사용했으나 같은 결과라면 쿼리가 쉬웠을 듯
+old_db.copy_lifemark 데이터 가공
+  old_db=> update geo data: null -> 0
+  old_db=> update due_date: substring(due_datehour from 0 for 14) : 새형식 포맷에 맞게
+old_db.copy_lifemark 데이터 copy
+  old_db=> \copy copy_lifemark(key, title, link, category, state, due_date, rating, tags, descr, img_link, cdate, udate, geo_lat, geo_lon, u_geo_lat, u_geo_lon) to /home/ubuntu/data/aws_lifemark_db_20181006.csv delimiter ',' quote '"' csv;

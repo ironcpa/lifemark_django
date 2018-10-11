@@ -121,3 +121,32 @@ class LifemarkModelTest(TestCase):
             'aaa'
         )
         self.assertEqual(len(lifemarks), 2)
+
+    def test_get_dued_lifemarks(self):
+        Lifemark.objects.create(title='test1', state='todo', due_datehour='2018-01-01 00')
+        Lifemark.objects.create(title='test2', state='todo', due_datehour='2018-01-01 10')
+        Lifemark.objects.create(title='test3', state='todo', due_datehour='2018-01-02 00')
+        Lifemark.objects.create(title='test4', state='todo', due_datehour='2018-01-02 10')
+        Lifemark.objects.create(title='test5', state='todo', due_datehour='2018-01-03 00')
+        Lifemark.objects.create(title='test6', state='todo', due_datehour='2018-01-03 10')
+        Lifemark.objects.create(title='test7', due_datehour='2018-01-02 10')
+
+        curr_datehour = '2018-01-01 00'
+        lifemarks = Lifemark.objects.get_dued_lifemarks(curr_datehour)
+        self.assertEqual(lifemarks.count(), 3)
+        self.assertIn(Lifemark.objects.get(title='test1'), lifemarks)
+        self.assertIn(Lifemark.objects.get(title='test2'), lifemarks)
+        self.assertIn(Lifemark.objects.get(title='test3'), lifemarks)
+
+    def test_get_hourly_dued_lifemarks(self):
+        Lifemark.objects.create(title='test1', state='todo', due_datehour='2018-01-01 00')
+        Lifemark.objects.create(title='test2', state='todo', due_datehour='2018-01-01 01')
+        Lifemark.objects.create(title='test3', state='todo', due_datehour='2018-01-01 02')
+        Lifemark.objects.create(title='test4', state='todo', due_datehour='2018-01-01 03')
+        Lifemark.objects.create(title='test5', state='todo', due_datehour='2018-01-01 04')
+
+        curr_datehour = '2018-01-01 01'
+        lifemarks = Lifemark.objects.get_hourly_dued_lifemarks(curr_datehour)
+        self.assertEquals(lifemarks.count(), 2)
+        self.assertIn(Lifemark.objects.get(title='test2'), lifemarks)
+        self.assertIn(Lifemark.objects.get(title='test3'), lifemarks)

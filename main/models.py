@@ -43,6 +43,23 @@ class LifemarkManager(models.Manager):
 
         return qs.filter(q_objects)
 
+    def get_dued_lifemarks(self, datehour):
+        """
+        'dued' means expiration date tomorrow
+        compare to curr datehour + 1day
+        """
+        qs = self.filter(state='todo')
+        return qs.extra(where=[f"to_timestamp(due_datehour, 'YYYY-MM-DD HH24') <= to_timestamp('{datehour}', 'YYYY-MM-DD HH24') + interval '1 day'"])
+
+    def get_hourly_dued_lifemarks(self, datehour):
+        """
+        'hourly dued' means expiration 1hour later
+        compare to curr datehour + 1hour
+        ignore 00hour items: ruled by view logic
+        """
+        qs = self.filter(state='todo')
+        return qs.extra(where=[f"extract(hour from to_timestamp(due_datehour, 'YYYY-MM-DD HH24')) != 0 and to_timestamp(due_datehour, 'YYYY-MM-DD HH24') <= to_timestamp('{datehour}', 'YYYY-MM-DD HH24') + interval '1 hour'"])
+
 
 class Lifemark(models.Model):
     title = models.TextField()
