@@ -16,7 +16,6 @@ urlpatterns = [
     url(r'^update/(?P<pk>\d+)/$', views.UpdateLifemarkView.as_view(), name='update'),
     url(r'^delete/(?P<pk>\d+)/$', views.DeleteLifemarkView.as_view(), name='delete'),
     url(r'^map$', views.show_map, name='show_map'),
-    url(r'^create_dued$', views.create_dued, name='create_dued'),
 
     url(r'^signup/$', account_views.signup, name='signup'),
     url(r'^login/$', auth_views.LoginView.as_view(template_name='login.html'), name='login'),

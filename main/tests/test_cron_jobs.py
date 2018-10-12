@@ -1,9 +1,11 @@
+from datetime import datetime
 from django.test import TestCase
 from main.models import Lifemark
-from main.notifications import create_dued_lifemarks
+from main.cron_jobs import create_dued_lifemarks, do_hourly_job
+import unittest.mock as mock
 
 
-class NotificationTest(TestCase):
+class CronJobTests(TestCase):
     def test_create_hourly_dued_lifemarks(self):
         Lifemark.objects.create(title='hourly dued1', state='todo', due_datehour='2018-01-01 23')
         Lifemark.objects.create(title='complete', state='complete', due_datehour='2018-01-02 00')
@@ -44,3 +46,42 @@ class NotificationTest(TestCase):
         self.assertIn(':dued todo1(todo) is dued!', created.desc)
         self.assertIn(':hourly dued todo(todo) is dued!', created.desc)
         self.assertIn(':dued todo2(todo) is dued!', created.desc)
+
+    @mock.patch('main.cron_jobs.datetime')
+    @mock.patch('main.cron_jobs.send_slack_noti')
+    def test_dued_item_creation_by_hourly_job(self, send_slack_noti_mock, datetime_mock):
+        datetime_mock.now.return_value = datetime(2018, 1, 3)
+
+        Lifemark.objects.create(title='dued1', state='todo', due_datehour='2018-01-01 00')
+        Lifemark.objects.create(title='dued2', state='todo', due_datehour='2018-01-02 00')
+        Lifemark.objects.create(title='dued3', state='todo', due_datehour='2018-01-03 00')
+        Lifemark.objects.create(title='not yet', state='todo', due_datehour='2018-01-04 00')
+
+        do_hourly_job()
+
+        latest = Lifemark.objects.order_by('-id')[0]
+        self.assertEqual(latest.title, 'items due tomorrow')
+        self.assertEqual(latest.category, 'noti')
+        self.assertIn(':dued1(todo) is dued!', latest.desc)
+        self.assertIn(':dued2(todo) is dued!', latest.desc)
+        self.assertIn(':dued3(todo) is dued!', latest.desc)
+
+    @mock.patch('main.cron_jobs.datetime')
+    @mock.patch('main.cron_jobs.send_slack_noti')
+    def test_hourly_dued_item_creation_by_hourly_job(self, send_slack_noti_mock, datetime_mock):
+        datetime_mock.now.return_value = datetime(2018, 1, 2, 1)
+
+        Lifemark.objects.create(title='dued1', state='todo', due_datehour='2018-01-01 23')
+        Lifemark.objects.create(title='hourly', state='todo', due_datehour='2018-01-02 00')
+        Lifemark.objects.create(title='dued2', state='todo', due_datehour='2018-01-02 01')
+        Lifemark.objects.create(title='dued3', state='todo', due_datehour='2018-01-02 02')
+        Lifemark.objects.create(title='not yet', state='todo', due_datehour='2018-01-02 03')
+
+        do_hourly_job()
+
+        latest = Lifemark.objects.order_by('-id')[0]
+        self.assertEqual(latest.title, 'items due tomorrow')
+        self.assertEqual(latest.category, 'noti')
+        self.assertIn(':dued1(todo) is dued!', latest.desc)
+        self.assertIn(':dued2(todo) is dued!', latest.desc)
+        self.assertIn(':dued3(todo) is dued!', latest.desc)

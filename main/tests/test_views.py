@@ -7,12 +7,10 @@ from ..views import (LifemarkSearchListView,
                      CreateLifemarkView,
                      UpdateLifemarkView,
                      DeleteLifemarkView,
-                     show_map,
-                     create_dued)
+                     show_map)
 from main.forms import LifemarkForm
 from .base import LifemarkTestCase
 from ..templatetags.imgur_filters import to_imgur_thumbnail
-import unittest.mock as mock
 
 
 class HomeTest(LifemarkTestCase):
@@ -571,51 +569,3 @@ class ShowMapTests(LifemarkTestCase):
 
         html = self.res.content.decode('utf8')
         self.assertTrue(expecting_map_js_func in html)
-
-
-class CronJobTests(TestCase):
-    def setUp(self):
-        self.url = reverse('create_dued')
-
-    def test_url_existance(self):
-        view = resolve(self.url)
-        self.assertEqual(view.func, create_dued)
-
-    @mock.patch('main.cron_jobs.datetime')
-    @mock.patch('main.cron_jobs.send_slack_noti')
-    def test_dued_item_creation(self, send_slack_noti_mock, datetime_mock):
-        datetime_mock.now.return_value = datetime(2018, 1, 3)
-
-        Lifemark.objects.create(title='dued1', state='todo', due_datehour='2018-01-01 00')
-        Lifemark.objects.create(title='dued2', state='todo', due_datehour='2018-01-02 00')
-        Lifemark.objects.create(title='dued3', state='todo', due_datehour='2018-01-03 00')
-        Lifemark.objects.create(title='not yet', state='todo', due_datehour='2018-01-04 00')
-
-        self.client.get(self.url)
-
-        latest = Lifemark.objects.order_by('-id')[0]
-        self.assertEqual(latest.title, 'items due tomorrow')
-        self.assertEqual(latest.category, 'noti')
-        self.assertIn(':dued1(todo) is dued!', latest.desc)
-        self.assertIn(':dued2(todo) is dued!', latest.desc)
-        self.assertIn(':dued3(todo) is dued!', latest.desc)
-
-    @mock.patch('main.cron_jobs.datetime')
-    @mock.patch('main.cron_jobs.send_slack_noti')
-    def test_hourly_dued_item_creation(self, send_slack_noti_mock, datetime_mock):
-        datetime_mock.now.return_value = datetime(2018, 1, 2, 1)
-
-        Lifemark.objects.create(title='dued1', state='todo', due_datehour='2018-01-01 23')
-        Lifemark.objects.create(title='hourly', state='todo', due_datehour='2018-01-02 00')
-        Lifemark.objects.create(title='dued2', state='todo', due_datehour='2018-01-02 01')
-        Lifemark.objects.create(title='dued3', state='todo', due_datehour='2018-01-02 02')
-        Lifemark.objects.create(title='not yet', state='todo', due_datehour='2018-01-02 03')
-
-        self.client.get(self.url)
-
-        latest = Lifemark.objects.order_by('-id')[0]
-        self.assertEqual(latest.title, 'items due tomorrow')
-        self.assertEqual(latest.category, 'noti')
-        self.assertIn(':dued1(todo) is dued!', latest.desc)
-        self.assertIn(':dued2(todo) is dued!', latest.desc)
-        self.assertIn(':dued3(todo) is dued!', latest.desc)
