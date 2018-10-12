@@ -32,7 +32,7 @@ def send_slack_noti(message):
     print('>>>>>>>>> slack noti sent >>>>>>>>>>')
 
 
-def do_daily():
+def do_hourly_job():
     curr_datehour = datetime.now().strftime('%Y-%m-%d %H')
     is_daily = int(str(curr_datehour)[11:13]) == 0
     created = create_dued_lifemarks(curr_datehour, is_daily)
@@ -45,3 +45,7 @@ def do_daily():
 
     # todo: run scrappers
     # run_scrappers.main()
+
+
+if __name__ == '__main__':
+    do_hourly_job()

@@ -10,7 +10,7 @@ from django.urls import reverse_lazy
 from django.utils.decorators import method_decorator
 from .models import Lifemark
 from .forms import LifemarkForm
-from .cron_jobs import do_daily
+from .cron_jobs import do_hourly_job
 from core.models import LifemarkLineSearchData, LifemarkLineListData
 
 
@@ -246,7 +246,7 @@ class TestUpdateView(UpdateView):
 
 
 def create_dued(request):
-    do_daily()
+    do_hourly_job()
     return HttpResponse('dued lifemark created')
 
 
