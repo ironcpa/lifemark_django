@@ -50,12 +50,14 @@ class LifemarkModelTest(TestCase):
         lifemarks = Lifemark.objects.get_all_matches_on_any_fields(
             ('title',),
             '',
+            '',
             'aaa'
         )
         self.assertEquals(len(lifemarks), 3)
 
         lifemarks = Lifemark.objects.get_all_matches_on_any_fields(
             ('title', 'desc'),
+            '',
             '',
             'aaa'
         )
@@ -75,12 +77,14 @@ class LifemarkModelTest(TestCase):
         lifemarks = Lifemark.objects.get_any_matches_on_any_fields(
             ('title',),
             '',
+            '',
             'aaa bbb'
         )
         self.assertEquals(len(lifemarks), 3)
 
         lifemarks = Lifemark.objects.get_all_matches_on_any_fields(
             ('title',),
+            '',
             '',
             'aaa bbb'
         )
@@ -89,12 +93,14 @@ class LifemarkModelTest(TestCase):
         lifemarks = Lifemark.objects.get_any_matches_on_any_fields(
             ('title', 'desc'),
             '',
+            '',
             'aaa bbb'
         )
         self.assertEquals(len(lifemarks), 7)
 
         lifemarks = Lifemark.objects.get_all_matches_on_any_fields(
             ('title', 'desc'),
+            '',
             '',
             'aaa bbb'
         )
@@ -111,6 +117,7 @@ class LifemarkModelTest(TestCase):
         lifemarks = Lifemark.objects.get_all_matches_on_any_fields(
             ('title', 'category', 'desc'),
             'xxx',
+            '',
             ''
         )
         self.assertEqual(len(lifemarks), 3)
@@ -118,6 +125,32 @@ class LifemarkModelTest(TestCase):
         lifemarks = Lifemark.objects.get_all_matches_on_any_fields(
             ('title', 'category', 'desc'),
             'xxx',
+            '',
+            'aaa'
+        )
+        self.assertEqual(len(lifemarks), 2)
+
+    def test_lifemark_searh_w_state(self):
+        Lifemark.objects.create(title='aaa')
+        Lifemark.objects.create(title='aaa')
+        Lifemark.objects.create(title='aaa', state='todo')
+        Lifemark.objects.create(title='bbb', state='todo')
+        Lifemark.objects.create(title='bbb', state='complete')
+        Lifemark.objects.create(title='bbb', state='working')
+        Lifemark.objects.create(title='bbb', state='todo', desc='aaa')
+
+        lifemarks = Lifemark.objects.get_all_matches_on_any_fields(
+            ('title', 'desc'),
+            '',
+            'todo',
+            ''
+        )
+        self.assertEqual(len(lifemarks), 3)
+
+        lifemarks = Lifemark.objects.get_all_matches_on_any_fields(
+            ('title', 'desc'),
+            '',
+            'todo',
             'aaa'
         )
         self.assertEqual(len(lifemarks), 2)

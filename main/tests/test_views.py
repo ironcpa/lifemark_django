@@ -419,6 +419,35 @@ class SearchTest(LifemarkTestCase):
         self.assertEqual(len(lifemarks), 1)
         self.assertEqual(lifemarks[0].title, 'aaa3')
 
+    def test_search_todo_state(self):
+        Lifemark.objects.create(title='aaa')
+        Lifemark.objects.create(title='bbb', state='working')
+        Lifemark.objects.create(title='ccc', state='todo')
+        Lifemark.objects.create(title='ddd', state='todo')
+        Lifemark.objects.create(title='eee', state='todo')
+        Lifemark.objects.create(title='eee', state='complete')
+
+        res = self.client.get(self.url + '?s=todo')
+
+        lifemarks = list(res.context['lifemarks'])
+
+        self.assertEqual(len(lifemarks), 3)
+
+    def test_search_todo_state_w_keyword(self):
+        Lifemark.objects.create(title='aaa')
+        Lifemark.objects.create(title='bbb', state='working')
+        Lifemark.objects.create(title='ccc', state='todo', desc='keyword')
+        Lifemark.objects.create(title='ddd', state='todo', desc='keyword')
+        Lifemark.objects.create(title='eee', state='todo')
+        Lifemark.objects.create(title='eee', state='todo', desc='seoaifj')
+        Lifemark.objects.create(title='eee', state='complete')
+
+        res = self.client.get(self.url + '?q=keyword&s=todo')
+
+        lifemarks = list(res.context['lifemarks'])
+
+        self.assertEqual(len(lifemarks), 2)
+
 
 class LifemarkContentDetailTest(LifemarkTestCase):
     def setUp(self):

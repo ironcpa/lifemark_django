@@ -1,3 +1,4 @@
+import random
 from .base import FunctionalTest
 from main.models import Lifemark
 
@@ -67,15 +68,14 @@ class SearchTests(FunctionalTest):
             lambda: self.assertEqual(len(list_trs), 1)
         )
 
-    def test_todo_category_only_search(self):
+    def test_todo_state_only_search(self):
         # augie has 10 lifemarks and
         # 4 of them are 'todo' category for scheduling
-        for i in range(10):
-            self.add_lifemark(title=f'existing {i+1}', category=f'category{i*10}')
         for i in range(4):
-            lifemark = Lifemark.objects.get(title=f'existing {i+1}')
-            lifemark.category = 'todo'
-            lifemark.save()
+            self.add_lifemark(title=f'toto existing {i+1}', state='todo')
+        non_todo_states = ['', 'working', 'complete']
+        for i in range(4, 10):
+            self.add_lifemark(title=f'nontodo existing {i+1}', state=random.choice(non_todo_states))
 
         # augie goes to the main page
         # and he click 'todo search' button
@@ -90,12 +90,12 @@ class SearchTests(FunctionalTest):
         )
 
         # augie now has two 'xxx' keyword item on both 'todo' and non todo category items
-        lifemark = Lifemark.objects.get(category='category90')
-        lifemark.desc = 'xxx'
-        lifemark.save()
-        lifemark = Lifemark.objects.filter(category='todo')[0]
-        lifemark.desc = 'xxx'
-        lifemark.save()
+        self.browser.get(self.live_server_url)  # need to update page to show all items
+        self.check_detail_row_count(10)
+        self.update_lifemark(0, desc='xxx', tags='aaa')  # non todo item
+        self.check_row_in_detail_table(0, {'desc': 'xxx', 'tags': 'aaa'})
+        self.update_lifemark(9, desc='xxx', tags='bbb')  # todo item
+        self.check_row_in_detail_table(0, {'desc': 'xxx', 'tags': 'bbb'})
 
         # augie goes to the main page again
         # he now enter 'xxx' in search text box

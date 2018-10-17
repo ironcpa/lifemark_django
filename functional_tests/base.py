@@ -5,10 +5,10 @@ from selenium.common.exceptions import WebDriverException
 import time
 import os
 
-from django.conf import settings
-from django.contrib.auth import BACKEND_SESSION_KEY, SESSION_KEY
+# from django.conf import settings
+# from django.contrib.auth import BACKEND_SESSION_KEY, SESSION_KEY
 from django.contrib.auth.models import User
-from django.contrib.sessions.backends.db import SessionStore
+# from django.contrib.sessions.backends.db import SessionStore
 
 MAX_WAIT = 10
 
@@ -79,7 +79,6 @@ class FunctionalTest(StaticLiveServerTestCase):
         self.browser.get(self.live_server_url + '/test_login?username=testxxx&password=1234')
 
     def login(self):
-        '''
         User.objects.create_user(
             username='augie',
             password='abcde12345',
@@ -100,6 +99,7 @@ class FunctionalTest(StaticLiveServerTestCase):
             'abcde12345',
             'augie@sample.com'
         )
+        '''
 
     @wait
     def wait_for_single(self, fn):
@@ -144,12 +144,15 @@ class FunctionalTest(StaticLiveServerTestCase):
         id = row_id[row_id.index('_') + 1:]
         td = table.find_elements_by_xpath(f'.//tbody/tr[{row + 1}]/td[1]')[0]
         for field, text in field_text_dict.items():
-            span = td.find_element_by_id(f'row_{id}_{field}')
-            if span.is_displayed():
-                actual_text = span.text
+            if field == 'id':
+                self.assertEqual(id, text)
             else:
-                actual_text = span.get_attribute('innerHTML')
-            self.assertEquals(actual_text, text)
+                span = td.find_element_by_id(f'row_{id}_{field}')
+                if span.is_displayed():
+                    actual_text = span.text
+                else:
+                    actual_text = span.get_attribute('innerHTML')
+                self.assertEquals(actual_text, text)
 
     @wait
     def check_login_required(self):
@@ -166,14 +169,22 @@ class FunctionalTest(StaticLiveServerTestCase):
         detail_trs = self.browser.find_elements_by_xpath('//table[@id="id_detail_list"]/tbody/tr')
         self.assertEqual(len(detail_trs), row_count)
 
+    def get_row_id(self, row):
+        table = self.browser.find_element_by_id('id_detail_list')
+        tds = table.find_elements_by_xpath(f'.//tbody/tr[{row + 1}]/td')
+        target_id = tds[0].text
+
+        return target_id
+
     def click_button(self, id):
         button = self.browser.find_element_by_id(id)
         button.click()
 
-    def click_list_button(self, row_idx, btn_type):
-        table = self.browser.find_element_by_id('id_recent_list')
-        tds = table.find_elements_by_xpath(f'.//tbody/tr[{row_idx + 1}]/td')
-        target_id = tds[0].text
+    def click_list_button(self, row, btn_type):
+        table = self.browser.find_element_by_id('id_detail_list')
+        tr = table.find_elements_by_xpath(f'.//tbody/tr[{row + 1}]')[0]
+        row_id = tr.get_attribute('id')
+        target_id = row_id[row_id.index('_') + 1:]
 
         list_btn_edit = self.browser.find_element_by_id(f'id_list_btn_{btn_type}_' + target_id)
         list_btn_edit.click()
@@ -189,9 +200,12 @@ class FunctionalTest(StaticLiveServerTestCase):
     def click_update_lifemark(self):
         self.click_button('id_btn_update')
 
-    def set_form_input(self, field, value):
+    def set_form_input(self, field, value, target_form=None):
+        if not target_form:
+            target_form = self.browser.find_element_by_id('id_new_form')
+
         if value:
-            input_box = self.browser.find_element_by_id('id_' + field)
+            input_box = target_form.find_element_by_id('id_' + field)
             input_box.send_keys(value)
 
     def add_lifemark(self, title, link=None, category=None, state=None,
@@ -219,6 +233,36 @@ class FunctionalTest(StaticLiveServerTestCase):
         self.click_add_lifemark()
 
         self.check_row_in_detail_table(0, {'title': title})
+
+    def update_lifemark(self, row_idx, title=None, link=None, category=None, state=None,
+                        due_datehour=None, rating=None, tags=None, desc=None,
+                        image_url=None):
+        self.click_list_button(row_idx, 'edit')
+
+        update_form = self.browser.find_element_by_id('id_update_form')
+
+        self.set_form_input('title', title, update_form)
+        self.set_form_input('link', link, update_form)
+        if category:
+            category_txt_box = update_form.find_element_by_id('id_category_txt')
+            category_txt_box.send_keys(category)
+        if state:
+            state_sel = Select(update_form.find_element_by_id('id_state'))
+            state_sel.select_by_value(state)
+        if due_datehour:
+            due_date = due_datehour[:10]
+            due_hour = str(int(due_datehour[10:]))
+            due_date_box = update_form.find_element_by_id('id_due_date')
+            due_date_box.send_keys(due_date)
+            due_hour_sel = Select(update_form.find_element_by_id('id_due_hour'))
+            due_hour_sel.select_by_visible_text(due_hour)
+        self.set_form_input('rating', rating, update_form)
+        self.set_form_input('tags', tags, update_form)
+        self.set_form_input('desc', desc, update_form)
+
+        self.click_update_lifemark()
+
+        # need to check from caller location to check page update correctly
 
     def del_lifemark(self, row_idx):
         table = self.browser.find_element_by_id('id_recent_list')

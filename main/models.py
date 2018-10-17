@@ -3,16 +3,21 @@ from django.db.models import Q
 
 
 class LifemarkManager(models.Manager):
-    def get_any_matches_on_any_fields(self, fields, category, keywords_str):
+    def get_any_matches_on_any_fields(self, fields, category, state, keywords_str):
         if keywords_str:
             keywords = keywords_str.split(' ')
         else:
             keywords = ''
 
+        qs = None
+
         if category:
             qs = self.filter(category=category)
         else:
             qs = self.all()
+
+        if state:
+            qs = qs.filter(state=state)
 
         q_objects = Q()
         if keywords:
@@ -22,16 +27,21 @@ class LifemarkManager(models.Manager):
 
         return qs.filter(q_objects)
 
-    def get_all_matches_on_any_fields(self, fields, category, keywords_str):
+    def get_all_matches_on_any_fields(self, fields, category, state, keywords_str):
         if keywords_str:
             keywords = keywords_str.split(' ')
         else:
             keywords = ''
 
+        qs = None
+
         if category:
             qs = self.filter(category=category)
         else:
             qs = self.all()
+
+        if state:
+            qs = qs.filter(state=state)
 
         q_objects = Q()
         if keywords:
