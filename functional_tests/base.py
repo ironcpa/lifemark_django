@@ -49,6 +49,8 @@ class FunctionalTest(StaticLiveServerTestCase):
         if staging_server:
             self.live_server_url = staging_server
             self.is_remote_test = True
+        else:
+            self.is_remote_test = False
 
     def tearDown(self):
         self.browser.quit()
@@ -168,6 +170,36 @@ class FunctionalTest(StaticLiveServerTestCase):
         self.assertEqual(len(rows), row_count)
 
     @wait
+    def check_form(self,
+                   target_form,
+                   title=None, link=None, category=None, state=None,
+                   due_datehour=None, desc=None):
+        edit_title_box = target_form.find_element_by_id('id_title')
+        edit_link_box = target_form.find_element_by_id('id_link')
+        edit_category_sel = Select(target_form.find_element_by_id('id_category_sel'))
+        edit_state_sel = Select(target_form.find_element_by_id('id_state'))
+        edit_due_date_box = target_form.find_element_by_id('id_update_due_date')
+        edit_due_hour_sel = Select(target_form.find_element_by_id('id_due_hour'))
+        edit_desc_box = target_form.find_element_by_id('id_desc')
+
+        if title:
+            self.assertEqual(edit_title_box.get_attribute('value'), title)
+        if link:
+            self.assertEqual(edit_link_box.get_attribute('value'), link)
+        if category:
+            self.assertEqual(edit_category_sel.first_selected_option.text, category)
+        if state:
+            self.assertEqual(edit_state_sel.first_selected_option.text, state)
+        if due_datehour:
+            due_date = due_datehour[:10]
+            due_hour = str(int(due_datehour[11:]))
+            self.assertEqual(edit_due_date_box.get_attribute('value'), due_date)
+            self.assertEqual(edit_due_hour_sel.first_selected_option.text, due_hour)
+        if desc:
+            self.assertEqual(edit_desc_box.get_attribute('value'), desc)
+
+
+    @wait
     def check_detail_row_count(self, row_count):
         detail_trs = self.browser.find_elements_by_xpath('//table[@id="id_detail_list"]/tbody/tr')
         self.assertEqual(len(detail_trs), row_count)
@@ -209,6 +241,7 @@ class FunctionalTest(StaticLiveServerTestCase):
 
         if value:
             input_box = target_form.find_element_by_id('id_' + field)
+            input_box.clear()
             input_box.send_keys(value)
 
     def add_lifemark_w_ui(self, title, link=None, category=None, state=None,
