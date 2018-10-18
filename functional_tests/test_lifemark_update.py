@@ -26,6 +26,7 @@ class LifemarkUpdateTest(FunctionalTest):
             image_url='http://aaa.com/sample.jpg'
         )
         self.browser.get(self.live_server_url)
+        self.check_row_count(2)
 
         # augie click 'edit' button on list's 1st row
         self.click_list_button(0, 'edit')
@@ -82,6 +83,7 @@ class LifemarkUpdateTest(FunctionalTest):
             image_url='http://aaa.com/sample.jpg'
         )
         self.browser.get(self.live_server_url)
+        self.check_row_count(2)
 
         # augie click 'edit' button on list's 1st row
         self.click_list_button(0, 'edit')
@@ -139,6 +141,7 @@ class LifemarkUpdateTest(FunctionalTest):
             image_url='http://aaa.com/sample.jpg'
         )
         self.browser.get(self.live_server_url)
+        self.check_row_count(2)
 
         # augie click 'edit' button on detail list
         table = self.browser.find_element_by_id('id_recent_list')

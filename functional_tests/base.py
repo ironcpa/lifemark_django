@@ -10,6 +10,8 @@ import os
 from django.contrib.auth.models import User
 # from django.contrib.sessions.backends.db import SessionStore
 
+from main.models import Lifemark
+
 MAX_WAIT = 10
 
 
@@ -46,6 +48,7 @@ class FunctionalTest(StaticLiveServerTestCase):
         staging_server = os.environ.get('STAGING_SERVER')
         if staging_server:
             self.live_server_url = staging_server
+            self.is_remote_test = True
 
     def tearDown(self):
         self.browser.quit()
@@ -208,9 +211,9 @@ class FunctionalTest(StaticLiveServerTestCase):
             input_box = target_form.find_element_by_id('id_' + field)
             input_box.send_keys(value)
 
-    def add_lifemark(self, title, link=None, category=None, state=None,
-                     due_datehour=None, rating=None, tags=None, desc=None,
-                     image_url=None):
+    def add_lifemark_w_ui(self, title, link=None, category=None, state=None,
+                          due_datehour=None, rating=None, tags=None, desc=None,
+                          image_url=None):
         self.set_form_input('title', title)
         self.set_form_input('link', link)
         if category:
@@ -234,9 +237,9 @@ class FunctionalTest(StaticLiveServerTestCase):
 
         self.check_row_in_detail_table(0, {'title': title})
 
-    def update_lifemark(self, row_idx, title=None, link=None, category=None, state=None,
-                        due_datehour=None, rating=None, tags=None, desc=None,
-                        image_url=None):
+    def update_lifemark_w_ui(self, row_idx, title=None, link=None, category=None, state=None,
+                             due_datehour=None, rating=None, tags=None, desc=None,
+                             image_url=None):
         self.click_list_button(row_idx, 'edit')
 
         update_form = self.browser.find_element_by_id('id_update_form')
@@ -263,6 +266,58 @@ class FunctionalTest(StaticLiveServerTestCase):
         self.click_update_lifemark()
 
         # need to check from caller location to check page update correctly
+
+    def add_lifemark(self, title, link=None, category=None, state=None,
+                     due_datehour=None, rating=None, tags=None, desc=None,
+                     image_url=None):
+        if self.is_remote_test:
+            self.add_lifemark_w_ui(title, link, category, state,
+                                   due_datehour, rating, tags, desc,
+                                   image_url)
+        else:
+            lifemark = Lifemark.objects.create(title=title)
+            if link:
+                lifemark.link = link
+            if category:
+                lifemark.category = category
+            if state:
+                lifemark.state = state
+            if due_datehour:
+                lifemark.due_datehour = due_datehour
+            if tags:
+                lifemark.tags = tags
+            if desc:
+                lifemark.desc = desc
+            if image_url:
+                lifemark.image_url = image_url
+            lifemark.save()
+
+    def update_lifemark(self, id, title=None, link=None, category=None, state=None,
+                        due_datehour=None, rating=None, tags=None, desc=None,
+                        image_url=None):
+        if self.is_remote_test:
+            self.update_lifemark_w_ui(id, title, link, category, state,
+                                      due_datehour, rating, tags, desc,
+                                      image_url)
+        else:
+            lifemark = Lifemark.objects.get(id=id)
+            if title:
+                lifemark.title = title
+            if link:
+                lifemark.link = link
+            if category:
+                lifemark.category = category
+            if state:
+                lifemark.state = state
+            if due_datehour:
+                lifemark.due_datehour = due_datehour
+            if tags:
+                lifemark.tags = tags
+            if desc:
+                lifemark.desc = desc
+            if image_url:
+                lifemark.image_url = image_url
+            lifemark.save()
 
     def del_lifemark(self, row_idx):
         table = self.browser.find_element_by_id('id_recent_list')
