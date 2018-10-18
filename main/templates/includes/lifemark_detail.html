@@ -8,7 +8,11 @@
 <p>Title: 
     <span style="display: none" id="row_{{ lifemark.id }}_title">{{ lifemark.title }}</span>
     <span style="display: none" id="row_{{ lifemark.id }}_link">{{ lifemark.link }}</span>
-    <a href="{{ lifemark.link }}">{{ lifemark.title }}</a>
+    {% if lifemark.link %}
+        <a href="{{ lifemark.link }}" target="_blank">{{ lifemark.title }}</a>
+    {% else %}
+        {{ lifemark.title }}
+    {% endif %}
 </p>
 <p>cdate: <span id="row_{{ lifemark.id }}_cdate">{{ lifemark.cdate }}</span></p>
 <p>udate: <span id="row_{{ lifemark.id }}_udate">{{ lifemark.udate }}</span></p>
