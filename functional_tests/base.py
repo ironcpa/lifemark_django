@@ -165,7 +165,7 @@ class FunctionalTest(StaticLiveServerTestCase):
 
     @wait
     def check_row_count(self, row_count):
-        table = self.browser.find_element_by_id('id_recent_list')
+        table = self.browser.find_element_by_id('id_detail_list')
         rows = table.find_elements_by_xpath('.//tbody/tr')
         self.assertEqual(len(rows), row_count)
 
@@ -197,7 +197,6 @@ class FunctionalTest(StaticLiveServerTestCase):
             self.assertEqual(edit_due_hour_sel.first_selected_option.text, due_hour)
         if desc:
             self.assertEqual(edit_desc_box.get_attribute('value'), desc)
-
 
     @wait
     def check_detail_row_count(self, row_count):
