@@ -101,9 +101,9 @@ class LifemarkSearchListView(ListView):
         kwargs['existing_categories'] = get_distinct_categories()
         kwargs['form'] = LifemarkForm()
 
-        paged_lifmarks = super().get_context_data()['page_obj']
+        paged_lifemarks = super().get_context_data()['page_obj']
         kwargs['lifemark_line_data'] = self.get_keywords_lines(
-            list(paged_lifmarks),
+            list(paged_lifemarks),
             self.request.GET.get('q'),
             self.search_fields
         )
