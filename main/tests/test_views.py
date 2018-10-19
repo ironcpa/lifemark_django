@@ -448,6 +448,35 @@ class SearchTest(LifemarkTestCase):
 
         self.assertEqual(len(lifemarks), 2)
 
+    def test_search_working_state(self):
+        Lifemark.objects.create(title='aaa')
+        Lifemark.objects.create(title='bbb', state='todo')
+        Lifemark.objects.create(title='ccc', state='working')
+        Lifemark.objects.create(title='ddd', state='working')
+        Lifemark.objects.create(title='eee', state='working')
+        Lifemark.objects.create(title='eee', state='complete')
+
+        res = self.client.get(self.url + '?s=working')
+
+        lifemarks = list(res.context['lifemarks'])
+
+        self.assertEqual(len(lifemarks), 3)
+
+    def test_search_working_state_w_keyword(self):
+        Lifemark.objects.create(title='aaa')
+        Lifemark.objects.create(title='bbb', state='todo')
+        Lifemark.objects.create(title='ccc', state='working', desc='keyword')
+        Lifemark.objects.create(title='ddd', state='working', desc='keyword')
+        Lifemark.objects.create(title='eee', state='working')
+        Lifemark.objects.create(title='eee', state='working', desc='seoaifj')
+        Lifemark.objects.create(title='eee', state='complete')
+
+        res = self.client.get(self.url + '?q=keyword&s=working')
+
+        lifemarks = list(res.context['lifemarks'])
+
+        self.assertEqual(len(lifemarks), 2)
+
 
 class LifemarkContentDetailTest(LifemarkTestCase):
     def setUp(self):
@@ -462,7 +491,7 @@ class LifemarkContentDetailTest(LifemarkTestCase):
         )
         res = self.client.get(self.url)
 
-        expecting_anchor = f'<a href="{link}">test</a>'
+        expecting_anchor = f'<a href="{link}" target="_blank">test</a>'
         self.assertContains(res, expecting_anchor, html=True)
 
     def test_show_image_url_as_thumbnail(self):

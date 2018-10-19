@@ -75,13 +75,6 @@ class SearchTests(FunctionalTest):
     def test_todo_state_only_search(self):
         # augie has 10 lifemarks and
         # 4 of them are 'todo' category for scheduling
-        '''
-        for i in range(4):
-            self.add_lifemark(title=f'toto existing {i+1}', state='todo')
-        non_todo_states = ['', 'working', 'complete']
-        for i in range(4, 10):
-            self.add_lifemark(title=f'nontodo existing {i+1}', state=random.choice(non_todo_states))
-            '''
         for i in range(4):
             self.add_lifemark(title=f'todo existing {i+1}', state='todo')
         non_todo_states = ['', 'working', 'complete']
@@ -101,15 +94,7 @@ class SearchTests(FunctionalTest):
             lambda: self.assertEqual(len(list_trs), 4)
         )
 
-        # augie now has two 'xxx' keyword item on both 'todo' and non todo category items
-        '''
-        self.browser.get(self.live_server_url)  # need to update page to show all items
-        self.check_detail_row_count(10)
-        self.update_lifemark(0, desc='xxx', tags='aaa')  # non todo item
-        self.check_row_in_detail_table(0, {'desc': 'xxx', 'tags': 'aaa'})
-        self.update_lifemark(9, desc='xxx', tags='bbb')  # todo item
-        self.check_row_in_detail_table(0, {'desc': 'xxx', 'tags': 'bbb'})
-        '''
+        # augie now has two 'xxx' keyword item on both 'todo' and non todo state items
         self.update_lifemark(Lifemark.objects.get(title='todo existing 1').id, desc='xxx')
         self.update_lifemark(Lifemark.objects.get(title='nontodo existing 5').id, desc='xxx')
 
@@ -120,6 +105,43 @@ class SearchTests(FunctionalTest):
         search_text_box = self.browser.find_element_by_id('id_txt_search')
         search_text_box.send_keys('xxx')
         self.click_button('id_btn_search_todo')
+
+        # then page only shows 'todo' category item with 'xxx'
+        self.check_detail_row_count(1)
+
+    def test_working_state_only_search(self):
+        # augie has 10 lifemarks and
+        # 4 of them are 'working' category for scheduling
+        for i in range(4):
+            self.add_lifemark(title=f'working existing {i+1}', state='working')
+        non_working_states = ['', 'todo', 'complete']
+        for i in range(4, 10):
+            self.add_lifemark(title=f'other existing {i+1}', state=random.choice(non_working_states))
+
+        # augie goes to the main page
+        # and he click 'working search' button
+        self.browser.get(self.live_server_url)
+        self.check_row_count(10)
+        self.click_button('id_btn_search_working')
+
+        # then page updates, and shows search results only for 4 working items in list and detail tables
+        self.check_detail_row_count(4)
+        list_trs = self.browser.find_elements_by_xpath('//table[@id="id_recent_list"]/tbody/tr')
+        self.wait_for(
+            lambda: self.assertEqual(len(list_trs), 4)
+        )
+
+        # augie now has two 'xxx' keyword item on both 'working' and non working state items
+        self.update_lifemark(Lifemark.objects.get(title='working existing 1').id, desc='xxx')
+        self.update_lifemark(Lifemark.objects.get(title='other existing 5').id, desc='xxx')
+
+        # augie goes to the main page again
+        # he now enter 'xxx' in search text box
+        # and click 'working search'
+        self.browser.get(self.live_server_url)
+        search_text_box = self.browser.find_element_by_id('id_txt_search')
+        search_text_box.send_keys('xxx')
+        self.click_button('id_btn_search_working')
 
         # then page only shows 'todo' category item with 'xxx'
         self.check_detail_row_count(1)
