@@ -17,26 +17,22 @@
     <body>
         <button onclick="topFunction()" id="id_btn_top" title="Go to top">Top</button>
 
-        <nav class="navbar navbar-inverse">
-            <div class="container-fluid">
-                <div class="navbar-header">
-                    <a class="navbar-brand" href="{% url 'home' %}">Lifemark</a>
-                </div>
-                <ul class="nav navbar-nav">
-                    <li class="active"><a href="{% url 'home' %}">Home</a></li>
-                    <li><a href="#">Images</a></li>
-                    <li><a href="#">Scraps</a></li>
-                </ul>
-                <ul class="nav navbar-nav navbar-right">
-                    {% if user.is_authenticated %}
-                    <li><a href="#" id="id_logged_in_user">{{ user.username }} logged in</a></li>
-                        <li><a href="{% url 'logout' %}">Logout</a></li>
-                    {% else %}
-                        <li><a id="id_btn_login" href="{% url 'login' %}"Login</a></li>
-                        <li><a id="id_btn_signup" href="{% url 'signup' %}">Signup</a></li>
-                    {% endif %}
-                </ul>
-            </div>
+        <nav class="navbar navbar-expand-sm bg-dark navbar-dark">
+            <a class="navbar-brand" href="{% url 'home' %}">Lifemark</a>
+            <ul class="navbar-nav mr-auto">
+                <li class="nav-item active"><a class="nav-link" href="{% url 'home' %}">Home</a></li>
+                <li class="nav-item"><a class="nav-link" href="#">Images</a></li>
+                <li class="nav-item"><a class="nav-link" href="#">Scraps</a></li>
+            </ul>
+            <ul class="navbar-nav navbar-right">
+                {% if user.is_authenticated %}
+                    <li class="nav-item"><a class="nav-link" href="#" id="id_logged_in_user">{{ user.username }} logged in</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{% url 'logout' %}">Logout</a></li>
+                {% else %}
+                    <li class="nav-item"><a class="nav-link" id="id_btn_login" href="{% url 'login' %}"Login</a></li>
+                    <li class="nav-item"><a class="nav-link" id="id_btn_signup" href="{% url 'signup' %}">Signup</a></li>
+                {% endif %}
+            </ul>
         </nav>
         <div class="container-fluid">
             {% block form %}
