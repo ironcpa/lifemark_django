@@ -1,21 +1,21 @@
 {% load lifemark_filters %}
 
-<div class="form-group">
-    <label class="control-label col-xs-2" for="id_title">Title</label>
-    <div class="col-xs-10">{{ form.title }}</div>
+<div class="form-group form-row">
+    <label class="col-sm-2 col-form-label" for="id_title">Title</label>
+    <div class="col-sm-10">{{ form.title }}</div>
 </div>
-<div class="form-group">
-    <label class="control-label col-xs-2" for="id_link">Link</label>
-    <div class="col-xs-10">{{ form.link }}</div>
+<div class="form-group form-row">
+    <label class="col-sm-2 col-form-label" for="id_link">Link</label>
+    <div class="col-sm-10">{{ form.link }}</div>
 </div>
-<div class="form-group">
-    <label class="control-label col-xs-2" for="id_category_txt">Category</label>
-    <div class="col-xs-10">
+<div class="form-group form-row">
+    <label class="col-sm-2 col-form-label" for="id_category_txt">Category</label>
+    <div class="col-sm-10 flex-grow-1">
         <div class="row">
-            <div class="col-xs-8">
+            <div class="col-sm-8">
                 <input type="text" class="form-control" id="id_category_txt" placeholder="Enter or select category">
             </div>
-            <div class="col-xs-4">
+            <div class="col-sm-4">
                 <select id="id_category_sel" class="form-control">
                     {% for c in existing_categories %}
                         <option value="{{ c }}">{{ c }}</option>
@@ -26,22 +26,22 @@
     </div>
     {{ form.category }}
 </div>
-<div class="form-group">
-    <label class="control-label col-xs-2" for="id_state">State</label>
-    <div class="col-xs-10">{{ form.state }}</div>
+<div class="form-group form-row">
+    <label class="col-sm-2 col-form-label" for="id_state">State</label>
+    <div class="col-sm-10 flex-grow-1">{{ form.state }}</div>
 </div>
-<div class="form-group">
-    <label class="control-label col-xs-2" for="id_due_date">Due Date</label>
-    <div class="col-xs-10">
+<div class="form-group form-row">
+    <label class="col-sm-2 col-form-label" for="id_due_date">Due Date</label>
+    <div class="col-sm-10">
         <div class="row">
-            <div class="col-xs-8">
+            <div class="col-sm-8">
                 {% if is_update_form %}
                     <input type="text" class="form-control" id="id_update_due_date" placeholder="Choose Date">
                 {% else %}
                     <input type="text" class="form-control" id="id_due_date" placeholder="Choose Date">
                 {% endif %}
             </div>
-            <div class="col-xs-4">
+            <div class="col-sm-4">
                 <select id="id_due_hour" class="form-control">
                     {% for hour in 24|times %}
                         <option value="{{ hour }}">{{ hour }}</option>
@@ -52,20 +52,18 @@
     </div>
     {{ form.due_datehour }}
 </div>
-<div class="form-group">
-    <label class="control-label col-xs-2" for="id_rating">Rating</label>
-    <div class="col-xs-10">{{ form.rating }}</div>
+<div class="form-group form-row">
+    <label class="col-sm-2 col-form-label" for="id_rating">Rating</label>
+    <div class="col-sm-10 flex-grow-1">{{ form.rating }}</div>
 </div>
-<div class="form-group">
-    <label class="control-label col-xs-2" for="id_tags">Tags</label>
-    <div class="col-xs-10">{{ form.tags }}</div>
+<div class="form-group form-row">
+    <label class="col-sm-2 col-form-label" for="id_tags">Tags</label>
+    <div class="col-sm-10 flex-grow-1">{{ form.tags }}</div>
 </div>
-<div class="form-group">
-    <div class="col-xs-12">{{ form.desc }}</div>
+<div class="form-group form-row">
+    <div class="col-sm-12">{{ form.desc }}</div>
 </div>
-<div class="form-group">
-    <label class="control-label col-xs-2" for="id_img_url">Iamge Url</label>
-    <div class="col-xs-10">{{ form.image_url }}</div>
+<div class="form-group form-row">
+    <label class="col-sm-2 col-form-label" for="id_img_url">Iamge Url</label>
+    <div class="col-sm-10 flex-grow-1">{{ form.image_url }}</div>
 </div>
-{{ form.geo_lat }}
-{{ form.geo_lon }}
