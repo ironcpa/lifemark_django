@@ -13,6 +13,10 @@ pre {
     background-color: white;
 }
 
+table.table-hover tbody tr:hover {
+    background-color: #fb9692; 
+}
+
 .row_ref {
     background-color: blue;
 }

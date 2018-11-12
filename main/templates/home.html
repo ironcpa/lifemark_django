@@ -198,7 +198,7 @@
         {% csrf_token %}
         <div class="form-group">
             <div class="col-sm-12">
-                <button type="submit" id="id_btn_new" class="btn btn-default">Add Lifemark</button>
+                <button type="submit" id="id_btn_new" class="btn btn-primary">Add Lifemark</button>
             </div>
         </div>
         {% include 'includes/lifemark_form.html' with is_update_form=False %}
@@ -207,8 +207,8 @@
         {% csrf_token %}
         <div class="form-group">
             <div class="col-sm-12">
-                <button type="submit" id="id_btn_update" class="btn btn-default">Update Lifemark</button>
-                <button class="btn btn-default" onclick="show_form('new')">Cancel</button>
+                <button type="submit" id="id_btn_update" class="btn btn-primary">Update Lifemark</button>
+                <button class="btn btn-primary" onclick="show_form('new')">Cancel</button>
             </div>
         </div>
         {% include 'includes/lifemark_form.html' with is_update_form=True %}
@@ -225,13 +225,13 @@
 {% block content %}
     <form id="id_search_form" method="GET" action="{% url 'search' %}">
         <div class="row bg-primary" style="padding-top: .5em; padding-bottom: .5em">
-            <div class="col-sm-4">
-                <button type="submit" class="btn btn-default" id="id_btn_search">Search</button>
-                <button type="submit" class="btn btn-default" id="id_btn_search_todo" onclick="return submit_state_search('todo')">Search Todo</button>
-                <button type="submit" class="btn btn-default" id="id_btn_search_working" onclick="return submit_state_search('working')">Search Working</button>
-                <button type="submit" class="btn btn-default" id="id_btn_search_ref" onclick="return submit_category_search('ref')">Search Ref</button>
+            <div class="col-sm-6">
+                <button type="submit" class="btn btn-primary btn-md" id="id_btn_search">Search</button>
+                <button type="submit" class="btn btn-primary btn-md" id="id_btn_search_todo" onclick="return submit_state_search('todo')">Search Todo</button>
+                <button type="submit" class="btn btn-primary btn-md" id="id_btn_search_working" onclick="return submit_state_search('working')">Search Working</button>
+                <button type="submit" class="btn btn-primary btn-md" id="id_btn_search_ref" onclick="return submit_category_search('ref')">Search Ref</button>
             </div>
-            <div class="col-sm-8">
+            <div class="col-sm-6">
                 <input type="text" class="form-control" id="id_txt_search" name="q">
                 <input type="hidden" id="id_hdn_search_category" name="c" />
                 <input type="hidden" id="id_hdn_search_state" name="s" />
@@ -260,8 +260,8 @@
                             {{ line_data.lifemark.title }}
                         </td>
                         <td>
-                            <button id="id_list_btn_edit_{{ key }}" type="button" class="btn btn-default btn-xs" onclick="edit(event, {{ key }})">Edit</button>
-                            <button id="id_list_btn_del_{{ key }}" type="button" class="btn btn-default btn-xs" onclick="del({{ key }})">Del</button>
+                            <button id="id_list_btn_edit_{{ key }}" type="button" class="btn btn-primary btn-sm" onclick="edit(event, {{ key }})">Edit</button>
+                            <button id="id_list_btn_del_{{ key }}" type="button" class="btn btn-primary btn-sm" onclick="del({{ key }})">Del</button>
                         </td>
                     </tr>
                     {% for line_search_data in line_data.lines %}
@@ -289,6 +289,7 @@
                 {% endfor %}
             </tbody>
         </table>
+        {% include 'includes/range_pagination.html' %}
 
     </form>
 {% endblock content %}
